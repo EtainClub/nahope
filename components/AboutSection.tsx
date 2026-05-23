@@ -1,42 +1,40 @@
-import Image from "next/image";
-
 interface CastMember {
   name: string;
   role: string;
   desc: string;
-  status: "ACTIVE" | "CLASSIFIED" | "UNKNOWN";
+  status: "ACTIVE" | "CLASSIFIED" | "UNKNOWN" | "EXTRATERRESTRIAL";
 }
 
 const CAST_LIST: CastMember[] = [
   {
     name: "Hwang Jung-min",
-    role: "Local Police Officer",
-    desc: "A veteran cop searching the dark, foggy forest for clues of the anomaly. Threat level: A.",
+    role: "Bum-seok (Police Chief)",
+    desc: "The veteran chief of the Hopo Police Outpost. Struggling to protect the isolated coastal town under extreme pressure.",
     status: "ACTIVE",
   },
   {
     name: "Jo In-sung",
-    role: "Young Hunter",
-    desc: "A skilled marksman who witnessed something inexplicable on the village outskirts.",
+    role: "Sung-ki (Hunter / Villager)",
+    desc: "A bold local youth who tracks the creature in the dense forest with a Carbine rifle, eventually becoming the prey.",
     status: "ACTIVE",
   },
   {
-    name: "Jung Ho-yeon",
-    role: "Field Analyst",
-    desc: "An elite agent investigating electromagnetic paralysis and deciphering unknown cosmic signals.",
+    name: "Gong Min-jung",
+    role: "Sung-ae (Outpost Officer)",
+    desc: "Bum-seok's junior partner. Tries to maintain civil order and guard the elders as all communications fail.",
     status: "CLASSIFIED",
   },
   {
-    name: "Michael Fassbender",
-    role: "Mysterious Inspector",
-    desc: "A foreign agent deployed under tight secrecy, suspected of maintaining a connection to the entities.",
-    status: "CLASSIFIED",
+    name: "Michael Fassbender & Alicia Vikander",
+    role: "Mysterious Alien Entities",
+    desc: "A real-life power couple making their first joint appearance in a Korean film, portraying major non-human roles.",
+    status: "EXTRATERRESTRIAL",
   },
   {
-    name: "Alicia Vikander",
-    role: "Co-Researcher",
-    desc: "A scientist tracking the landing coordinates, holding the key to humanity's ultimate survival.",
-    status: "UNKNOWN",
+    name: "Taylor Russell & Cameron Britton",
+    role: "Humanoid Cosmic Entities",
+    desc: "Portraying 15-20ft tall humanoid alien beasts that crash-landed to ravage Hopo Port.",
+    status: "EXTRATERRESTRIAL",
   },
 ];
 
@@ -44,8 +42,8 @@ export default function AboutSection() {
   return (
     <section id="story" className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-20 border-t border-space-800/40">
       
-      {/* Decorative backdrop mesh in Jeroin style */}
-      <div className="absolute right-0 top-1/4 w-[300px] h-[300px] bg-neon-purple/5 rounded-full blur-[90px] pointer-events-none" />
+      {/* Decorative holographic gradient glow in Jeroin style */}
+      <div className="absolute right-0 top-1/4 w-[350px] h-[350px] bg-gradient-to-tr from-neon-pink/10 to-alien-cyan/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Grid: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -53,21 +51,22 @@ export default function AboutSection() {
         {/* Left Col: Narrative & Movie info */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="text-neon-pink font-mono text-sm tracking-widest uppercase">
-            // PROJECT BACKGROUND
+            // OFFICIAL PRODUCTION DATABASE
           </div>
           <h2 className="font-righteous text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-            Na Hong-jin&apos;s Sci-Fi Epic: <span className="text-neon-pink text-neon-pink">HOPE</span>
+            Na Hong-jin&apos;s Sci-Fi Epic: <span className="text-oil-slick font-bold">HOPE</span>
           </h2>
-          <div className="w-12 h-1 bg-gradient-to-r from-neon-pink to-neon-purple" />
+          <div className="w-12 h-1 bg-gradient-to-r from-neon-pink via-neon-purple to-alien-cyan" />
           
           <p className="text-gray-400 leading-relaxed font-sans text-sm sm:text-base">
-            Renowned for his dark masterpieces <strong>&apos;The Chaser&apos;</strong>, <strong>&apos;The Yellow Sea&apos;</strong>, and <strong>&apos;The Wailing&apos;</strong>, 
-            director Na Hong-jin returns in 2026 with a high-budget sci-fi mystery thriller.
+            Renowned for his dark masterpieces <em>&apos;The Chaser&apos;</em>, <em>&apos;The Yellow Sea&apos;</em>, and <em>&apos;The Wailing&apos;</em>, 
+            director Na Hong-jin returns with a high-budget sci-fi thriller. Breaking the country&apos;s budget records, 
+            the 160-minute epic marks his official Cannes Competition debut.
           </p>
           <p className="text-gray-400 leading-relaxed font-sans text-sm sm:text-base">
-            In a rural village isolated by fog, residents encounter incomprehensible alien entities 
-            that challenge the limits of human cognition. Amidst this dread, we search for 
-            a sliver of hope—and this community-led project brings the cinematic thrill onto the Solana blockchain.
+            The story takes place in the 1980s in **Hopo Port, Haenam**, a coastal town isolated by an electromagnetic pulse. 
+            A small spark of human ignorance balloons into a massive extraterrestrial tragedy. Humanity encounters 
+            mysterious 15-20ft humanoid aliens and massive motherships hovering over the shore.
           </p>
 
           {/* Chicken Meme Card */}
@@ -82,12 +81,12 @@ export default function AboutSection() {
               </h4>
             </div>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              At timestamp [[00:36](https://www.youtube.com/watch?v=KgwHb2qNo8k&t=36)] in the trailer, a single chicken strolls calmly through the desolation. 
-              In Na Hong-jin&apos;s dark cinematic universe, it is agreed that this chicken is immune to the invaders and stronger than any alien vessel. 
-              It serves as $NAHOPE&apos;s ultimate spiritual mascot.
+              Spotted at timestamp [00:36] in the trailer, this single chicken roams the ruins without fear. 
+              In the Hopo Port community, it is agreed that this creature is immune to extra-terrestrial rays and represents the ultimate survivor. 
+              It stands as the spiritual mascot of the $NAHOPE initiative.
             </p>
             <div className="mt-3 text-[10px] text-alien-cyan font-mono">
-              STATUS: IMMUNE TO ALIEN BEAMS
+              STATUS: SECURE AND IMMUNE TO COSMIC BEAMS
             </div>
           </div>
         </div>
@@ -95,10 +94,10 @@ export default function AboutSection() {
         {/* Right Col: Cast dossiers */}
         <div id="casting" className="lg:col-span-7 flex flex-col gap-6">
           <div className="text-neon-pink font-mono text-sm tracking-widest uppercase">
-            // CLASSIFIED FILES: CODENAME &apos;HOPE&apos;
+            // CONFIDENTIAL PROFILE LOGS
           </div>
           <h3 className="font-righteous text-2xl font-bold text-white">
-            Star-Studded Cast &amp; Dossiers
+            Official Cast &amp; Character Files
           </h3>
 
           <div className="flex flex-col gap-4">
@@ -129,7 +128,9 @@ export default function AboutSection() {
                     ? "text-alien-cyan border-alien-cyan/20 bg-alien-cyan/5"
                     : cast.status === "CLASSIFIED"
                       ? "text-neon-purple border-neon-purple/20 bg-neon-purple/5"
-                      : "text-neon-pink border-neon-pink/20 bg-neon-pink/5"
+                      : cast.status === "EXTRATERRESTRIAL"
+                        ? "text-neon-pink border-neon-pink/20 bg-neon-pink/5"
+                        : "text-alert-red border-alert-red/20 bg-alert-red/5"
                 }`}>
                   {cast.status}
                 </span>

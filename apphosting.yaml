@@ -5,3 +5,21 @@ runConfig:
   minInstances: 0
   maxInstances: 10
   concurrency: 80
+
+env:
+  # Firebase Client SDK (public)
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyCvWNVynwRX5cdvwiNWCmBoCkz9v6HnIgs
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: nahope-port.firebaseapp.com
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: nahope-port
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: nahope-port.firebasestorage.app
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "287544756816"
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:287544756816:web:bed5b9ea7cea3bc472df55"
+  - variable: NEXT_PUBLIC_APP_URL
+    value: https://nahope.org
+ 

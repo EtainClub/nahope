@@ -1,13 +1,26 @@
 {
-  "apphosting": {
-    "backendId": "nahope-app",
-    "rootDir": "/",
-    "ignore": [
-      "node_modules",
-      ".git",
-      ".next",
-      "firebase-debug.log",
-      "firebase-debug.*.log"
-    ]
-  }
+  "apphosting": [
+    {
+      "backendId": "nahope-app",
+      "rootDir": "/",
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".next",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    },
+    {
+      "backendId": "nahope",
+      "rootDir": "/",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ]
+    }
+  ]
 }
