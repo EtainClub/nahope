@@ -79,9 +79,25 @@ export default function WalletConnectModal({
             })()
           : null;
 
+      const existingLocal =
+        typeof window !== "undefined"
+          ? (() => {
+              try {
+                return JSON.parse(
+                  localStorage.getItem(`profile_${pubkeyStr}`) ?? "null"
+                );
+              } catch {
+                return null;
+              }
+            })()
+          : null;
+
       const realProfile = database.getUserProfile(pubkeyStr);
       const merged = {
         ...realProfile,
+        // New real wallets start at 0; chain fetch overwrites with actual balance.
+        // Existing wallets (existingLocal present) keep their stored balance.
+        tokenBalance: existingLocal?.tokenBalance ?? 0,
         inventory:
           realProfile.inventory.length > 0
             ? realProfile.inventory
