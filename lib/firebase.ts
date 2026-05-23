@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, query, where, orderBy, increment } from "firebase/firestore";
+import { getAuth, signInAnonymously, Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,14 +20,30 @@ const isFirebaseConfigured = !!(
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 let db: any = null;
+let auth: Auth | null = null;
 
 if (isFirebaseConfigured) {
   try {
     db = getFirestore(app);
+    auth = getAuth(app);
   } catch (e) {
-    console.warn("Failed to initialize Firestore, using localStorage fallback:", e);
+    console.warn("Failed to initialize Firebase, using localStorage fallback:", e);
   }
 }
+
+export { auth };
+
+export const connectWalletAndAuth = async (): Promise<string | null> => {
+  if (!auth) return null;
+  if (auth.currentUser) return auth.currentUser.uid;
+  try {
+    const credential = await signInAnonymously(auth);
+    return credential.user.uid;
+  } catch (e) {
+    console.warn("Firebase Anonymous Auth failed:", e);
+    return null;
+  }
+};
 
 // Fallback Local Storage functions
 const getLocalData = (key: string, defaultValue: any) => {
@@ -62,10 +79,13 @@ if (typeof window !== "undefined") {
 // Interfaces
 export interface UserProfile {
   solanaAddress: string;
+  firebaseUid?: string;    // anonymous Firebase UID — updated each session
   tokenBalance: number;
   inventory: string[];
   checkInDates: string[]; // YYYY-MM-DD
   lastCheckIn: string | null;
+  createdAt?: number;
+  lastSeen?: number;
 }
 
 export interface CommunityPost {
@@ -155,34 +175,35 @@ export const database = {
     }
   },
 
-  async getUserProfile(walletAddress: string): Promise<UserProfile> {
+  getUserProfile(walletAddress: string): UserProfile {
     const localKey = `profile_${walletAddress}`;
     const localProfile = getLocalData(localKey, null);
 
+    // Return from localStorage immediately — never block the UI on Firestore.
+    // Firestore sync runs in the background and writes to localStorage so the
+    // next call picks up the server copy.
+    const result: UserProfile = localProfile ?? {
+      ...DEFAULT_PROFILE,
+      solanaAddress: walletAddress,
+    };
+    if (!localProfile) {
+      setLocalData(localKey, result);
+    }
+
     if (db && firestoreActive) {
-      try {
-        const docRef = doc(db, "users", walletAddress);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data() as UserProfile;
-          // Merge to sync local storage if remote has newer
-          setLocalData(localKey, data);
-          return data;
-        }
-      } catch (e) {
-        if (!isOfflineError(e)) console.error("Firestore fetch failed, disabling remote sync:", e);
-        firestoreActive = false;
-      }
+      getDoc(doc(db, "users", walletAddress))
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            setLocalData(localKey, docSnap.data() as UserProfile);
+          }
+        })
+        .catch((e) => {
+          if (!isOfflineError(e)) console.error("Firestore bg-sync failed:", e);
+          firestoreActive = false;
+        });
     }
 
-    if (localProfile) {
-      return localProfile;
-    }
-
-    // Default configuration for new wallets
-    const newProfile = { ...DEFAULT_PROFILE, solanaAddress: walletAddress };
-    setLocalData(localKey, newProfile);
-    return newProfile;
+    return result;
   },
 
   // 2. Community posts operations

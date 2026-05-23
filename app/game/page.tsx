@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { database, UserProfile } from "../../lib/firebase";
-import { Shield, Key, Compass, MessageSquare, Terminal, Archive, Check } from "lucide-react";
+import WalletConnectModal from "../../components/WalletConnectModal";
+import { Shield, Key, Compass, MessageSquare, Terminal, Archive, Check, Wallet } from "lucide-react";
 
 // Web Audio API Synthesizer
 const playSound = (type: "beep" | "dissonant" | "unlock" | "ambient" | "move") => {
@@ -85,6 +87,8 @@ interface GameHotspot {
 }
 
 export default function GamePage() {
+  const { connected } = useWallet();
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const profileRef = useRef<UserProfile | null>(null);
   const [currentRoom, setCurrentRoom] = useState<RoomId>("OFFICE");
@@ -106,10 +110,10 @@ export default function GamePage() {
   // Load and sync profile — only on mount and cross-tab storage events.
   // Does NOT trigger the end overlay — that only fires when the user actually
   // picks up Green Alien Slime during the current session (inside secureItem).
-  const syncProfile = async () => {
+  const syncProfile = () => {
     if (typeof window === "undefined") return;
     const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    const data = await database.getUserProfile(wallet);
+    const data = database.getUserProfile(wallet);
     profileRef.current = data;
     setProfile(data);
   };
@@ -133,12 +137,21 @@ export default function GamePage() {
   }, [logs]);
 
   // DB Sync Helper for Items
-  // Uses profileRef (not a DB re-fetch) so sequential calls like "BOTH" build on each other
-  // without a stale-state race condition.
   const secureItem = async (itemName: string, message: string) => {
     if (typeof window === "undefined") return;
-    const currentProfile = profileRef.current;
-    if (!currentProfile) return;
+
+    const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
+
+    // profileRef.current can be null if syncProfile hasn't resolved yet
+    // (user clicked a hotspot before the async load finished).
+    // In that case, fetch the profile right now instead of silently bailing.
+    if (!profileRef.current) {
+      const data = database.getUserProfile(wallet);
+      profileRef.current = data;
+      setProfile(data);
+    }
+
+    const currentProfile = profileRef.current!;
 
     if (currentProfile.inventory.includes(itemName)) {
       setLogs((p) => [...p, `[INFO] ${itemName} already in your possession.`]);
@@ -150,22 +163,25 @@ export default function GamePage() {
       inventory: [...currentProfile.inventory, itemName],
     };
 
-    // Update ref immediately so the next sequential secureItem call sees fresh state
+    // Write to ref immediately — sequential secureItem calls (e.g. "BOTH") read this
+    // before React re-renders, so they always see the freshest inventory.
     profileRef.current = updatedProfile;
     setProfile(updatedProfile);
     setDiscoveryQueue((q) => [...q, itemName]);
     setLogs((p) => [...p, `[SECURED] ${itemName} added to artifact deck.`, `[STORY] ${message}`]);
     playSound("unlock");
 
-    const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    await database.saveUserProfile(wallet, updatedProfile);
-
+    // Start the end-overlay timer immediately on item pickup — before the async save —
+    // so Firestore latency doesn't delay it. The overlay itself is gated by
+    // discoveryQueue.length === 0, so it only appears after the discovery modal is dismissed.
     if (itemName === "Green Alien Slime" && !hasClosedOverlay.current) {
       setTimeout(() => {
         setShowEndOverlay(true);
         playSound("unlock");
       }, 1200);
     }
+
+    await database.saveUserProfile(wallet, updatedProfile);
 
     // Notify navbar to refresh token balance display
     window.dispatchEvent(new Event("profileUpdated"));
@@ -347,7 +363,7 @@ export default function GamePage() {
           if (hasScrewdriver && hasKey) {
             return { text: "The workbench is empty, scattered with old blueprints, copper wires and dust." };
           }
-          
+
           let responseText = "You searched the drawer of the workbench. ";
           let pickedItem = "";
 
@@ -397,7 +413,7 @@ export default function GamePage() {
   const handleHotspotClick = async (h: GameHotspot) => {
     playSound("dissonant");
     const result = h.onClick(activeItem);
-    
+
     setCurrentText(result.text);
     setLogs((p) => [...p, `[ACTION] Checked ${h.name}.`, `[TEXT] ${result.text}`]);
 
@@ -434,11 +450,19 @@ export default function GamePage() {
     "Green Alien Slime": "Ω",
   };
 
+  const ITEM_IMAGES: Record<string, string> = {
+    "Screwdriver": "/images/items/screwdriver.png",
+    "Cabinet Key": "/images/items/cabinet_key.png",
+    "80s Radio": "/images/items/80s_radio.png",
+    "Torn ID Tag": "/images/items/torn_id_tag.png",
+    "Green Alien Slime": "/images/items/green_alien_slime.png",
+  };
+
   const currentDiscovery = discoveryQueue[0] ?? null;
 
   return (
     <div className="fixed inset-x-0 top-[56px] bottom-[88px] md:top-[72px] md:bottom-0 flex flex-col bg-black text-gray-200 p-4 font-mono select-none overflow-hidden touch-none">
-      
+
       {/* Top Title Banner */}
       <div className="text-center text-[10px] text-neon-pink mb-2 tracking-widest uppercase animate-pulse">
         ⚠️ PROTOCOL OMEGA: EPISODE 1 - THE COGNITIVE SEARCH INTERACTIVE ⚠️
@@ -448,25 +472,22 @@ export default function GamePage() {
       <div className="md:hidden flex border-b border-space-850 mb-3 text-xs bg-space-950/80 rounded-xl overflow-hidden p-1 gap-1">
         <button
           onClick={() => setMobileTab("canvas")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${
-            mobileTab === "canvas" ? "bg-neon-pink text-white" : "text-gray-400"
-          }`}
+          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "canvas" ? "bg-neon-pink text-white" : "text-gray-400"
+            }`}
         >
           🎮 GAME SCREEN
         </button>
         <button
           onClick={() => setMobileTab("logs")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${
-            mobileTab === "logs" ? "bg-neon-purple text-white" : "text-gray-400"
-          }`}
+          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "logs" ? "bg-neon-purple text-white" : "text-gray-400"
+            }`}
         >
           📝 LOGS ({logs.length})
         </button>
         <button
           onClick={() => setMobileTab("inventory")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${
-            mobileTab === "inventory" ? "bg-alien-cyan text-black" : "text-gray-400"
-          }`}
+          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "inventory" ? "bg-alien-cyan text-black" : "text-gray-400"
+            }`}
         >
           🎒 INVENTORY ({profile?.inventory.length || 0})
         </button>
@@ -474,12 +495,11 @@ export default function GamePage() {
 
       {/* Main Board Layout */}
       <div className="flex flex-1 gap-4 overflow-hidden h-[calc(100%-80px)]">
-        
+
         {/* LEFT COLUMN: Terminal Logs (25% - Hidden on mobile unless active) */}
         <div
-          className={`${
-            mobileTab === "logs" ? "flex" : "hidden"
-          } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#080112] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
+          className={`${mobileTab === "logs" ? "flex" : "hidden"
+            } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#080112] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
         >
           <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
           <div ref={logContainerRef} className="flex flex-col gap-2 h-full overflow-y-auto pr-1 touch-auto">
@@ -501,9 +521,8 @@ export default function GamePage() {
 
         {/* CENTER COLUMN: Point-and-Click Canvas (50% - Hidden on mobile unless active) */}
         <div
-          className={`${
-            mobileTab === "canvas" ? "flex" : "hidden"
-          } md:flex w-full md:w-1/2 border-2 border-space-700 bg-space-950 rounded-xl relative flex-col items-center justify-between overflow-hidden`}
+          className={`${mobileTab === "canvas" ? "flex" : "hidden"
+            } md:flex w-full md:w-1/2 border-2 border-space-700 bg-space-950 rounded-xl relative flex-col items-center justify-between overflow-hidden`}
         >
           <div className="crt-scanlines absolute inset-0 opacity-[0.06] pointer-events-none z-10" />
 
@@ -513,7 +532,7 @@ export default function GamePage() {
               <Compass className="w-3.5 h-3.5 text-neon-pink" />
               <span>ROOM: <span className="text-white font-bold">{currentRoom.replace("_", " ")}</span></span>
             </div>
-            
+
             <div className="flex gap-2">
               {currentRoom !== "FRONT_YARD" && (
                 <button
@@ -543,19 +562,19 @@ export default function GamePage() {
           </div>
 
           {/* Core Interactive Backdrop */}
-          <div 
+          <div
             style={{ touchAction: "manipulation" }}
             className="relative w-full flex-1 flex items-center justify-center bg-black mt-14 overflow-hidden border-b border-space-900 select-none touch-manipulation"
           >
-            
+
             {/* Background Image depending on currentRoom */}
             <img
               src={
                 currentRoom === "OFFICE"
                   ? "/images/substation_office.png"
                   : currentRoom === "FRONT_YARD"
-                  ? "/images/hopo_farm_road_bg.png"
-                  : "/images/substation_storage.png"
+                    ? "/images/hopo_farm_road_bg.png"
+                    : "/images/substation_storage.png"
               }
               alt={currentRoom}
               className="absolute inset-0 w-full h-full object-cover opacity-80 transition-all duration-500 z-0 select-none pointer-events-none"
@@ -604,12 +623,11 @@ export default function GamePage() {
 
         {/* RIGHT COLUMN: UGC Inventory (25% - Hidden on mobile unless active) */}
         <div
-          className={`${
-            mobileTab === "inventory" ? "flex" : "hidden"
-          } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#0a0114] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
+          className={`${mobileTab === "inventory" ? "flex" : "hidden"
+            } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#0a0114] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
         >
           <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-          
+
           <div className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
             <div className="border-b border-space-850 pb-2 flex justify-between items-center">
               <span className="text-[9px] text-gray-500 uppercase font-mono tracking-widest">
@@ -634,25 +652,33 @@ export default function GamePage() {
                       playSound("beep");
                       setActiveItem(isActive ? null : item);
                     }}
-                    className={`border text-left rounded-xl p-3 flex flex-col gap-1 transition-all ${
-                      isSecured
-                        ? isActive
-                          ? "bg-neon-pink/15 border-neon-pink shadow-[0_0_12px_rgba(255,0,127,0.2)]"
-                          : "bg-space-950 border-space-850 hover:border-space-700 cursor-pointer"
-                        : "bg-space-950/20 border-space-900 border-dashed opacity-35 cursor-not-allowed"
-                    }`}
+                    className={`border text-left rounded-xl p-2 flex gap-3 items-center transition-all ${isSecured
+                      ? isActive
+                        ? "bg-neon-pink/15 border-neon-pink shadow-[0_0_12px_rgba(255,0,127,0.2)]"
+                        : "bg-space-950 border-space-850 hover:border-space-700 cursor-pointer"
+                      : "bg-space-950/20 border-space-900 border-dashed opacity-35 cursor-not-allowed"
+                      }`}
                   >
-                    <div className="flex justify-between items-center w-full">
-                      <span className={`text-[10px] font-bold ${isActive ? "text-neon-pink" : "text-white"}`}>
-                        {item}
-                      </span>
-                      {isActive && <Check className="w-3 h-3 text-neon-pink" />}
+                    <div className="w-10 h-10 rounded-lg bg-black/40 border border-space-800 flex items-center justify-center overflow-hidden shrink-0">
+                      {isSecured ? (
+                        <img src={ITEM_IMAGES[item]} alt={item} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-gray-700 text-[10px] font-bold">LKD</span>
+                      )}
                     </div>
-                    {isSecured && (
-                      <span className="text-[8px] font-mono text-gray-500 uppercase tracking-widest mt-0.5">
-                        {isActive ? "[ EQUIPPED - CLICK TARGET HOTSPOT ]" : "[ CLICK TO EQUIP ]"}
-                      </span>
-                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center w-full">
+                        <span className={`text-[10px] font-bold truncate ${isActive ? "text-neon-pink" : "text-white"}`}>
+                          {item}
+                        </span>
+                        {isActive && <Check className="w-3 h-3 text-neon-pink shrink-0 ml-1" />}
+                      </div>
+                      {isSecured && (
+                        <span className="text-[8px] font-mono text-gray-500 uppercase tracking-widest mt-0.5 block truncate">
+                          {isActive ? "[ EQUIPPED ]" : "[ CLICK TO EQUIP ]"}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 );
               })}
@@ -670,7 +696,7 @@ export default function GamePage() {
       {/* BOTTOM STATUS BAR */}
       <div className="w-full bg-[#080112] border-2 border-space-850 rounded-xl px-4 py-2 mt-3 flex flex-col sm:flex-row justify-between items-center gap-2 font-mono text-[9px] text-gray-400 relative overflow-hidden shadow-inner">
         <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-        
+
         <div className="flex items-center gap-1.5 relative z-10">
           <span className="w-1.5 h-1.5 rounded-full bg-term-green animate-ping" />
           <span>NETWORK: <span className="text-term-green font-bold">SOLANA CLOUD ACTIVE</span></span>
@@ -700,11 +726,9 @@ export default function GamePage() {
             </div>
 
             {/* Item display */}
-            <div className="flex flex-col items-center gap-3 py-5 border border-dashed border-alien-cyan/30 rounded-xl bg-space-900/60 relative z-10">
-              <div className="w-14 h-14 rounded-full border-2 border-alien-cyan/40 bg-alien-cyan/10 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,200,0.15)]">
-                <span className="text-alien-cyan font-bold text-2xl select-none">
-                  {ITEM_SYMBOLS[currentDiscovery] ?? "◈"}
-                </span>
+            <div className="flex flex-col items-center gap-3 py-5 border border-dashed border-alien-cyan/30 rounded-xl bg-space-900/60 relative z-10 w-full px-4">
+              <div className="w-24 h-24 rounded-xl border border-alien-cyan/40 bg-black/60 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,200,0.15)] overflow-hidden">
+                <img src={ITEM_IMAGES[currentDiscovery]} alt={currentDiscovery} className="w-full h-full object-cover" />
               </div>
               <span className="text-base font-bold text-white text-center px-2 leading-snug">{currentDiscovery}</span>
               <span className="text-[8px] text-gray-500 uppercase tracking-widest">SECURED TO ARTIFACT DECK</span>
@@ -727,12 +751,20 @@ export default function GamePage() {
         </div>
       )}
 
+      {/* WALLET CONNECT MODAL */}
+      <WalletConnectModal
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)}
+        onSuccess={() => setShowWalletModal(false)}
+        reason="episode2"
+      />
+
       {/* Episode complete overlay — only when no discovery modal is queued */}
       {showEndOverlay && discoveryQueue.length === 0 && (
         <div className="fixed inset-0 z-50 bg-[#040108]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
           <div className="crt-screen max-w-xl w-full rounded-2xl p-6 border-2 border-neon-pink/40 shadow-[0_0_40px_rgba(255,0,127,0.2)] relative flex flex-col gap-5 font-mono text-gray-200 text-left">
             <div className="crt-scanlines absolute inset-0 opacity-[0.08] pointer-events-none" />
-            
+
             {/* Header */}
             <div className="flex items-center justify-between border-b border-space-800 pb-3">
               <div className="flex items-center gap-2">
@@ -751,16 +783,16 @@ export default function GamePage() {
                   // DECLASSIFIED SIGNAL ANALYSIS //
                 </span>
                 <p className="text-gray-300 font-sans">
-                  The <span className="text-alien-cyan font-bold">Green Alien Slime</span> scraped from the typewriter was the final link. 
+                  The <span className="text-alien-cyan font-bold">Green Alien Slime</span> scraped from the typewriter was the final link.
                   By injecting its molecular resonance data into the 80s military radio, the glitched radar suddenly resolves...
                 </p>
                 <p className="text-gray-300 font-sans">
-                  Officer Bum-seok stares at the pulsing CRT screen, his eyes hollow and dead. 
-                  <span className="text-term-amber font-mono italic"> &quot;아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)...&quot; </span> 
+                  Officer Bum-seok stares at the pulsing CRT screen, his eyes hollow and dead.
+                  <span className="text-term-amber font-mono italic"> &quot;아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)...&quot; </span>
                   he whispers as the power grid short-circuits.
                 </p>
                 <p className="text-gray-300 font-sans border-t border-space-900/60 pt-2.5">
-                  The incoming signal wasn&apos;t an SOS from the mainland. It was an orbital beacon broadcasting the outpost&apos;s bio-signatures. 
+                  The incoming signal wasn&apos;t an SOS from the mainland. It was an orbital beacon broadcasting the outpost&apos;s bio-signatures.
                   Outcast Sung-ki has disappeared into the freezing fog of the DMZ, and a towering, dark humanoid silhouette is rising from the coastal waters of Hopo Port.
                 </p>
               </div>
@@ -782,11 +814,19 @@ export default function GamePage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
+                  <span className="text-gray-500 font-bold uppercase">WALLET:</span>
+                  {connected ? (
+                    <span className="text-term-green font-bold uppercase">// CONNECTED //</span>
+                  ) : (
+                    <span className="text-alert-red font-bold uppercase">// NOT CONNECTED //</span>
+                  )}
+                </div>
+                <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
                   <span className="text-gray-500 font-bold uppercase">STAGE ACCESS:</span>
-                  {profile && profile.tokenBalance >= 5000 ? (
+                  {connected && profile && profile.tokenBalance >= 5000 ? (
                     <span className="text-term-green font-bold uppercase animate-pulse">// ACCESS GRANTED //</span>
                   ) : (
-                    <span className="text-alert-red font-bold uppercase animate-pulse">// ACCESS DENIED (INSUFFICIENT $NAHOPE) //</span>
+                    <span className="text-alert-red font-bold uppercase animate-pulse">// ACCESS DENIED //</span>
                   )}
                 </div>
               </div>
@@ -805,19 +845,17 @@ export default function GamePage() {
               >
                 PROPOSE PART 2 STORY TO NA HONG-JIN (GO TO COMMUNITY)
               </Link>
-              
+
               <div className="grid grid-cols-2 gap-2">
-                <Link
-                  href="/profile"
-                  onClick={() => {
-                    playSound("beep");
-                    hasClosedOverlay.current = true;
-                    setShowEndOverlay(false);
-                  }}
-                  className="bg-space-900 border border-space-700 hover:border-alien-cyan text-white hover:text-alien-cyan font-bold py-2.5 px-4 rounded-xl text-center text-[10px] tracking-wider transition-colors uppercase"
-                >
-                  DAILY CHECK-IN (+1,000 $NAHOPE)
-                </Link>
+                {!connected && (
+                  <button
+                    onClick={() => setShowWalletModal(true)}
+                    className="col-span-2 flex items-center justify-center gap-2 bg-space-900 border border-neon-purple/30 hover:border-neon-purple/60 text-neon-purple font-bold py-2.5 px-4 rounded-xl text-[10px] tracking-wider transition-colors cursor-pointer uppercase"
+                  >
+                    <Wallet className="w-3.5 h-3.5" />
+                    CONNECT WALLET FOR EP.2
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     playSound("move");

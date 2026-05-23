@@ -2,6 +2,12 @@
 
 ## <HOPE: Omega Protocol> Design System, Project Overview, and Game Mechanics
 
+## ⚠️ 0. Language Rule
+
+**ALL UI text, labels, buttons, modals, tooltips, placeholders, and error messages must be written in English.** No Korean text in UI components. Korean may appear only inside in-game narrative dialogue strings (e.g., character quotes that are intentionally bilingual for atmosphere), nowhere else.
+
+---
+
 ## 🚀 1. Project Overview: <HOPE: THE HOPO PORT MYSTERY>
 
 ### 1.1. Background and Vision

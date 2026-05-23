@@ -206,4 +206,4 @@ npx -y firebase-tools@latest apphosting:backends:list
 
 ## 📜 License
 
-This is a private project.
+Coming Soon

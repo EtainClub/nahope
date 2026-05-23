@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { database, CommunityPost, UserProfile } from "../../lib/firebase";
+import WalletConnectModal from "../../components/WalletConnectModal";
 import { MessageSquare, Flame, Award, Plus, X, ArrowUp, Tag } from "lucide-react";
 
 export default function CommunityPage() {
+  const { connected } = useWallet();
   const [activeCategory, setActiveCategory] = useState<"all" | "scenario" | "brag">("all");
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // Form states
   const [author, setAuthor] = useState("");
@@ -20,7 +24,7 @@ export default function CommunityPage() {
   const loadData = async () => {
     if (typeof window === "undefined") return;
     const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    const userProfile = await database.getUserProfile(wallet);
+    const userProfile = database.getUserProfile(wallet);
     setProfile(userProfile);
 
     const communityPosts = await database.getPosts();
@@ -115,7 +119,13 @@ export default function CommunityPage() {
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            if (!connected) {
+              setShowWalletModal(true);
+            } else {
+              setShowModal(true);
+            }
+          }}
           className="flex items-center gap-2 bg-gradient-to-r from-neon-pink to-neon-purple text-white px-5 py-3 rounded-xl text-xs font-bold tracking-widest hover:scale-[1.03] transition-all shadow-[0_0_15px_rgba(255,0,127,0.3)] border border-white/10"
         >
           <Plus className="w-4 h-4" />
@@ -239,6 +249,17 @@ export default function CommunityPage() {
           )}
         </div>
       </div>
+
+      {/* WALLET CONNECT MODAL */}
+      <WalletConnectModal
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)}
+        onSuccess={() => {
+          setShowWalletModal(false);
+          setShowModal(true);
+        }}
+        reason="community"
+      />
 
       {/* NEW TRANSMISSION MODAL */}
       {showModal && (

@@ -5,16 +5,17 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Home, Film, Gamepad2, Users, User, Wallet } from "lucide-react";
 import { database, UserProfile } from "../lib/firebase";
+import packageJson from "../package.json";
 
 export default function Navigation() {
   const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   // Sync profile data
-  const syncProfile = async () => {
+  const syncProfile = () => {
     if (typeof window === "undefined") return;
     const activeAddress = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    const data = await database.getUserProfile(activeAddress);
+    const data = database.getUserProfile(activeAddress);
     setProfile(data);
   };
 
@@ -60,9 +61,14 @@ export default function Navigation() {
             <span className="blur-p chromatic-text inline-block group-hover:scale-105 transition-transform">P</span>
             <span className="blur-e chromatic-text inline-block group-hover:scale-105 transition-transform">E</span>
           </span>
-          <span className="text-[9px] text-gray-500 font-mono self-end mb-0.5 ml-2 uppercase tracking-widest">
-            // OMEGA_SYS
-          </span>
+          <div className="flex flex-col self-end mb-0.5 ml-2">
+            <span className="text-[9px] text-gray-500 font-mono uppercase tracking-widest leading-none mb-1">
+              // OMEGA_SYS
+            </span>
+            <span className="text-[8px] text-neon-green/70 font-mono tracking-widest leading-none">
+              v{packageJson.version}
+            </span>
+          </div>
         </Link>
 
         {/* Links */}
@@ -136,11 +142,16 @@ export default function Navigation() {
       </nav>
       {/* Mobile top-bar layout helper to show wallet status on mobile */}
       <div className="md:hidden w-full bg-space-950 border-b border-space-900 px-4 py-3 flex items-center justify-between relative z-30">
-        <Link href="/" className="font-righteous text-lg tracking-widest text-white">
-          <span className="blur-h chromatic-text inline-block">H</span>
-          <span className="blur-o chromatic-text inline-block">O</span>
-          <span className="blur-p chromatic-text inline-block">P</span>
-          <span className="blur-e chromatic-text inline-block">E</span>
+        <Link href="/" className="flex flex-col">
+          <div className="font-righteous text-lg tracking-widest text-white leading-none">
+            <span className="blur-h chromatic-text inline-block">H</span>
+            <span className="blur-o chromatic-text inline-block">O</span>
+            <span className="blur-p chromatic-text inline-block">P</span>
+            <span className="blur-e chromatic-text inline-block">E</span>
+          </div>
+          <span className="text-[8px] text-neon-green/70 font-mono tracking-widest mt-1">
+            v{packageJson.version}
+          </span>
         </Link>
         <div className="flex items-center gap-1.5 bg-space-900 border border-neon-purple/20 px-2.5 py-1 rounded-lg text-[9px] font-mono">
           <Wallet className="w-2.5 h-2.5 text-alien-cyan" />

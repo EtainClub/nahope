@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Righteous, Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "../components/Navigation";
+import ProvidersWrapper from "../components/ProvidersWrapper";
 
 const righteous = Righteous({
   weight: "400",
@@ -125,10 +126,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/images/nahope_logo.png" />
       </head>
       <body className="min-h-full flex flex-col bg-space-950 font-sans text-gray-100 pb-24 md:pb-0">
-        <Navigation />
-        <div className="flex-1 flex flex-col">
-          {children}
-        </div>
+        <ProvidersWrapper>
+          <Navigation />
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
+        </ProvidersWrapper>
       </body>
     </html>
   );
