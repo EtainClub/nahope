@@ -86,6 +86,7 @@ interface GameHotspot {
 
 export default function GamePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const profileRef = useRef<UserProfile | null>(null);
   const [currentRoom, setCurrentRoom] = useState<RoomId>("OFFICE");
   const [logs, setLogs] = useState<string[]>([
     "[SYSTEM INITIALIZED] connection established.",
@@ -96,38 +97,33 @@ export default function GamePage() {
   const [currentText, setCurrentText] = useState(
     "You are inside the police substation office. Officer Bum-seok is sitting at his desk. A heavy fog covers the window."
   );
+  const [discoveryQueue, setDiscoveryQueue] = useState<string[]>([]);
   const [mobileTab, setMobileTab] = useState<"canvas" | "logs" | "inventory">("canvas");
   const [showEndOverlay, setShowEndOverlay] = useState(false);
   const logContainerRef = useRef<HTMLDivElement>(null);
   const hasClosedOverlay = useRef(false);
 
-  // Load and sync profile
+  // Load and sync profile — only on mount and cross-tab storage events.
+  // Does NOT trigger the end overlay — that only fires when the user actually
+  // picks up Green Alien Slime during the current session (inside secureItem).
   const syncProfile = async () => {
     if (typeof window === "undefined") return;
     const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
     const data = await database.getUserProfile(wallet);
+    profileRef.current = data;
     setProfile(data);
-    
-    // Auto trigger end overlay if final item already possessed
-    if (data.inventory.includes("Green Alien Slime") && !hasClosedOverlay.current) {
-      setShowEndOverlay(true);
-    }
   };
+
+  // Keep profileRef in sync whenever profile state changes
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
 
   useEffect(() => {
     syncProfile();
-    
-    const handleSync = () => {
-      syncProfile();
-    };
-
-    window.addEventListener("profileUpdated", handleSync);
-    window.addEventListener("storage", handleSync);
-
-    return () => {
-      window.removeEventListener("profileUpdated", handleSync);
-      window.removeEventListener("storage", handleSync);
-    };
+    // Only listen for true cross-tab storage changes
+    window.addEventListener("storage", syncProfile);
+    return () => window.removeEventListener("storage", syncProfile);
   }, []);
 
   useEffect(() => {
@@ -137,13 +133,13 @@ export default function GamePage() {
   }, [logs]);
 
   // DB Sync Helper for Items
+  // Uses profileRef (not a DB re-fetch) so sequential calls like "BOTH" build on each other
+  // without a stale-state race condition.
   const secureItem = async (itemName: string, message: string) => {
     if (typeof window === "undefined") return;
-    const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    
-    // Fetch the most up-to-date profile from database/localStorage to prevent race conditions
-    const currentProfile = await database.getUserProfile(wallet);
-    
+    const currentProfile = profileRef.current;
+    if (!currentProfile) return;
+
     if (currentProfile.inventory.includes(itemName)) {
       setLogs((p) => [...p, `[INFO] ${itemName} already in your possession.`]);
       return;
@@ -153,15 +149,17 @@ export default function GamePage() {
       ...currentProfile,
       inventory: [...currentProfile.inventory, itemName],
     };
-    
+
+    // Update ref immediately so the next sequential secureItem call sees fresh state
+    profileRef.current = updatedProfile;
     setProfile(updatedProfile);
-    setLogs((p) => [...p, `[SECURED] ${itemName} added to your profile inventory.`, `[STORY] ${message}`]);
+    setDiscoveryQueue((q) => [...q, itemName]);
+    setLogs((p) => [...p, `[SECURED] ${itemName} added to artifact deck.`, `[STORY] ${message}`]);
     playSound("unlock");
 
-    // Persist
+    const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
     await database.saveUserProfile(wallet, updatedProfile);
-    
-    // Trigger overlay if final item is secured
+
     if (itemName === "Green Alien Slime" && !hasClosedOverlay.current) {
       setTimeout(() => {
         setShowEndOverlay(true);
@@ -169,8 +167,13 @@ export default function GamePage() {
       }, 1200);
     }
 
-    // Dispatch event to update navbar instantly
+    // Notify navbar to refresh token balance display
     window.dispatchEvent(new Event("profileUpdated"));
+  };
+
+  const dismissDiscovery = () => {
+    playSound("beep");
+    setDiscoveryQueue((q) => q.slice(1));
   };
 
   // Rooms and Hotspots Configuration
@@ -201,10 +204,10 @@ export default function GamePage() {
       {
         id: "substation-typewriter",
         name: "Goldstar Retro Typewriter",
-        top: "50%",
-        left: "36%",
-        width: "32%",
-        height: "25%",
+        top: "62%",
+        left: "30%",
+        width: "24%",
+        height: "22%",
         hoverText: "Inspect Goldstar Typewriter",
         onClick: (item) => {
           if (profile?.inventory.includes("Green Alien Slime")) {
@@ -224,10 +227,10 @@ export default function GamePage() {
       {
         id: "rotary-phone",
         name: "Blue House Rotary Phone",
-        top: "65%",
+        top: "72%",
         left: "70%",
-        width: "20%",
-        height: "25%",
+        width: "18%",
+        height: "22%",
         hoverText: "Inspect Rotary Phone",
         onClick: () => {
           return {
@@ -422,6 +425,16 @@ export default function GamePage() {
     setCurrentText(description);
     setLogs((p) => [...p, `[MOVE] Entered ${room.replace("_", " ")}.`]);
   };
+
+  const ITEM_SYMBOLS: Record<string, string> = {
+    "Screwdriver": "⚙",
+    "Cabinet Key": "⬡",
+    "80s Radio": "◎",
+    "Torn ID Tag": "≡",
+    "Green Alien Slime": "Ω",
+  };
+
+  const currentDiscovery = discoveryQueue[0] ?? null;
 
   return (
     <div className="fixed inset-x-0 top-[56px] bottom-[88px] md:top-[72px] md:bottom-0 flex flex-col bg-black text-gray-200 p-4 font-mono select-none overflow-hidden touch-none">
@@ -674,7 +687,48 @@ export default function GamePage() {
         </div>
       </div>
 
-      {showEndOverlay && (
+      {/* Item Discovery Modal — z-50, always takes priority over end overlay */}
+      {discoveryQueue.length > 0 && (
+        <div className="fixed inset-0 z-50 bg-[#040108]/85 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative max-w-xs w-full bg-[#080112] border-2 border-alien-cyan/60 rounded-2xl p-6 font-mono shadow-[0_0_50px_rgba(0,255,200,0.12)] flex flex-col gap-4">
+            <div className="crt-scanlines absolute inset-0 opacity-[0.06] pointer-events-none rounded-2xl" />
+
+            {/* Header */}
+            <div className="flex items-center gap-2 border-b border-space-800 pb-3 relative z-10">
+              <span className="w-2 h-2 bg-alien-cyan rounded-full animate-ping shrink-0" />
+              <span className="text-[9px] text-alien-cyan uppercase tracking-widest font-bold">// ARTIFACT ACQUIRED</span>
+            </div>
+
+            {/* Item display */}
+            <div className="flex flex-col items-center gap-3 py-5 border border-dashed border-alien-cyan/30 rounded-xl bg-space-900/60 relative z-10">
+              <div className="w-14 h-14 rounded-full border-2 border-alien-cyan/40 bg-alien-cyan/10 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,200,0.15)]">
+                <span className="text-alien-cyan font-bold text-2xl select-none">
+                  {ITEM_SYMBOLS[currentDiscovery] ?? "◈"}
+                </span>
+              </div>
+              <span className="text-base font-bold text-white text-center px-2 leading-snug">{currentDiscovery}</span>
+              <span className="text-[8px] text-gray-500 uppercase tracking-widest">SECURED TO ARTIFACT DECK</span>
+            </div>
+
+            {/* Inventory count */}
+            <div className="flex justify-between items-center text-[9px] text-gray-600 relative z-10">
+              <span>ARTIFACT DECK</span>
+              <span className="text-alien-cyan font-bold">{profile?.inventory.length ?? 0} / 5 SLOTS FILLED</span>
+            </div>
+
+            {/* Confirm button */}
+            <button
+              onClick={dismissDiscovery}
+              className="w-full bg-alien-cyan/10 hover:bg-alien-cyan/20 border border-alien-cyan/40 hover:border-alien-cyan text-alien-cyan font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all cursor-pointer relative z-10 shadow-[0_0_15px_rgba(0,255,200,0.05)]"
+            >
+              [ CONFIRM ACQUISITION ]
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Episode complete overlay — only when no discovery modal is queued */}
+      {showEndOverlay && discoveryQueue.length === 0 && (
         <div className="fixed inset-0 z-50 bg-[#040108]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
           <div className="crt-screen max-w-xl w-full rounded-2xl p-6 border-2 border-neon-pink/40 shadow-[0_0_40px_rgba(255,0,127,0.2)] relative flex flex-col gap-5 font-mono text-gray-200 text-left">
             <div className="crt-scanlines absolute inset-0 opacity-[0.08] pointer-events-none" />

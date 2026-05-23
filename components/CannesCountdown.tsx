@@ -51,15 +51,28 @@ export default function CannesCountdown() {
     return () => clearInterval(timer);
   }, []);
 
-  // Bonding Curve progress simulation
+  // Fetch real bonding curve progress from GeckoTerminal API
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBondingProgress((prev) => {
-        if (prev >= 100) return 74.28;
-        const increment = Math.random() * 0.03;
-        return parseFloat((prev + increment).toFixed(2));
-      });
-    }, 4500);
+    const fetchProgress = async () => {
+      try {
+        const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/CvKFHHfXqusmcrU18d6pvCWhJrWyteziqi99xJgjpump");
+        if (res.ok) {
+          const data = await res.json();
+          const progress = data?.data?.attributes?.launchpad_details?.graduation_percentage;
+          if (progress !== undefined && progress !== null) {
+            setBondingProgress(parseFloat(progress.toFixed(2)));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching bonding curve progress:", err);
+      }
+    };
+
+    // Initial fetch
+    fetchProgress();
+
+    // Refresh every 60 seconds to avoid hitting rate limits
+    const interval = setInterval(fetchProgress, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -139,6 +152,12 @@ export default function CannesCountdown() {
             The token pool is bonding. Upon reaching 100% progress, $NAHOPE will graduate to the Raydium liquidity pool, 
             automatically triggering the **Episode 1: Golden Palm Hope Release Event**.
           </p>
+          <div className="mt-1 flex items-center justify-between bg-space-950/60 p-2.5 rounded-lg border border-neon-purple/20">
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Contract Address</span>
+            <code className="text-xs text-alien-cyan font-mono select-all cursor-copy" title="Click to select">
+              CvKFHHfXqusmcrU18d6pvCWhJrWyteziqi99xJgjpump
+            </code>
+          </div>
         </div>
 
         {/* Bonding gauge */}

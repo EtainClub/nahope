@@ -1,4 +1,61 @@
+import type { Metadata } from "next";
 import { Shield, Radio, Eye, Clapperboard, FlaskConical, Wrench, Globe, FileText } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "영화 HOPE 소개 | Film Profile",
+  description:
+    "나홍진 감독의 SF 코즈믹 호러 영화 HOPE(호프) 상세 정보. 황정민, 조인성, 정호연, 마이클 패스벤더, 알리시아 비칸데르 출연. 시놉시스, 캐릭터 소개, 감독 프로필. Cast, synopsis, and director profile for Na Hong-jin's sci-fi cosmic horror film 'HOPE'.",
+  openGraph: {
+    title: "영화 HOPE(호프) | 나홍진 감독 SF 코즈믹 호러",
+    description:
+      "황정민, 조인성, 정호연, 마이클 패스벤더 출연. 호포항에 나타난 외계 존재와 생존자들의 이야기. Na Hong-jin's cosmic horror film starring Hwang Jung-min, Jo In-sung, and Jung Ho-yeon.",
+    images: [
+      {
+        url: "/images/og-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "HOPE - 나홍진 감독 SF 코즈믹 호러 영화",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "영화 HOPE | 나홍진 감독 코즈믹 호러",
+    description:
+      "황정민, 조인성, 정호연, 마이클 패스벤더 출연. Na Hong-jin's cosmic horror film HOPE.",
+    images: ["/images/og-banner.png"],
+  },
+};
+
+// JSON-LD for the movie
+const movieJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Movie",
+  name: "HOPE (호프)",
+  alternateName: "호프",
+  description:
+    "안개에 휩싸인 해안 마을 호포항에 나타난 외계 존재와 생존자들의 이야기. A cosmic horror thriller set in a fog-shrouded coastal village.",
+  director: {
+    "@type": "Person",
+    name: "Na Hong-jin (나홍진)",
+  },
+  actor: [
+    { "@type": "Person", name: "Hwang Jung-min (황정민)" },
+    { "@type": "Person", name: "Jo In-sung (조인성)" },
+    { "@type": "Person", name: "Jung Ho-yeon (정호연)" },
+    { "@type": "Person", name: "Taylor Russell" },
+    { "@type": "Person", name: "Cameron Britton" },
+    { "@type": "Person", name: "Alicia Vikander" },
+    { "@type": "Person", name: "Michael Fassbender" },
+  ],
+  genre: ["Sci-Fi", "Cosmic Horror", "Thriller"],
+  productionCompany: [
+    { "@type": "Organization", name: "Forged Films" },
+    { "@type": "Organization", name: "Plus M Entertainment" },
+  ],
+  image: "https://nahope.com/images/og-banner.png",
+  url: "https://nahope.com/intro",
+};
 
 export default function MovieIntroPage() {
   const castList = [
@@ -83,6 +140,11 @@ export default function MovieIntroPage() {
 
   return (
     <div className="flex-1 flex flex-col bg-space-950 py-12 px-4 md:px-8 relative overflow-hidden font-sans select-none">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(movieJsonLd) }}
+      />
       {/* Ambient background glow */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-neon-pink/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-[450px] h-[450px] bg-neon-purple/5 rounded-full blur-[140px] pointer-events-none" />

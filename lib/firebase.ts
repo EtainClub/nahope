@@ -10,14 +10,22 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
+// Only use Firestore when all required env vars are present
+const isFirebaseConfigured = !!(
+  firebaseConfig.apiKey &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+);
+
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 let db: any = null;
 
-try {
-  db = getFirestore(app);
-} catch (e) {
-  console.warn("Failed to initialize Firestore, using localStorage fallback:", e);
+if (isFirebaseConfigured) {
+  try {
+    db = getFirestore(app);
+  } catch (e) {
+    console.warn("Failed to initialize Firestore, using localStorage fallback:", e);
+  }
 }
 
 // Fallback Local Storage functions
@@ -36,6 +44,20 @@ const setLocalData = (key: string, data: any) => {
   if (typeof window === "undefined") return;
   localStorage.setItem(key, JSON.stringify(data));
 };
+
+// Clean up corrupted wallet address entries caused by double-JSON-encoding
+if (typeof window !== "undefined") {
+  const storedAddress = localStorage.getItem("active_wallet_address");
+  if (storedAddress && storedAddress.startsWith('"')) {
+    localStorage.removeItem("active_wallet_address");
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('profile_"')) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  }
+}
 
 // Interfaces
 export interface UserProfile {
@@ -102,7 +124,12 @@ const DEFAULT_POSTS: CommunityPost[] = [
   }
 ];
 
-let firestoreActive = true;
+let firestoreActive = isFirebaseConfigured;
+
+const isOfflineError = (e: unknown): boolean => {
+  const err = e as any;
+  return err?.code === "unavailable" || /offline|network/i.test(err?.message ?? "");
+};
 
 // Unified database operations with fallback
 export const database = {
@@ -110,9 +137,11 @@ export const database = {
   async saveUserProfile(walletAddress: string, profile: UserProfile): Promise<void> {
     const localKey = `profile_${walletAddress}`;
     setLocalData(localKey, profile);
-    
-    // Save current active profile identity
-    setLocalData("active_wallet_address", walletAddress);
+
+    // Store wallet address as raw string (not JSON-encoded) so getItem() returns it cleanly
+    if (typeof window !== "undefined") {
+      localStorage.setItem("active_wallet_address", walletAddress);
+    }
     setLocalData("active_profile", profile);
 
     if (db && firestoreActive) {
@@ -120,7 +149,7 @@ export const database = {
         const docRef = doc(db, "users", walletAddress);
         await setDoc(docRef, profile, { merge: true });
       } catch (e) {
-        console.error("Firestore save failed, disabling remote sync:", e);
+        if (!isOfflineError(e)) console.error("Firestore save failed, disabling remote sync:", e);
         firestoreActive = false;
       }
     }
@@ -141,7 +170,7 @@ export const database = {
           return data;
         }
       } catch (e) {
-        console.error("Firestore fetch failed, disabling remote sync:", e);
+        if (!isOfflineError(e)) console.error("Firestore fetch failed, disabling remote sync:", e);
         firestoreActive = false;
       }
     }
@@ -177,7 +206,7 @@ export const database = {
         const docRef = doc(db, "posts", id);
         await setDoc(docRef, newPost);
       } catch (e) {
-        console.error("Firestore add post failed, disabling remote sync:", e);
+        if (!isOfflineError(e)) console.error("Firestore add post failed, disabling remote sync:", e);
         firestoreActive = false;
       }
     }
@@ -203,7 +232,7 @@ export const database = {
           posts = fbPosts;
         }
       } catch (e) {
-        console.error("Firestore get posts failed, disabling remote sync:", e);
+        if (!isOfflineError(e)) console.error("Firestore get posts failed, disabling remote sync:", e);
         firestoreActive = false;
       }
     }
@@ -245,7 +274,7 @@ export const database = {
           votedBy: post.votedBy
         }, { merge: true });
       } catch (e) {
-        console.error("Firestore vote failed, disabling remote sync:", e);
+        if (!isOfflineError(e)) console.error("Firestore vote failed, disabling remote sync:", e);
         firestoreActive = false;
       }
     }
