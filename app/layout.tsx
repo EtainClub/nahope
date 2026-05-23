@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Righteous, Inter } from "next/font/google";
 import "./globals.css";
+import Navigation from "../components/Navigation";
 
 const righteous = Righteous({
   weight: "400",
@@ -51,11 +52,15 @@ export default function RootLayout({
       lang="en"
       className={`${righteous.variable} ${inter.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-space-950 font-sans text-gray-100">
-        {children}
+      <body className="min-h-full flex flex-col bg-space-950 font-sans text-gray-100 pb-24 md:pb-0">
+        <Navigation />
+        <div className="flex-1 flex flex-col">
+          {children}
+        </div>
       </body>
     </html>
   );
 }
+
 
 
