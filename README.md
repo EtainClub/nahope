@@ -36,7 +36,7 @@ It delivers an unprecedented **"Cinematic Governance"** experience to users of t
 ## 📁 Project Structure
 
 ```
-nahome/
+nahope/
 ├── app/                          # Next.js App Router
 │   ├── layout.tsx                # Root layout (fonts, metadata, Navigation)
 │   ├── page.tsx                  # Landing page (hero, Cannes countdown, roadmap)

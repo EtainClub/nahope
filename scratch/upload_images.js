@@ -4,7 +4,7 @@ const https = require('https');
 const path = require('path');
 const crypto = require('crypto');
 
-const serviceAccount = require('/Users/etain/devel-src/nahome/nahope-port-firebase-adminsdk-fbsvc-06cf3d5ed6.json');
+const serviceAccount = require('/Users/etain/devel-src/nahope/nahope-port-firebase-adminsdk-fbsvc-06cf3d5ed6.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
