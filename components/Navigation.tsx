@@ -5,13 +5,31 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Home, Film, Gamepad2, Users, User, Wallet } from "lucide-react";
 import { database, UserProfile } from "../lib/firebase";
+import PaletteSwitcher from "./PaletteSwitcher";
 import packageJson from "../package.json";
+
+// Inline RadarDial SVG ornament
+function RadarDial({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" style={{ display: "block", flexShrink: 0 }}>
+      <circle cx="18" cy="18" r="16" stroke="var(--line-bright)" strokeWidth="1" />
+      <circle cx="18" cy="18" r="10" stroke="var(--line)" strokeWidth="0.8" />
+      <circle cx="18" cy="18" r="4"  stroke="var(--acc-primary)" strokeWidth="0.8" opacity="0.6" />
+      <line x1="18" y1="2"  x2="18" y2="8"  stroke="var(--line-bright)" strokeWidth="0.8" />
+      <line x1="18" y1="28" x2="18" y2="34" stroke="var(--line-bright)" strokeWidth="0.8" />
+      <line x1="2"  y1="18" x2="8"  y2="18" stroke="var(--line-bright)" strokeWidth="0.8" />
+      <line x1="28" y1="18" x2="34" y2="18" stroke="var(--line-bright)" strokeWidth="0.8" />
+      <line x1="18" y1="18" x2="28" y2="10" stroke="var(--acc-primary)" strokeWidth="0.8" opacity="0.7"
+        style={{ transformOrigin: "18px 18px", animation: "orbit 4s linear infinite" }} />
+      <circle cx="18" cy="18" r="1.5" fill="var(--acc-primary)" />
+    </svg>
+  );
+}
 
 export default function Navigation() {
   const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  // Sync profile data
   const syncProfile = () => {
     if (typeof window === "undefined") return;
     const activeAddress = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
@@ -21,19 +39,10 @@ export default function Navigation() {
 
   useEffect(() => {
     syncProfile();
-
-    // Listen to local storage changes to keep balance and items in sync across pages
-    const handleStorageChange = () => {
-      syncProfile();
-    };
-
+    const handleStorageChange = () => syncProfile();
     window.addEventListener("storage", handleStorageChange);
-    // Custom event to force update within the same window
     window.addEventListener("profileUpdated", handleStorageChange);
-
-    // Short polling for immediate responsiveness during gameplay
     const interval = setInterval(syncProfile, 1000);
-
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("profileUpdated", handleStorageChange);
@@ -42,37 +51,56 @@ export default function Navigation() {
   }, []);
 
   const navItems = [
-    { name: "Home", href: "/", icon: Home },
-    { name: "Movie Intro", href: "/intro", icon: Film },
-    { name: "Episode Game", href: "/game", icon: Gamepad2 },
-    { name: "Community", href: "/community", icon: Users },
-    { name: "Profile", href: "/profile", icon: User },
+    { name: "HOME",         href: "/",          icon: Home },
+    { name: "MOVIE INTRO",  href: "/intro",     icon: Film },
+    { name: "EPISODE GAME", href: "/game",       icon: Gamepad2 },
+    { name: "COMMUNITY",    href: "/community",  icon: Users },
+    { name: "PROFILE",      href: "/profile",    icon: User },
   ];
+
+  const walletAddr = profile?.solanaAddress
+    ? `${profile.solanaAddress.slice(0, 4)}…${profile.solanaAddress.slice(-4)}`
+    : "----…----";
+  const balance = profile?.tokenBalance?.toLocaleString() ?? "0";
 
   return (
     <>
-      {/* DESKTOP TOP NAVIGATION */}
-      <header className="hidden md:flex sticky top-0 z-50 w-full glass-panel border-b border-space-800/80 px-8 py-4 items-center justify-between shadow-[0_4px_30px_rgba(4,1,8,0.7)]">
-        {/* Title / Logo */}
-        <Link href="/" className="flex items-center gap-1 select-none group">
-          <span className="font-righteous text-2xl tracking-widest text-white flex items-center gap-0.5">
-            <span className="blur-h chromatic-text inline-block group-hover:scale-105 transition-transform">H</span>
-            <span className="blur-o chromatic-text inline-block group-hover:scale-105 transition-transform">O</span>
-            <span className="blur-p chromatic-text inline-block group-hover:scale-105 transition-transform">P</span>
-            <span className="blur-e chromatic-text inline-block group-hover:scale-105 transition-transform">E</span>
+      {/* ── DESKTOP TOP NAV ──────────────────────────────────────────────── */}
+      <header style={{
+        display: "none",
+        position: "sticky", top: 0, zIndex: 50,
+        width: "100%",
+        background: "var(--bg-1)",
+        borderBottom: "1px solid var(--line)",
+        boxShadow: "0 1px 0 rgba(255,255,255,0.02)",
+      }} className="md:flex items-center justify-between px-6 py-0">
+
+        {/* Logo */}
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", flexShrink: 0 }}>
+          <span
+            className="glitch-text display"
+            data-text="HOPE"
+            style={{
+              fontSize: 22,
+              letterSpacing: "-0.02em",
+              color: "var(--ink-0)",
+              lineHeight: 1,
+            }}
+          >
+            HOPE
           </span>
-          <div className="flex flex-col self-end mb-0.5 ml-2">
-            <span className="text-[9px] text-gray-500 font-mono uppercase tracking-widest leading-none mb-1">
-              // OMEGA_SYS
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span className="eyebrow" style={{ fontSize: 9, color: "var(--acc-primary)" }}>
+              // OMEGA · SYS
             </span>
-            <span className="text-[8px] text-neon-green/70 font-mono tracking-widest leading-none">
-              v{packageJson.version}
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--ink-3)", letterSpacing: "0.16em" }}>
+              v{packageJson.version} · BUILD ε
             </span>
           </div>
         </Link>
 
-        {/* Links */}
-        <nav className="flex items-center gap-6">
+        {/* Nav tabs */}
+        <nav style={{ display: "flex", gap: 0, alignItems: "stretch" }}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -80,36 +108,99 @@ export default function Navigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative font-mono text-xs uppercase tracking-widest px-3 py-2 transition-all flex items-center gap-2 ${
-                  isActive
-                    ? "text-neon-pink font-bold text-neon-pink"
-                    : "text-gray-400 hover:text-white"
-                }`}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "14px 12px",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  textTransform: "uppercase" as const,
+                  letterSpacing: "0.2em",
+                  color: isActive ? "var(--acc-primary)" : "var(--ink-2)",
+                  borderBottom: isActive ? "1px solid var(--acc-primary)" : "1px solid transparent",
+                  textShadow: isActive ? "0 0 12px var(--acc-primary)" : "none",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  whiteSpace: "nowrap" as const,
+                }}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon size={11} />
                 {item.name}
-                {isActive && (
-                  <span className="absolute bottom-0 inset-x-3 h-[2px] bg-gradient-to-r from-neon-pink to-neon-purple shadow-[0_0_10px_rgba(255,0,127,0.8)]" />
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Solana Wallet indicator */}
-        <div className="flex items-center gap-3 bg-space-950/90 border border-neon-purple/20 px-4 py-2 rounded-xl text-xs font-mono shadow-[0_0_15px_rgba(216,0,255,0.05)]">
-          <Wallet className="w-3.5 h-3.5 text-alien-cyan" />
-          <span className="text-gray-500">WALLET:</span>
-          <span className="text-white font-bold">{profile?.solanaAddress.slice(0, 4)}...{profile?.solanaAddress.slice(-4)}</span>
-          <span className="text-gray-700">|</span>
-          <span className="text-alien-cyan font-bold">
-            {profile?.tokenBalance.toLocaleString()} $NAHOPE
-          </span>
+        {/* Right cluster: PaletteSwitcher + RadarDial + Wallet */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <PaletteSwitcher />
+          <RadarDial size={28} />
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "7px 12px",
+            border: "1px solid var(--line-bright)",
+            background: "var(--bg-2)",
+            fontFamily: "var(--font-mono)", fontSize: 10,
+            letterSpacing: "0.14em",
+          }}>
+            <Wallet size={11} style={{ color: "var(--ink-2)", flexShrink: 0 }} />
+            <span style={{ color: "var(--ink-2)" }}>WALLET</span>
+            <span style={{ color: "var(--ink-0)" }}>{walletAddr}</span>
+            <span style={{ color: "var(--ink-4)" }}>·</span>
+            <span style={{ color: "var(--acc-primary)" }}>{balance} $NAHOPE</span>
+          </div>
         </div>
       </header>
 
-      {/* MOBILE BOTTOM NAVIGATION BAR */}
-      <nav className="md:hidden fixed bottom-4 inset-x-4 z-50 glass-panel border border-neon-pink/20 rounded-2xl py-3 px-4 flex justify-between items-center shadow-[0_0_25px_rgba(255,0,127,0.15)] backdrop-blur-md">
+      {/* ── MOBILE TOP BAR ───────────────────────────────────────────────── */}
+      <div className="md:hidden" style={{
+        width: "100%",
+        background: "var(--bg-1)",
+        borderBottom: "1px solid var(--line)",
+        padding: "10px 16px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "relative", zIndex: 30,
+      }}>
+        <Link href="/" style={{ display: "flex", flexDirection: "column", gap: 2, textDecoration: "none" }}>
+          <span
+            className="glitch-text display"
+            data-text="HOPE"
+            style={{ fontSize: 18, letterSpacing: "-0.02em", color: "var(--ink-0)" }}
+          >
+            HOPE
+          </span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--ink-3)", letterSpacing: "0.16em" }}>
+            v{packageJson.version}
+          </span>
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <PaletteSwitcher />
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            border: "1px solid var(--line-bright)", background: "var(--bg-2)",
+            padding: "4px 8px",
+            fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.1em",
+          }}>
+            <Wallet size={10} style={{ color: "var(--ink-2)" }} />
+            <span style={{ color: "var(--acc-primary)" }}>{balance} $NAHOPE</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MOBILE BOTTOM NAV ────────────────────────────────────────────── */}
+      <nav className="md:hidden" style={{
+        position: "fixed", bottom: 12, left: 12, right: 12,
+        zIndex: 50,
+        background: "var(--bg-1)",
+        border: "1px solid var(--line-bright)",
+        padding: "10px 16px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -117,49 +208,45 @@ export default function Navigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 relative transition-all ${
-                isActive ? "text-neon-pink font-bold" : "text-gray-400 hover:text-gray-200"
-              }`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+                gap: 4,
+                color: isActive ? "var(--acc-primary)" : "var(--ink-3)",
+                textDecoration: "none",
+                position: "relative",
+              }}
             >
-              <div
-                className={`p-2 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? "bg-neon-pink/10 border border-neon-pink/20 shadow-[0_0_10px_rgba(255,0,127,0.15)]"
-                    : "border border-transparent"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
+              <div style={{
+                padding: 7,
+                border: `1px solid ${isActive ? "var(--acc-primary)" : "transparent"}`,
+                background: isActive ? "color-mix(in srgb, var(--acc-primary) 8%, transparent)" : "transparent",
+              }}>
+                <Icon size={16} />
               </div>
-              <span className="text-[8px] font-mono uppercase tracking-wider mt-1 scale-90">
+              <span style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 7,
+                textTransform: "uppercase" as const,
+                letterSpacing: "0.16em",
+              }}>
                 {item.name.split(" ")[0]}
               </span>
               {isActive && (
-                <span className="absolute -top-3 w-1.5 h-1.5 bg-neon-pink rounded-full shadow-[0_0_8px_rgba(255,0,127,0.8)]" />
+                <span style={{
+                  position: "absolute", top: -12,
+                  width: 4, height: 4, borderRadius: "50%",
+                  background: "var(--acc-primary)",
+                  boxShadow: "0 0 8px var(--acc-primary)",
+                }} />
               )}
             </Link>
           );
         })}
       </nav>
-      {/* Mobile top-bar layout helper to show wallet status on mobile */}
-      <div className="md:hidden w-full bg-space-950 border-b border-space-900 px-4 py-3 flex items-center justify-between relative z-30">
-        <Link href="/" className="flex flex-col">
-          <div className="font-righteous text-lg tracking-widest text-white leading-none">
-            <span className="blur-h chromatic-text inline-block">H</span>
-            <span className="blur-o chromatic-text inline-block">O</span>
-            <span className="blur-p chromatic-text inline-block">P</span>
-            <span className="blur-e chromatic-text inline-block">E</span>
-          </div>
-          <span className="text-[8px] text-neon-green/70 font-mono tracking-widest mt-1">
-            v{packageJson.version}
-          </span>
-        </Link>
-        <div className="flex items-center gap-1.5 bg-space-900 border border-neon-purple/20 px-2.5 py-1 rounded-lg text-[9px] font-mono">
-          <Wallet className="w-2.5 h-2.5 text-alien-cyan" />
-          <span className="text-alien-cyan font-bold">
-            {profile ? profile.tokenBalance.toLocaleString() : "25,000"} $NAHOPE
-          </span>
-        </div>
-      </div>
     </>
   );
 }

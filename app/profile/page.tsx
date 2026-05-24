@@ -120,18 +120,18 @@ export default function ProfilePage() {
 
   return (
     <div className="flex-1 flex flex-col bg-space-950 py-12 px-4 md:px-8 relative overflow-hidden font-sans select-none">
-      <div className="absolute top-1/4 right-1/4 w-[350px] h-[350px] bg-neon-pink/5 rounded-full blur-[110px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-neon-purple/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 right-1/4 w-[350px] h-[350px] rounded-full blur-[110px] pointer-events-none" style={{ background: "color-mix(in srgb, var(--acc-violet) 5%, transparent)" }} />
+      <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full blur-[100px] pointer-events-none" style={{ background: "color-mix(in srgb, var(--acc-primary) 4%, transparent)" }} />
 
       {/* Header */}
       <div className="w-full max-w-4xl mx-auto text-center mb-12 relative z-10">
-        <span className="text-[10px] text-neon-purple font-mono tracking-[0.3em] uppercase block mb-3 animate-pulse">
+        <span className="eyebrow block mb-3" style={{ color: "var(--acc-violet)" }}>
           // USER PROFILE IDENT DECK //
         </span>
-        <h1 className="font-righteous text-3xl sm:text-4xl font-extrabold text-white tracking-widest uppercase">
+        <h1 className="display text-3xl sm:text-4xl uppercase" style={{ color: "var(--ink-0)" }}>
           CLASSIFIED DOSSIER
         </h1>
-        <div className="w-24 h-[2px] bg-gradient-to-r from-neon-purple to-alien-cyan mx-auto mt-2" />
+        <div className="w-24 h-[2px] mx-auto mt-2" style={{ background: "linear-gradient(90deg, var(--acc-violet), var(--acc-cyan))" }} />
       </div>
 
       <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch relative z-10">
@@ -140,15 +140,12 @@ export default function ProfilePage() {
         <div className="md:col-span-5 flex flex-col gap-6">
 
           {/* Wallet Panel */}
-          <div className="glass-panel rounded-2xl p-5 border border-neon-purple/20 relative shadow-xl flex flex-col gap-4">
-            <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-neon-purple" />
-            <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-neon-purple" />
-            <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-neon-purple" />
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-neon-purple" />
+          <div className="panel panel-bracket p-5 relative flex flex-col gap-4" style={{ borderColor: "var(--acc-violet)", boxShadow: "var(--glow-violet)" }}>
+            <span className="br-bl" /><span className="br-br" />
 
-            <div className="flex items-center gap-2 border-b border-space-900 pb-2">
-              <Wallet className="w-4 h-4 text-alien-cyan" />
-              <span className="text-white font-righteous text-sm tracking-wider uppercase">
+            <div className="flex items-center gap-2 pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
+              <Wallet className="w-4 h-4" style={{ color: "var(--acc-cyan)" }} />
+              <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
                 Solana Wallet
               </span>
               {isSimulation && (
@@ -162,14 +159,14 @@ export default function ProfilePage() {
               /* Connected State */
               <div className="flex flex-col gap-3 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
-                  <span className="text-neon-green font-bold uppercase tracking-widest text-[10px]">
+                  <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
+                  <span className="font-bold uppercase tracking-widest" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
                     Connected
                   </span>
                 </div>
 
                 {/* Address */}
-                <div className="bg-space-950 border border-space-800 rounded-xl px-3 py-2.5 flex items-center justify-between gap-2">
+                <div className="px-3 py-2.5 flex items-center justify-between gap-2" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
                   <span className="text-white text-[11px] truncate">
                     {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-6)}
                   </span>
@@ -185,7 +182,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Balance */}
-                <div className="bg-space-950 border border-alien-cyan/20 rounded-xl px-3 py-3 flex items-center justify-between">
+                <div className="px-3 py-3 flex items-center justify-between" style={{ background: "var(--bg-0)", border: "1px solid color-mix(in srgb, var(--acc-cyan) 20%, transparent)" }}>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[9px] text-gray-500 uppercase tracking-widest">
                       {balanceLabel}
@@ -196,7 +193,7 @@ export default function ProfilePage() {
                         <span className="text-[11px]">Fetching...</span>
                       </div>
                     ) : (
-                      <span className="text-alien-cyan font-bold text-base">
+                      <span className="font-bold text-base" style={{ color: "var(--acc-cyan)" }}>
                         {displayBalance.toLocaleString()}
                         <span className="text-[10px] ml-1 text-gray-400">
                           $NAHOPE
@@ -219,7 +216,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Episode access gates */}
-                <div className="flex flex-col gap-1.5 text-[10px] border border-space-900 rounded-xl p-3 bg-space-950/50">
+                <div className="flex flex-col gap-1.5 p-3" style={{ fontSize: 10, border: "1px solid var(--line)", background: "var(--bg-0)" }}>
                   {[
                     { label: "EP.2 ACCESS", req: 5000 },
                     { label: "EP.3 ACCESS", req: 20000 },
@@ -230,9 +227,8 @@ export default function ProfilePage() {
                       <div key={label} className="flex justify-between items-center">
                         <span className="text-gray-600 font-bold">{label}</span>
                         <span
-                          className={
-                            granted ? "text-neon-green font-bold" : "text-gray-600"
-                          }
+                          className="font-bold"
+                          style={{ color: granted ? "var(--acc-primary)" : "var(--ink-4)" }}
                         >
                           {granted
                             ? "// GRANTED //"
@@ -262,14 +258,15 @@ export default function ProfilePage() {
                 <p className="text-gray-600 text-[10px]">
                   Episode 1 is free — currently playing in simulation mode with
                   a mock balance of{" "}
-                  <span className="text-alien-cyan font-bold">
+                  <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>
                     {profile?.tokenBalance.toLocaleString()} $NAHOPE
                   </span>
                   .
                 </p>
                 <button
                   onClick={() => setShowWalletModal(true)}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-neon-purple/80 to-alien-cyan/80 hover:from-neon-purple hover:to-alien-cyan text-white font-bold py-3 rounded-xl text-[11px] tracking-widest transition-all shadow-[0_0_15px_rgba(216,0,255,0.2)] border border-white/10 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 font-mono font-bold py-3 text-[11px] tracking-widest transition-all cursor-pointer"
+                  style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
                 >
                   <Wallet className="w-3.5 h-3.5" />
                   Connect Wallet
@@ -279,32 +276,33 @@ export default function ProfilePage() {
           </div>
 
           {/* Clearance Summary */}
-          <div className="glass-panel rounded-2xl p-5 border border-white/5 relative flex flex-col justify-between">
+          <div className="panel panel-bracket p-5 relative flex flex-col justify-between">
+            <span className="br-bl" /><span className="br-br" />
             <div className="flex items-center gap-2 mb-3">
-              <ShieldCheck className="w-4 h-4 text-neon-pink" />
-              <span className="text-white font-righteous text-sm tracking-wider uppercase">
+              <ShieldCheck className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
+              <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
                 Clearance Summary
               </span>
             </div>
 
             <div className="flex flex-col gap-2.5 font-mono text-[10px] leading-relaxed">
-              <div className="flex justify-between border-b border-space-900 pb-1.5">
+              <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
                 <span className="text-gray-500">ACTIVE ACCOUNT:</span>
-                <span className="text-white font-bold">
+                <span className="font-bold" style={{ color: "var(--ink-0)" }}>
                   {displayAddress.length > 14
                     ? `${displayAddress.slice(0, 6)}...${displayAddress.slice(-6)}`
                     : displayAddress}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-space-900 pb-1.5">
+              <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
                 <span className="text-gray-500">LIQUID $NAHOPE:</span>
-                <span className="text-alien-cyan font-bold">
+                <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>
                   {displayBalance.toLocaleString()} TOKENS
                 </span>
               </div>
-              <div className="flex justify-between border-b border-space-900 pb-1.5">
+              <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
                 <span className="text-gray-500">SECURED GEAR:</span>
-                <span className="text-neon-pink font-bold">
+                <span className="font-bold" style={{ color: "var(--acc-primary)" }}>
                   {profile?.inventory.length || 0} / 5
                 </span>
               </div>
@@ -316,10 +314,11 @@ export default function ProfilePage() {
         <div className="md:col-span-7 flex flex-col gap-6">
 
           {/* Inventory Grid */}
-          <div className="glass-panel rounded-2xl p-5 border border-white/5">
-            <div className="flex items-center gap-2 mb-4 border-b border-space-900 pb-2">
-              <Award className="w-4 h-4 text-alien-cyan" />
-              <span className="text-white font-righteous text-sm tracking-wider uppercase">
+          <div className="panel panel-bracket p-5 relative">
+            <span className="br-bl" /><span className="br-br" />
+            <div className="flex items-center gap-2 mb-4 pb-2" style={{ borderBottom: "1px solid var(--line)" }}>
+              <Award className="w-4 h-4" style={{ color: "var(--acc-cyan)" }} />
+              <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
                 Gear Secured List
               </span>
             </div>
@@ -344,21 +343,33 @@ export default function ProfilePage() {
                 return (
                   <div
                     key={item}
-                    className={`border rounded-xl p-2 flex flex-col items-center justify-center gap-2 min-h-[95px] transition-all ${isSecured
-                        ? "bg-alien-cyan/5 border-alien-cyan/30 text-alien-cyan shadow-[0_0_8px_rgba(0,245,212,0.05)]"
-                        : "bg-space-950/20 border-space-900 border-dashed opacity-40"
-                      }`}
+                    className="border p-2 flex flex-col items-center justify-center gap-2 min-h-[95px] transition-all"
+                    style={isSecured ? {
+                      background: "color-mix(in srgb, var(--acc-cyan) 5%, transparent)",
+                      borderColor: "color-mix(in srgb, var(--acc-cyan) 30%, transparent)",
+                      color: "var(--acc-cyan)",
+                      boxShadow: "0 0 8px color-mix(in srgb, var(--acc-cyan) 8%, transparent)",
+                    } : {
+                      background: "color-mix(in srgb, var(--bg-0) 20%, transparent)",
+                      borderColor: "var(--line)",
+                      borderStyle: "dashed",
+                      opacity: 0.4,
+                    }}
                   >
                     <div
-                      className={`w-12 h-12 rounded-lg border flex items-center justify-center overflow-hidden shrink-0 ${isSecured
-                          ? "border-alien-cyan/40 bg-black/40"
-                          : "border-gray-800 bg-transparent"
-                        }`}
+                      className="w-12 h-12 flex items-center justify-center overflow-hidden shrink-0"
+                      style={isSecured ? {
+                        border: "1px solid color-mix(in srgb, var(--acc-cyan) 40%, transparent)",
+                        background: "rgba(0,0,0,0.4)",
+                      } : {
+                        border: "1px solid var(--line)",
+                        background: "transparent",
+                      }}
                     >
                       {isSecured ? (
                         <img src={itemImages[item]} alt={item} className="w-full h-full object-cover" />
                       ) : (
-                        <Star className="w-4 h-4 text-gray-750" />
+                        <Star className="w-4 h-4 text-gray-700" />
                       )}
                     </div>
                     <span
@@ -374,10 +385,11 @@ export default function ProfilePage() {
           </div>
 
           {/* My Transmissions */}
-          <div className="glass-panel rounded-2xl p-5 border border-white/5">
-            <div className="flex items-center gap-2 mb-3 border-b border-space-900 pb-2">
-              <ClipboardList className="w-4 h-4 text-neon-pink" />
-              <span className="text-white font-righteous text-sm tracking-wider uppercase">
+          <div className="panel panel-bracket p-5 relative">
+            <span className="br-bl" /><span className="br-br" />
+            <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: "1px solid var(--line)" }}>
+              <ClipboardList className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
+              <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
                 My Logged Transmissions ({userPosts.length})
               </span>
             </div>
@@ -391,15 +403,13 @@ export default function ProfilePage() {
                 {userPosts.map((post) => (
                   <div
                     key={post.id}
-                    className="bg-space-950/80 border border-space-900 rounded-xl p-3 flex flex-col gap-1.5 font-mono text-[10px]"
+                    className="p-3 flex flex-col gap-1.5 font-mono text-[10px]"
+                    style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}
                   >
-                    <div className="flex justify-between items-center border-b border-space-950 pb-1.5 text-gray-500 text-[9px]">
+                    <div className="flex justify-between items-center pb-1.5 text-gray-500 text-[9px]" style={{ borderBottom: "1px solid var(--line)" }}>
                       <span
-                        className={
-                          post.category === "scenario"
-                            ? "text-neon-purple font-bold"
-                            : "text-alien-cyan font-bold"
-                        }
+                        className="font-bold"
+                        style={{ color: post.category === "scenario" ? "var(--acc-violet)" : "var(--acc-cyan)" }}
                       >
                         {post.category.toUpperCase()}
                       </span>

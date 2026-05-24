@@ -81,20 +81,15 @@ export default function CannesCountdown() {
     <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch mb-8 px-4 md:px-0">
       
       {/* 24h Cannes Countdown Box */}
-      <div className="glass-panel rounded-2xl p-6 border border-neon-pink/30 relative overflow-hidden flex flex-col justify-between shadow-[0_0_30px_rgba(255,0,127,0.08)]">
-        <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-neon-pink rounded-tl" />
-        <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-neon-purple rounded-tr" />
-        <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-alien-cyan rounded-bl" />
-        <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-neon-pink rounded-br" />
+      <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col justify-between" style={{ boxShadow: "var(--glow-primary)" }}>
+        <span className="br-bl" /><span className="br-br" />
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-neon-pink animate-pulse" />
-            <span className="text-neon-pink font-mono text-[10px] tracking-widest uppercase">
-              {"// LIVE COUNTDOWN TIMER"}
-            </span>
+            <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
+            <span className="eyebrow" style={{ color: "var(--acc-primary)" }}>// LIVE COUNTDOWN TIMER</span>
           </div>
-          <h3 className="font-righteous text-2xl font-bold text-white tracking-wide">
+          <h3 className="display text-2xl" style={{ color: "var(--ink-0)" }}>
             CANNES CLOSING CEREMONY COUNTDOWN
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
@@ -105,54 +100,49 @@ export default function CannesCountdown() {
 
         {/* Timer display */}
         <div className="grid grid-cols-3 gap-4 py-6 text-center">
-          <div className="bg-space-950/80 rounded-xl p-3 border border-space-800">
-            <div className="font-righteous text-4xl sm:text-5xl text-neon-pink font-bold font-mono tracking-tight">
+          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-primary)" }}>
               {String(timeLeft.hours).padStart(2, "0")}
             </div>
-            <div className="text-[10px] text-gray-500 font-mono font-bold mt-1 uppercase">HOURS</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>HOURS</div>
           </div>
-          <div className="bg-space-950/80 rounded-xl p-3 border border-space-800">
-            <div className="font-righteous text-4xl sm:text-5xl text-neon-purple font-bold font-mono tracking-tight">
+          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-violet)" }}>
               {String(timeLeft.minutes).padStart(2, "0")}
             </div>
-            <div className="text-[10px] text-gray-500 font-mono font-bold mt-1 uppercase">MINUTES</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>MINUTES</div>
           </div>
-          <div className="bg-space-950/80 rounded-xl p-3 border border-space-800">
-            <div className="font-righteous text-4xl sm:text-5xl text-alien-cyan font-bold font-mono tracking-tight">
+          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-cyan)" }}>
               {String(timeLeft.seconds).padStart(2, "0")}
             </div>
-            <div className="text-[10px] text-gray-500 font-mono font-bold mt-1 uppercase">SECONDS</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>SECONDS</div>
           </div>
         </div>
 
-        <div className="text-[10px] text-neon-pink font-mono text-center tracking-wider">
+        <div className="font-mono text-center" style={{ fontSize: 10, color: "var(--acc-primary)", letterSpacing: "0.12em" }}>
           {statusText}
         </div>
       </div>
 
       {/* Pump.fun Graduation progress */}
-      <div className="glass-panel rounded-2xl p-6 border border-neon-purple/30 relative overflow-hidden flex flex-col justify-between shadow-[0_0_30px_rgba(216,0,255,0.08)]">
-        <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-alien-cyan rounded-tl" />
-        <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-neon-pink rounded-tr" />
-        <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-neon-purple rounded-bl" />
-        <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-alien-cyan rounded-br" />
+      <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col justify-between" style={{ boxShadow: "var(--glow-violet)" }}>
+        <span className="br-bl" /><span className="br-br" />
 
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-alien-cyan animate-ping" />
-            <span className="text-alien-cyan font-mono text-[10px] tracking-widest uppercase">
-              {"// PUMP.FUN POOL ALIGNMENT"}
-            </span>
+            <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-cyan)", animation: "pulse-glow 1s ease infinite" }} />
+            <span className="eyebrow" style={{ color: "var(--acc-cyan)" }}>// PUMP.FUN POOL ALIGNMENT</span>
           </div>
-          <h3 className="font-righteous text-2xl font-bold text-white tracking-wide">
+          <h3 className="display text-2xl" style={{ color: "var(--ink-0)" }}>
             BONDING CURVE GRADUATION BAR
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
             The token pool is bonding. Upon reaching 100% progress, $NAHOPE will graduate to the Raydium liquidity pool, 
             automatically triggering the **Episode 1: Golden Palm Hope Release Event**.
           </p>
-          <div className="mt-1 flex items-center justify-between bg-space-950/60 p-2.5 rounded-lg border border-neon-purple/20">
+          <div className="mt-1 flex items-center justify-between p-2.5" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
             <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Contract Address</span>
             <code className="text-xs text-alien-cyan font-mono select-all cursor-copy" title="Click to select">
               CvKFHHfXqusmcrU18d6pvCWhJrWyteziqi99xJgjpump
@@ -162,25 +152,25 @@ export default function CannesCountdown() {
 
         {/* Bonding gauge */}
         <div className="py-6 flex flex-col gap-2">
-          <div className="flex justify-between text-xs font-semibold text-gray-300">
+          <div className="flex justify-between font-mono text-xs" style={{ color: "var(--ink-1)" }}>
             <span>BONDING CURVE PROGRESS</span>
-            <span className="text-alien-cyan font-mono">{bondingProgress}%</span>
+            <span style={{ color: "var(--acc-cyan)" }}>{bondingProgress}%</span>
           </div>
-          
-          <div className="h-4 w-full bg-space-950 rounded-full overflow-hidden p-[2px] border border-space-850">
-            <div 
-              className="h-full bg-gradient-to-r from-neon-pink via-neon-purple to-alien-cyan rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(0,245,212,0.4)]"
-              style={{ width: `${bondingProgress}%` }}
+
+          <div className="h-4 w-full overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
+            <div
+              className="h-full transition-all duration-1000 ease-out"
+              style={{ width: `${bondingProgress}%`, background: "linear-gradient(90deg, var(--acc-primary), var(--acc-violet), var(--acc-cyan))", boxShadow: "0 0 15px var(--acc-cyan)" }}
             />
           </div>
 
-          <div className="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+          <div className="flex justify-between font-mono mt-1" style={{ fontSize: 10, color: "var(--ink-3)" }}>
             <span>CURRENT STAGE: GRADUATING</span>
             <span>TARGET: 85 SOL (100%)</span>
           </div>
         </div>
 
-        <div className="text-[10px] text-alien-cyan font-mono text-center tracking-wider">
+        <div className="font-mono text-center" style={{ fontSize: 10, color: "var(--acc-cyan)", letterSpacing: "0.12em" }}>
           UNLOCKED AT 100%: EPISODE 1 SCENARIO PLAYROOM EVENT
         </div>
       </div>

@@ -1,0 +1,376 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   HOPE // OMEGA PROTOCOL — Design System tokens
+   Three palette modes swap via [data-palette="void|blood|alien"]
+   ───────────────────────────────────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=JetBrains+Mono:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=VT323&display=swap");
+
+:root {
+  /* ── Type ─────────────────────────────────────────────────────────────── */
+  --font-display: "Major Mono Display", "JetBrains Mono", monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
+  --font-crt: "VT323", "JetBrains Mono", monospace;
+
+  /* ── Spacing scale (modular) ──────────────────────────────────────────── */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /* ── Radii ────────────────────────────────────────────────────────────── */
+  --r-0: 0px;
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-3: 8px;
+  --r-pill: 999px;
+
+  /* ── Tracking ─────────────────────────────────────────────────────────── */
+  --track-tight: -0.02em;
+  --track-mono: 0.02em;
+  --track-caps: 0.18em;
+  --track-omega: 0.32em;
+
+  /* ── Defaults: VOID (deep cosmic black) ──────────────────────────────── */
+  --bg-0: #030309;
+  --bg-1: #06060f;
+  --bg-2: #0a0a17;
+  --bg-3: #11111f;
+  --bg-4: #1a1a2c;
+  --ink-0: #ece9df;
+  --ink-1: #c4c1b5;
+  --ink-2: #7a7770;
+  --ink-3: #4a4842;
+  --ink-4: #2a2925;
+  --line: #1c1c2a;
+  --line-bright: #2e2e44;
+  --line-glow: #4a4a6e;
+
+  --acc-primary: #9eff5e;     /* alien green */
+  --acc-primary-d: #5fc428;
+  --acc-danger: #ff3a55;      /* omega siren red */
+  --acc-danger-d: #b41c34;
+  --acc-violet: #b377ff;      /* sigil violet */
+  --acc-amber: #ffb84d;       /* warning amber */
+  --acc-cyan: #5cf2e2;        /* signal cyan */
+
+  --glow-primary: 0 0 0 1px rgba(158, 255, 94, 0.4), 0 0 24px rgba(158, 255, 94, 0.35);
+  --glow-danger: 0 0 0 1px rgba(255, 58, 85, 0.45), 0 0 28px rgba(255, 58, 85, 0.4);
+  --glow-violet: 0 0 28px rgba(179, 119, 255, 0.4);
+
+  --shadow-panel: 0 1px 0 rgba(255,255,255,0.03) inset, 0 24px 60px rgba(0,0,0,0.6);
+}
+
+[data-palette="blood"] {
+  --bg-0: #080101;
+  --bg-1: #0d0202;
+  --bg-2: #150505;
+  --bg-3: #1e0808;
+  --bg-4: #2a0c0c;
+  --ink-0: #ffeae0;
+  --ink-1: #d9beb4;
+  --ink-2: #8a6f66;
+  --ink-3: #5a423b;
+  --ink-4: #321e1b;
+  --line: #2a0e10;
+  --line-bright: #4a1820;
+  --line-glow: #6e2030;
+
+  --acc-primary: #ff2a3d;
+  --acc-primary-d: #a8101e;
+  --acc-danger: #ffd24a;
+  --acc-danger-d: #b88a14;
+  --acc-violet: #ff6b9a;
+  --acc-amber: #ff8a3a;
+  --acc-cyan: #ff9a8a;
+
+  --glow-primary: 0 0 0 1px rgba(255, 42, 61, 0.55), 0 0 28px rgba(255, 42, 61, 0.45);
+  --glow-danger: 0 0 0 1px rgba(255, 210, 74, 0.45), 0 0 24px rgba(255, 210, 74, 0.35);
+  --glow-violet: 0 0 28px rgba(255, 107, 154, 0.35);
+}
+
+[data-palette="alien"] {
+  --bg-0: #02100a;
+  --bg-1: #03150d;
+  --bg-2: #051a12;
+  --bg-3: #08251a;
+  --bg-4: #0e3122;
+  --ink-0: #d8ffec;
+  --ink-1: #a8d8be;
+  --ink-2: #6b9582;
+  --ink-3: #3e5e50;
+  --ink-4: #1f3a2c;
+  --line: #103626;
+  --line-bright: #1c5039;
+  --line-glow: #287850;
+
+  --acc-primary: #6eff9e;
+  --acc-primary-d: #2ec862;
+  --acc-danger: #ffe23a;
+  --acc-danger-d: #b89c14;
+  --acc-violet: #61f7e4;
+  --acc-amber: #b9ff52;
+  --acc-cyan: #79f7d1;
+
+  --glow-primary: 0 0 0 1px rgba(110, 255, 158, 0.5), 0 0 28px rgba(110, 255, 158, 0.45);
+  --glow-danger: 0 0 0 1px rgba(255, 226, 58, 0.45), 0 0 24px rgba(255, 226, 58, 0.35);
+  --glow-violet: 0 0 28px rgba(97, 247, 228, 0.35);
+}
+
+/* ── Reset / base ───────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { background: var(--bg-0); color: var(--ink-0); }
+body {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: var(--track-mono);
+  font-feature-settings: "ss01", "cv11";
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--acc-primary); color: var(--bg-0); }
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+svg { display: block; }
+
+/* ── Glitch / CRT effects layered on demand ─────────────────────────────── */
+.crt-scan::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(255,255,255,0.025) 3px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+  z-index: 50;
+}
+
+.crt-vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.6) 100%);
+  z-index: 49;
+}
+
+@keyframes glitch-shift {
+  0%, 92%, 100% { transform: translate(0, 0); filter: none; }
+  93% { transform: translate(-1px, 0); filter: hue-rotate(20deg); }
+  94% { transform: translate(2px, -1px); filter: hue-rotate(-15deg); }
+  95% { transform: translate(-2px, 1px); }
+  96% { transform: translate(1px, 0); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.7; }
+  94% { opacity: 1; }
+  96% { opacity: 0.85; }
+}
+
+@keyframes scan-roll {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@keyframes drift-slow {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-2%, -2%) rotate(360deg); }
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes text-cycle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Glitch intensity is set on :root via JS as --glitch */
+.glitch-text {
+  position: relative;
+  animation: glitch-shift calc(6s / max(var(--glitch, 0.6), 0.1)) infinite steps(1);
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(var(--glitch, 0.6) * 0.6);
+}
+.glitch-text::before {
+  color: var(--acc-danger);
+  transform: translate(calc(var(--glitch, 0.6) * 2px), 0);
+  mix-blend-mode: screen;
+}
+.glitch-text::after {
+  color: var(--acc-cyan);
+  transform: translate(calc(var(--glitch, 0.6) * -2px), 0);
+  mix-blend-mode: screen;
+}
+
+.flicker { animation: flicker calc(4s / max(var(--glitch, 0.6), 0.1)) infinite; }
+
+/* ── Utility ────────────────────────────────────────────────────────────── */
+.mono { font-family: var(--font-mono); }
+.serif { font-family: var(--font-serif); }
+.display { font-family: var(--font-display); }
+.crt { font-family: var(--font-crt); }
+
+.caps { text-transform: uppercase; letter-spacing: var(--track-caps); }
+.caps-omega { text-transform: uppercase; letter-spacing: var(--track-omega); }
+
+.ink-0 { color: var(--ink-0); }
+.ink-1 { color: var(--ink-1); }
+.ink-2 { color: var(--ink-2); }
+.ink-3 { color: var(--ink-3); }
+.acc-primary { color: var(--acc-primary); }
+.acc-danger { color: var(--acc-danger); }
+.acc-violet { color: var(--acc-violet); }
+.acc-amber { color: var(--acc-amber); }
+.acc-cyan { color: var(--acc-cyan); }
+
+/* ── Panel with corner brackets ────────────────────────────────────────── */
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.012), transparent 30%), var(--bg-2);
+  border: 1px solid var(--line);
+}
+
+.panel-bracket::before,
+.panel-bracket::after,
+.panel-bracket > .br-bl,
+.panel-bracket > .br-br {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--acc-primary);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.panel-bracket::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.panel-bracket::after  { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+.panel-bracket > .br-bl { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+.panel-bracket > .br-br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+/* ── Headings ──────────────────────────────────────────────────────────── */
+.h-display {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 0.95;
+  letter-spacing: var(--track-tight);
+  font-weight: 400;
+}
+
+.h-section {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.5vw, 56px);
+  line-height: 1;
+  letter-spacing: var(--track-tight);
+}
+
+.h-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--track-omega);
+  color: var(--ink-2);
+}
+
+/* ── Grid container ────────────────────────────────────────────────────── */
+.page {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 var(--s-7);
+}
+
+@media (max-width: 880px) {
+  .page { padding: 0 var(--s-5); }
+}
+
+/* ── Hairline divider ──────────────────────────────────────────────────── */
+.hr {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-bright), transparent);
+  border: 0;
+}
+
+/* ── Floating "system" badges ─────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-bright);
+  border-radius: var(--r-1);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-1);
+  background: var(--bg-1);
+}
+.badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--acc-primary);
+  box-shadow: 0 0 8px var(--acc-primary);
+  animation: pulse-glow 2s infinite;
+}
+.badge.danger .dot { background: var(--acc-danger); box-shadow: 0 0 8px var(--acc-danger); }
+
+/* ── Background sigil layer ────────────────────────────────────────────── */
+.sigil-bg {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  color: var(--ink-4);
+}
+
+/* Numeric markers used in section corners */
+.corner-mark {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-3);
+  text-transform: uppercase;
+}

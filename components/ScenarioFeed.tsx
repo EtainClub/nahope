@@ -51,10 +51,10 @@ export default function ScenarioFeed({ scenarios, onVote }: ScenarioFeedProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <div className="text-neon-pink font-mono text-[10px] tracking-widest uppercase mb-1">
+          <div className="eyebrow mb-1" style={{ color: "var(--acc-primary)" }}>
             // COLLECTIVE INTELLIGENCE SCENARIO ROOM
           </div>
-          <h3 className="font-righteous text-2xl font-bold text-white tracking-wide">
+          <h3 className="display text-2xl" style={{ color: "var(--ink-0)" }}>
             PUBLIC SCENARIO TRANSMISSIONS
           </h3>
           <p className="text-xs text-gray-400 font-sans mt-1">
@@ -63,24 +63,26 @@ export default function ScenarioFeed({ scenarios, onVote }: ScenarioFeedProps) {
         </div>
 
         {/* Info card */}
-        <div className="bg-space-950/80 border border-space-800 rounded-xl px-4 py-2 text-right">
-          <div className="text-[10px] text-gray-500 font-mono">TOP SCENARIO EVENT</div>
-          <div className="text-xs text-alien-cyan font-bold font-sans">COMPILED & DELIVERED TO NA HONG-JIN</div>
+        <div className="px-4 py-2 text-right" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
+          <div className="eyebrow" style={{ fontSize: 9 }}>TOP SCENARIO EVENT</div>
+          <div className="font-mono font-bold" style={{ fontSize: 11, color: "var(--acc-cyan)" }}>COMPILED & DELIVERED TO NA HONG-JIN</div>
         </div>
       </div>
 
       {/* Feed list */}
       <div className="flex flex-col gap-6">
         {scenarios.map((scenario) => (
-          <div 
-            key={scenario.id} 
-            className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col md:flex-row gap-6 items-start justify-between relative transition-all hover:border-space-700/40"
+          <div
+            key={scenario.id}
+            className="panel panel-bracket p-6 flex flex-col md:flex-row gap-6 items-start justify-between relative transition-all"
           >
+            <span className="br-bl" /><span className="br-br" />
             {/* Left: Votes */}
-            <div className="flex md:flex-col items-center gap-2 bg-space-950/60 border border-space-850 px-3 py-2 rounded-xl min-w-[70px] text-center">
-              <button 
+            <div className="flex md:flex-col items-center gap-2 px-3 py-2 min-w-[70px] text-center" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
+              <button
                 onClick={() => onVote(scenario.id)}
-                className={`text-lg transition-transform active:scale-95 ${scenario.voted ? "text-neon-pink" : "text-gray-500 hover:text-white"}`}
+                className="text-lg transition-transform active:scale-95"
+                style={{ color: scenario.voted ? "var(--acc-primary)" : "var(--ink-3)" }}
                 title="Vote up"
               >
                 ▲
@@ -95,8 +97,8 @@ export default function ScenarioFeed({ scenarios, onVote }: ScenarioFeedProps) {
             <div className="flex-1 flex flex-col gap-3">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-space-800/40 pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-neon-purple" />
-                  <span className="text-xs font-bold text-gray-300 font-mono">
+                  <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-violet)" }} />
+                  <span className="font-mono font-bold" style={{ fontSize: 11, color: "var(--ink-1)" }}>
                     TRANSMISSION BY @{scenario.author}
                   </span>
                 </div>
@@ -111,9 +113,10 @@ export default function ScenarioFeed({ scenarios, onVote }: ScenarioFeedProps) {
               {/* Selected items badges */}
               <div className="flex flex-wrap gap-2 mt-2">
                 {scenario.items.map((item, idx) => (
-                  <span 
-                    key={idx} 
-                    className="text-[9px] font-mono bg-space-900/80 border border-neon-purple/20 text-neon-purple px-2 py-0.5 rounded-full"
+                  <span
+                    key={idx}
+                    className="font-mono px-2 py-0.5"
+                    style={{ fontSize: 9, color: "var(--acc-violet)", border: "1px solid color-mix(in srgb, var(--acc-violet) 30%, transparent)", background: "var(--bg-1)" }}
                   >
                     🧩 {item}
                   </span>

@@ -47,8 +47,8 @@ export default function Home() {
       <div className="absolute top-0 inset-x-0 h-[600px] bg-gradient-to-b from-space-900/30 to-transparent pointer-events-none z-0" />
 
       {/* Top Warning Ribbon */}
-      <div className="relative z-20 w-full bg-neon-pink text-white text-[10px] font-mono font-bold tracking-[0.2em] py-2 text-center uppercase animate-pulse">
-        ⚠️ ALERT: HOPO PORT CONTROL ZONE - OMEGA PROTOCOL ACTIVE ⚠️
+      <div className="relative z-20 w-full py-2 text-center font-mono font-bold uppercase flicker" style={{ background: "var(--acc-primary)", color: "var(--bg-0)", fontSize: 10, letterSpacing: "0.2em" }}>
+        ALERT: HOPO PORT CONTROL ZONE - OMEGA PROTOCOL ACTIVE
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col py-8">
@@ -56,10 +56,10 @@ export default function Home() {
         {/* Cinematic Welcome Banner & Quick Links */}
         <section className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-6 border-b border-space-900/40 pb-8">
           <div>
-            <h2 className="font-righteous text-2xl font-bold text-white uppercase tracking-wider">
+            <h2 className="display text-2xl uppercase" style={{ color: "var(--ink-0)" }}>
               WELCOME TO HOPO PORT OUTPOST
             </h2>
-            <p className="text-xs text-gray-400 font-sans mt-1">
+            <p className="font-sans mt-1" style={{ fontSize: 12, color: "var(--ink-3)" }}>
               Select a classified terminal frequency below to begin your decryption sequence.
             </p>
           </div>
@@ -67,21 +67,24 @@ export default function Home() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/intro"
-              className="flex items-center gap-2 bg-space-900 border border-space-800 hover:border-neon-pink px-4 py-2.5 rounded-xl text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 font-mono text-xs transition-all cursor-pointer"
+              style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
             >
               <Film className="w-3.5 h-3.5" />
               MOVIE INFO
             </Link>
             <Link
               href="/game"
-              className="flex items-center gap-2 bg-gradient-to-r from-neon-pink to-neon-purple text-white px-4 py-2.5 rounded-xl text-xs font-righteous tracking-widest hover:scale-[1.02] transition-all shadow-[0_0_15px_rgba(255,0,127,0.2)] border border-white/10 cursor-pointer animate-pulse"
+              className="flex items-center gap-2 px-4 py-2.5 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all cursor-pointer"
+              style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
             >
               <Gamepad2 className="w-3.5 h-3.5" />
               PLAY ROOM ESCAPE
             </Link>
             <Link
               href="/community"
-              className="flex items-center gap-2 bg-space-900 border border-space-800 hover:border-alien-cyan px-4 py-2.5 rounded-xl text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 font-mono text-xs transition-all cursor-pointer"
+              style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
             >
               <Users className="w-3.5 h-3.5" />
               COMMUNITY FEED
@@ -99,18 +102,19 @@ export default function Home() {
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12 -mt-4">
             <Link
               href="/game"
-              className="w-full bg-[#0a0114] border-2 border-neon-pink/30 rounded-xl px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 font-mono text-xs text-gray-300 hover:border-neon-pink transition-all hover:bg-neon-pink/5 cursor-pointer shadow-[0_0_15px_rgba(255,0,127,0.05)]"
+              className="w-full px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 font-mono text-xs transition-all cursor-pointer"
+              style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
             >
               <div className="flex items-center gap-3">
-                <span className="p-2 bg-neon-pink/10 border border-neon-pink/30 rounded-lg text-neon-pink">
+                <span className="p-2" style={{ background: "color-mix(in srgb, var(--acc-primary) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--acc-primary) 30%, transparent)" }}>
                   🎮
                 </span>
                 <div className="text-left">
-                  <div className="text-white font-righteous tracking-wider uppercase">EPISODE 1 MULTI-ROOM EDITION IS READY</div>
-                  <div className="text-[10px] text-gray-500 font-sans mt-0.5">Explore the full police substation office, farm roads, and storage room. Search for tools and unlock deep lore.</div>
+                  <div className="display uppercase tracking-wider" style={{ color: "var(--ink-0)" }}>EPISODE 1 MULTI-ROOM EDITION IS READY</div>
+                  <div className="font-sans mt-0.5" style={{ fontSize: 10, color: "var(--ink-3)" }}>Explore the full police substation office, farm roads, and storage room. Search for tools and unlock deep lore.</div>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 font-bold text-neon-pink uppercase tracking-widest text-[10px]">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-widest" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
                 PLAY FULL INTERACTIVE GAME
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
@@ -151,7 +155,7 @@ export default function Home() {
         {/* Section 5: Performance Campaign Info */}
         <section className="w-full max-w-7xl mx-auto px-4 md:px-0 py-12 border-t border-space-800/40 text-center">
           <div className="max-w-2xl mx-auto flex flex-col gap-6">
-            <h4 className="font-righteous text-xl font-bold text-white uppercase tracking-wider">
+            <h4 className="display text-xl uppercase" style={{ color: "var(--ink-0)" }}>
               Deliver the Scenario Book to Director Na Hong-jin
             </h4>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
@@ -173,8 +177,8 @@ export default function Home() {
           
           <div className="flex flex-col items-center md:items-start gap-1">
             <div className="flex items-center gap-2">
-              <span className="font-righteous text-sm font-bold tracking-wider text-white">
-                HOPO<span className="text-neon-pink">PORT</span>
+              <span className="display text-sm" style={{ color: "var(--ink-0)" }}>
+                HOPO<span style={{ color: "var(--acc-primary)" }}>PORT</span>
               </span>
               <span>|</span>
               <span>EST. 2026</span>

@@ -5,85 +5,107 @@ import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { database, UserProfile } from "../../lib/firebase";
 import WalletConnectModal from "../../components/WalletConnectModal";
-import { Shield, Key, Compass, MessageSquare, Terminal, Archive, Check, Wallet } from "lucide-react";
+import { Shield, Compass, Wallet } from "lucide-react";
 
-// Web Audio API Synthesizer
+// ── Web Audio API Synthesizer ────────────────────────────────────────────
 const playSound = (type: "beep" | "dissonant" | "unlock" | "ambient" | "move") => {
   if (typeof window === "undefined") return;
   try {
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContext) return;
     const ctx = new AudioContext();
-
     if (type === "beep") {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(520, ctx.currentTime);
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = "sine"; osc.frequency.setValueAtTime(520, ctx.currentTime);
       gain.gain.setValueAtTime(0.015, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.1);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1);
     } else if (type === "dissonant") {
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc1.type = "sawtooth";
-      osc1.frequency.setValueAtTime(80, ctx.currentTime);
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(82.5, ctx.currentTime);
+      const osc1 = ctx.createOscillator(); const osc2 = ctx.createOscillator(); const gain = ctx.createGain();
+      osc1.type = "sawtooth"; osc1.frequency.setValueAtTime(80, ctx.currentTime);
+      osc2.type = "sine"; osc2.frequency.setValueAtTime(82.5, ctx.currentTime);
       gain.gain.setValueAtTime(0.03, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ctx.destination);
-      osc1.start();
-      osc2.start();
-      osc1.stop(ctx.currentTime + 0.6);
-      osc2.stop(ctx.currentTime + 0.6);
+      osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+      osc1.start(); osc2.start(); osc1.stop(ctx.currentTime + 0.6); osc2.stop(ctx.currentTime + 0.6);
     } else if (type === "unlock") {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = "triangle"; osc.frequency.setValueAtTime(440, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
       gain.gain.setValueAtTime(0.025, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.2);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.2);
     } else if (type === "move") {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = "sine"; osc.frequency.setValueAtTime(150, ctx.currentTime);
       osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.15);
       gain.gain.setValueAtTime(0.04, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.15);
     }
-  } catch (e) {
-    console.warn("Audio Context blocked or unsupported:", e);
-  }
+  } catch (e) { console.warn("Audio Context blocked or unsupported:", e); }
 };
 
 type RoomId = "FRONT_YARD" | "OFFICE" | "STORAGE";
 
 interface GameHotspot {
-  id: string;
-  name: string;
-  top: string;
-  left: string;
-  width: string;
-  height: string;
+  id: string; name: string;
+  top: string; left: string; width: string; height: string;
   hoverText: string;
   onClick: (activeItem: string | null) => { text: string; pickUpItem?: string; unlocks?: string };
+}
+
+// ── SVG Crosshair Hotspot marker ────────────────────────────────────────
+function HotspotMarker({ x, y, w, h, label, status, onEnter, onClick }: {
+  x: string; y: string; w: string; h: string; label: string;
+  status: "idle" | "hover";
+  onEnter: () => void; onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const color = hovered ? "var(--acc-primary)" : "rgba(255,255,255,0.12)";
+  return (
+    <button
+      onMouseEnter={() => { setHovered(true); onEnter(); }}
+      onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
+      style={{
+        position: "absolute", top: y, left: x, width: w, height: h,
+        background: hovered ? "color-mix(in srgb, var(--acc-primary) 6%, transparent)" : "transparent",
+        border: "none", cursor: "crosshair", padding: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      {/* Corner brackets */}
+      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M 0 18 L 0 0 L 18 0" stroke={color} strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+        <path d="M 100 18 L 100 0 L 82 0" stroke={color} strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+        <path d="M 0 82 L 0 100 L 18 100" stroke={color} strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+        <path d="M 100 82 L 100 100 L 82 100" stroke={color} strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+        {hovered && <>
+          <circle cx="50" cy="50" r="12" stroke={color} strokeWidth="0.8" fill="none" opacity="0.5" />
+          <line x1="50" y1="36" x2="50" y2="42" stroke={color} strokeWidth="1" />
+          <line x1="50" y1="58" x2="50" y2="64" stroke={color} strokeWidth="1" />
+          <line x1="36" y1="50" x2="42" y2="50" stroke={color} strokeWidth="1" />
+          <line x1="58" y1="50" x2="64" y2="50" stroke={color} strokeWidth="1" />
+          <circle cx="50" cy="50" r="2" fill={color} />
+        </>}
+      </svg>
+      {/* Label tooltip */}
+      {hovered && (
+        <span style={{
+          position: "absolute", top: -26, left: "50%", transform: "translateX(-50%)",
+          fontFamily: "var(--font-mono)", fontSize: 9,
+          color: "var(--acc-primary)", textTransform: "uppercase", letterSpacing: "0.14em",
+          padding: "2px 8px", border: "1px solid var(--acc-primary)",
+          background: "var(--bg-0)", whiteSpace: "nowrap",
+          pointerEvents: "none", zIndex: 20,
+          boxShadow: "0 0 8px color-mix(in srgb, var(--acc-primary) 40%, transparent)",
+        }}>
+          {label}
+        </span>
+      )}
+    </button>
+  );
 }
 
 export default function GamePage() {
@@ -92,10 +114,10 @@ export default function GamePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const profileRef = useRef<UserProfile | null>(null);
   const [currentRoom, setCurrentRoom] = useState<RoomId>("OFFICE");
-  const [logs, setLogs] = useState<string[]>([
-    "[SYSTEM INITIALIZED] connection established.",
-    "[LOG 18:40] Bum-seok: 'We are completely blocked. No phones, no police radios. The fog is crawling in... Keep your eyes open.'",
-    "[TUTORIAL] Move through rooms using the navigation console. Equipping items and clicking hotspots yields secrets.",
+  const [logs, setLogs] = useState<Array<{ time: string; role: string; text: string; kind: "system" | "voice" | "omega" | "danger" | "default" }>>([
+    { time: "18:40:02", role: "SYSTEM", text: "connection established · ω-channel synced", kind: "system" },
+    { time: "18:40:18", role: "BUM-SEOK", text: "'We are completely blocked. No phones, no police radios. Keep your eyes open.'", kind: "voice" },
+    { time: "18:40:32", role: "TUTORIAL", text: "Move through rooms · equip items · click hotspots to reveal secrets", kind: "default" },
   ]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [currentText, setCurrentText] = useState(
@@ -103,13 +125,13 @@ export default function GamePage() {
   );
   const [discoveryQueue, setDiscoveryQueue] = useState<string[]>([]);
   const [mobileTab, setMobileTab] = useState<"canvas" | "logs" | "inventory">("canvas");
+  const [calibMode, setCalibMode] = useState(false);
+  const [calibCursor, setCalibCursor] = useState<{ x: number; y: number } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const [showEndOverlay, setShowEndOverlay] = useState(false);
   const logContainerRef = useRef<HTMLDivElement>(null);
   const hasClosedOverlay = useRef(false);
 
-  // Load and sync profile — only on mount and cross-tab storage events.
-  // Does NOT trigger the end overlay — that only fires when the user actually
-  // picks up Green Alien Slime during the current session (inside secureItem).
   const syncProfile = () => {
     if (typeof window === "undefined") return;
     const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
@@ -118,14 +140,10 @@ export default function GamePage() {
     setProfile(data);
   };
 
-  // Keep profileRef in sync whenever profile state changes
-  useEffect(() => {
-    profileRef.current = profile;
-  }, [profile]);
+  useEffect(() => { profileRef.current = profile; }, [profile]);
 
   useEffect(() => {
     syncProfile();
-    // Only listen for true cross-tab storage changes
     window.addEventListener("storage", syncProfile);
     return () => window.removeEventListener("storage", syncProfile);
   }, []);
@@ -136,275 +154,128 @@ export default function GamePage() {
     }
   }, [logs]);
 
-  // DB Sync Helper for Items
+  const addLog = (role: string, text: string, kind: "system" | "voice" | "omega" | "danger" | "default" = "default") => {
+    const now = new Date();
+    const time = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+    setLogs((p) => [...p, { time, role, text, kind }]);
+  };
+
   const secureItem = async (itemName: string, message: string) => {
     if (typeof window === "undefined") return;
-
     const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-
-    // profileRef.current can be null if syncProfile hasn't resolved yet
-    // (user clicked a hotspot before the async load finished).
-    // In that case, fetch the profile right now instead of silently bailing.
     if (!profileRef.current) {
       const data = database.getUserProfile(wallet);
       profileRef.current = data;
       setProfile(data);
     }
-
     const currentProfile = profileRef.current!;
-
     if (currentProfile.inventory.includes(itemName)) {
-      setLogs((p) => [...p, `[INFO] ${itemName} already in your possession.`]);
+      addLog("INFO", `${itemName} already in your possession.`, "system");
       return;
     }
-
-    const updatedProfile = {
-      ...currentProfile,
-      inventory: [...currentProfile.inventory, itemName],
-    };
-
-    // Write to ref immediately — sequential secureItem calls (e.g. "BOTH") read this
-    // before React re-renders, so they always see the freshest inventory.
+    const updatedProfile = { ...currentProfile, inventory: [...currentProfile.inventory, itemName] };
     profileRef.current = updatedProfile;
     setProfile(updatedProfile);
     setDiscoveryQueue((q) => [...q, itemName]);
-    setLogs((p) => [...p, `[SECURED] ${itemName} added to artifact deck.`, `[STORY] ${message}`]);
+    addLog("SECURED", `${itemName} added to artifact deck.`, "system");
+    addLog("STORY", message, "voice");
     playSound("unlock");
-
-    // Start the end-overlay timer immediately on item pickup — before the async save —
-    // so Firestore latency doesn't delay it. The overlay itself is gated by
-    // discoveryQueue.length === 0, so it only appears after the discovery modal is dismissed.
     if (itemName === "Green Alien Slime" && !hasClosedOverlay.current) {
-      setTimeout(() => {
-        setShowEndOverlay(true);
-        playSound("unlock");
-      }, 1200);
+      setTimeout(() => { setShowEndOverlay(true); playSound("unlock"); }, 1200);
     }
-
     await database.saveUserProfile(wallet, updatedProfile);
-
-    // Notify navbar to refresh token balance display
     window.dispatchEvent(new Event("profileUpdated"));
   };
 
-  const dismissDiscovery = () => {
-    playSound("beep");
-    setDiscoveryQueue((q) => q.slice(1));
-  };
+  const dismissDiscovery = () => { playSound("beep"); setDiscoveryQueue((q) => q.slice(1)); };
 
-  // Rooms and Hotspots Configuration
   const hotspots: Record<RoomId, GameHotspot[]> = {
     OFFICE: [
       {
-        id: "bum-seok",
-        name: "Chief Officer Bum-seok",
-        top: "45%",
-        left: "62%",
-        width: "20%",
-        height: "35%",
+        id: "bum-seok", name: "Chief Officer Bum-seok", top: "26%", left: "65%", width: "20%", height: "35%",
         hoverText: "Speak with Chief Bum-seok",
         onClick: () => {
           if (!profile) return { text: "Error loading user clearance." };
-          const hasTokens = profile.tokenBalance >= 5000;
-          if (hasTokens) {
-            return {
-              text: "Bum-seok whispers: '아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)... 성기 (Sung-ki) is staying up all night on that storage terminal. He claims it's telemetry data, but I suspect he is a collaborator. Look at the radar screen on the left—our radio frequency has been completely high-jacked by an internal signal. Someone in this building is coordinates-broadcasting us...'",
-            };
-          } else {
-            return {
-              text: "Bum-seok says: 'Stay back. This is an official quarantine command post. I cannot share classified log files unless you have 5,000 $NAHOPE clearance to prove you are a defender.'",
-            };
-          }
+          return profile.tokenBalance >= 5000
+            ? { text: "Bum-seok whispers: '아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)... 성기 (Sung-ki) is staying up all night on that storage terminal. He claims it's telemetry data, but I suspect he is a collaborator. Look at the radar screen on the left—our radio frequency has been completely high-jacked by an internal signal. Someone in this building is coordinates-broadcasting us...'" }
+            : { text: "Bum-seok says: 'Stay back. This is an official quarantine command post. I cannot share classified log files unless you have 5,000 $NAHOPE clearance to prove you are a defender.'" };
         },
       },
       {
-        id: "substation-typewriter",
-        name: "Goldstar Retro Typewriter",
-        top: "62%",
-        left: "30%",
-        width: "24%",
-        height: "22%",
+        id: "substation-typewriter", name: "Goldstar Retro Typewriter", top: "80%", left: "40%", width: "24%", height: "22%",
         hoverText: "Inspect Goldstar Typewriter",
         onClick: (item) => {
-          if (profile?.inventory.includes("Green Alien Slime")) {
-            return { text: "The typewriter lies disassembled, its keys covered in green residue." };
-          }
-          if (item === "Screwdriver") {
-            return {
-              text: "⚡ [Synergy Success] You used the Screwdriver to unscrew the typewriter's outer metal casing. Inside the key mechanism, you scraped off a vial of glowing Green Alien Slime!",
-              pickUpItem: "Green Alien Slime",
-            };
-          }
-          return {
-            text: "A Goldstar retro typewriter. Some keys are jammed with a sticky, glowing green alien slime, and the carriage returns with an odd metallic screech. The outer casing is screwed tight; you need a tool to open it.",
-          };
+          if (profile?.inventory.includes("Green Alien Slime")) return { text: "The typewriter lies disassembled, its keys covered in green residue." };
+          if (item === "Screwdriver") return { text: "⚡ [Synergy Success] You used the Screwdriver to unscrew the typewriter's outer metal casing. Inside the key mechanism, you scraped off a vial of glowing Green Alien Slime!", pickUpItem: "Green Alien Slime" };
+          return { text: "A Goldstar retro typewriter. Some keys are jammed with a sticky, glowing green alien slime, and the carriage returns with an odd metallic screech. The outer casing is screwed tight; you need a tool to open it." };
         },
       },
       {
-        id: "rotary-phone",
-        name: "Blue House Rotary Phone",
-        top: "72%",
-        left: "70%",
-        width: "18%",
-        height: "22%",
+        id: "rotary-phone", name: "Blue House Rotary Phone", top: "84%", left: "72%", width: "18%", height: "22%",
         hoverText: "Inspect Rotary Phone",
-        onClick: () => {
-          return {
-            text: "A black rotary telephone with a label reading '청와대 범죄신고 112'. Lifting the receiver yields static noise and a low, garbled frequency repeating: 'July 23... the sky turned purple... it is calling from the deep...'",
-          };
-        },
+        onClick: () => ({ text: "A black rotary telephone with a label reading '청와대 범죄신고 112'. Lifting the receiver yields static noise and a low, garbled frequency repeating: 'July 23... the sky turned purple... it is calling from the deep...'" }),
       },
       {
-        id: "radar-screen",
-        name: "Green Anomaly Radar",
-        top: "42%",
-        left: "2%",
-        width: "30%",
-        height: "32%",
+        id: "radar-screen", name: "Green Anomaly Radar", top: "42%", left: "2%", width: "30%", height: "32%",
         hoverText: "Inspect Glitched Radar Screen",
-        onClick: () => {
-          return {
-            text: "The green CRT monitor is showing severe electromagnetic interference. A glowing circle pulses rhythmically, printing: [SYS ERROR: OUTPOST SOURCE TRANSMITTING]. Someone inside this substation is actively beaconing our location.",
-          };
-        },
+        onClick: () => ({ text: "The green CRT monitor is showing severe electromagnetic interference. A glowing circle pulses rhythmically, printing: [SYS ERROR: OUTPOST SOURCE TRANSMITTING]. Someone inside this substation is actively beaconing our location." }),
       },
     ],
     FRONT_YARD: [
       {
-        id: "sung-ae",
-        name: "Officer Sung-ae",
-        top: "35%",
-        left: "60%",
-        width: "18%",
-        height: "38%",
+        id: "sung-ae", name: "Officer Sung-ae", top: "35%", left: "60%", width: "18%", height: "38%",
         hoverText: "Speak with Officer Sung-ae",
         onClick: () => {
           if (!profile) return { text: "Error loading user clearance." };
-          const hasTokens = profile.tokenBalance >= 5000;
-          if (hasTokens) {
-            return {
-              text: "Sung-ae: 'Private Choi went missing near the fence last night. I found his metallic ID tags, but they are carbonized and glow purple in the dark. It is like the entity is absorbing the bio-electricity from our soldiers.'",
-            };
-          } else {
-            return {
-              text: "Sung-ae: 'I am guarding the fence. Move along unless you have 5,000 $NAHOPE clearance to check our logs.'",
-            };
-          }
+          return profile.tokenBalance >= 5000
+            ? { text: "Sung-ae: 'Private Choi went missing near the fence last night. I found his metallic ID tags, but they are carbonized and glow purple in the dark. It is like the entity is absorbing the bio-electricity from our soldiers.'" }
+            : { text: "Sung-ae: 'I am guarding the fence. Move along unless you have 5,000 $NAHOPE clearance to check our logs.'" };
         },
       },
       {
-        id: "cow-carcass",
-        name: "Mutilated Cow Carcass",
-        top: "68%",
-        left: "30%",
-        width: "30%",
-        height: "25%",
+        id: "cow-carcass", name: "Mutilated Cow Carcass", top: "68%", left: "30%", width: "30%", height: "25%",
         hoverText: "Examine anomalous carcass",
-        onClick: () => {
-          return {
-            text: "A cow carcass with severe cellular warp and dimensional disintegration. A strange symbol is carved into its hide: Omega (Ω). The blood has evaporated, leaving the carcass brittle and dry. Background music shifts into static noise.",
-          };
-        },
+        onClick: () => ({ text: "A cow carcass with severe cellular warp and dimensional disintegration. A strange symbol is carved into its hide: Omega (Ω). The blood has evaporated, leaving the carcass brittle and dry. Background music shifts into static noise." }),
       },
       {
-        id: "torn-tag",
-        name: "Shiny Metallic Object",
-        top: "50%",
-        left: "80%",
-        width: "8%",
-        height: "10%",
+        id: "torn-tag", name: "Shiny Metallic Object", top: "50%", left: "80%", width: "8%", height: "10%",
         hoverText: "Investigate fence post",
         onClick: () => {
-          if (profile?.inventory.includes("Torn ID Tag")) {
-            return { text: "Nothing left but rusted wire and glowing purple residue." };
-          }
-          return {
-            text: "You found a military tag snagged on the barbed wire fence. It belongs to Private Choi, crusted with a bright, glassy purple residue. Secured the Torn ID Tag!",
-            pickUpItem: "Torn ID Tag",
-          };
+          if (profile?.inventory.includes("Torn ID Tag")) return { text: "Nothing left but rusted wire and glowing purple residue." };
+          return { text: "You found a military tag snagged on the barbed wire fence. It belongs to Private Choi, crusted with a bright, glassy purple residue. Secured the Torn ID Tag!", pickUpItem: "Torn ID Tag" };
         },
       },
     ],
     STORAGE: [
       {
-        id: "sung-ki",
-        name: "Outcast Sung-ki",
-        top: "35%",
-        left: "48%",
-        width: "18%",
-        height: "30%",
+        id: "sung-ki", name: "Outcast Sung-ki", top: "35%", left: "48%", width: "18%", height: "30%",
         hoverText: "Speak with Sung-ki",
         onClick: () => {
           if (!profile) return { text: "Error loading user clearance." };
-          const hasTokens = profile.tokenBalance >= 5000;
-          if (hasTokens) {
-            return {
-              text: "Sung-ki: 'I've deciphered the signal. It's a cosmic beacon loop. The beacon is coming from this very substation! Someone here is broadcasting our bio-signatures. They are trying to feed us to the humanoid creature in the forest.'",
-            };
-          } else {
-            return {
-              text: "Sung-ki: 'This terminal is processing telemetry arrays. Go away unless you have 5,000 $NAHOPE tokens.'",
-            };
-          }
+          return profile.tokenBalance >= 5000
+            ? { text: "Sung-ki: 'I've deciphered the signal. It's a cosmic beacon loop. The beacon is coming from this very substation! Someone here is broadcasting our bio-signatures. They are trying to feed us to the humanoid creature in the forest.'" }
+            : { text: "Sung-ki: 'This terminal is processing telemetry arrays. Go away unless you have 5,000 $NAHOPE tokens.'" };
         },
       },
       {
-        id: "workbench",
-        name: "Substation Workbench",
-        top: "60%",
-        left: "2%",
-        width: "45%",
-        height: "38%",
+        id: "workbench", name: "Substation Workbench", top: "60%", left: "2%", width: "45%", height: "38%",
         hoverText: "Search Workbench",
         onClick: () => {
           const hasScrewdriver = profile?.inventory.includes("Screwdriver");
           const hasKey = profile?.inventory.includes("Cabinet Key");
-
-          if (hasScrewdriver && hasKey) {
-            return { text: "The workbench is empty, scattered with old blueprints, copper wires and dust." };
-          }
-
-          let responseText = "You searched the drawer of the workbench. ";
-          let pickedItem = "";
-
-          if (!hasScrewdriver && !hasKey) {
-            responseText += "You found a heavy flathead Screwdriver and a small Cabinet Key!";
-            pickedItem = "BOTH";
-          } else if (!hasScrewdriver) {
-            responseText += "You found a heavy flathead Screwdriver!";
-            pickedItem = "Screwdriver";
-          } else if (!hasKey) {
-            responseText += "You found a small Cabinet Key!";
-            pickedItem = "Cabinet Key";
-          }
-
-          return {
-            text: responseText,
-            pickUpItem: pickedItem,
-          };
+          if (hasScrewdriver && hasKey) return { text: "The workbench is empty, scattered with old blueprints, copper wires and dust." };
+          if (!hasScrewdriver && !hasKey) return { text: "You searched the drawer of the workbench. You found a heavy flathead Screwdriver and a small Cabinet Key!", pickUpItem: "BOTH" };
+          if (!hasScrewdriver) return { text: "You searched the drawer of the workbench. You found a heavy flathead Screwdriver!", pickUpItem: "Screwdriver" };
+          return { text: "You searched the drawer of the workbench. You found a small Cabinet Key!", pickUpItem: "Cabinet Key" };
         },
       },
       {
-        id: "locked-cabinet",
-        name: "Locked Weapon Cabinet",
-        top: "18%",
-        left: "72%",
-        width: "26%",
-        height: "80%",
+        id: "locked-cabinet", name: "Locked Weapon Cabinet", top: "18%", left: "72%", width: "26%", height: "80%",
         hoverText: "Open Weapon Cabinet",
         onClick: (item) => {
-          if (profile?.inventory.includes("80s Radio")) {
-            return { text: "The weapon cabinet is open. You've already taken the 80s Radio." };
-          }
-          if (item === "Cabinet Key") {
-            return {
-              text: "⚡ [Synergy Success] You inserted the Cabinet Key. The lock turns with a rusty screech! Inside is a working military-grade 80s Radio.",
-              pickUpItem: "80s Radio",
-            };
-          }
-          return {
-            text: "A locked steel ammunition cabinet labeled 'COMMUNICATION GEAR'. You need a key to open it.",
-          };
+          if (profile?.inventory.includes("80s Radio")) return { text: "The weapon cabinet is open. You've already taken the 80s Radio." };
+          if (item === "Cabinet Key") return { text: "⚡ [Synergy Success] You inserted the Cabinet Key. The lock turns with a rusty screech! Inside is a working military-grade 80s Radio.", pickUpItem: "80s Radio" };
+          return { text: "A locked steel ammunition cabinet labeled 'COMMUNICATION GEAR'. You need a key to open it." };
         },
       },
     ],
@@ -413,10 +284,9 @@ export default function GamePage() {
   const handleHotspotClick = async (h: GameHotspot) => {
     playSound("dissonant");
     const result = h.onClick(activeItem);
-
     setCurrentText(result.text);
-    setLogs((p) => [...p, `[ACTION] Checked ${h.name}.`, `[TEXT] ${result.text}`]);
-
+    addLog("ACTION", `Checked ${h.name}.`, "default");
+    addLog("TEXT", result.text, "voice");
     if (result.pickUpItem) {
       if (result.pickUpItem === "BOTH") {
         await secureItem("Screwdriver", "Found a flathead screwdriver on the workbench.");
@@ -430,24 +300,21 @@ export default function GamePage() {
   const changeRoom = (room: RoomId) => {
     playSound("move");
     setCurrentRoom(room);
-    let description = "";
-    if (room === "OFFICE") {
-      description = "You are inside the police substation office. Chief Bum-seok is sitting at his desk. A heavy fog covers the window.";
-    } else if (room === "FRONT_YARD") {
-      description = "You are in the forest yard outside Hopo Outpost. Barbed wire fences line the perimeter. Officer Sung-ae is standing guard.";
-    } else if (room === "STORAGE") {
-      description = "You enter the dark storage room. Outcast Sung-ki is typing on a glowing terminal screen. Metal cabinets line the walls.";
-    }
-    setCurrentText(description);
-    setLogs((p) => [...p, `[MOVE] Entered ${room.replace("_", " ")}.`]);
+    const desc: Record<RoomId, string> = {
+      OFFICE: "You are inside the police substation office. Chief Bum-seok is sitting at his desk. A heavy fog covers the window.",
+      FRONT_YARD: "You are in the forest yard outside Hopo Outpost. Barbed wire fences line the perimeter. Officer Sung-ae is standing guard.",
+      STORAGE: "You enter the dark storage room. Outcast Sung-ki is typing on a glowing terminal screen. Metal cabinets line the walls.",
+    };
+    setCurrentText(desc[room]);
+    addLog("MOVE", `Entered ${room.replace("_", " ")}.`, "system");
   };
 
-  const ITEM_SYMBOLS: Record<string, string> = {
-    "Screwdriver": "⚙",
-    "Cabinet Key": "⬡",
-    "80s Radio": "◎",
-    "Torn ID Tag": "≡",
-    "Green Alien Slime": "Ω",
+  const ITEM_GLYPHS: Record<string, string> = {
+    "Screwdriver": "⏃",
+    "Cabinet Key": "✪",
+    "80s Radio": "⏁",
+    "Torn ID Tag": "◊",
+    "Green Alien Slime": "⌬",
   };
 
   const ITEM_IMAGES: Record<string, string> = {
@@ -458,300 +325,534 @@ export default function GamePage() {
     "Green Alien Slime": "/images/items/green_alien_slime.png",
   };
 
+  const LOG_COLORS: Record<string, string> = {
+    system: "var(--acc-primary)",
+    voice: "var(--ink-0)",
+    omega: "var(--acc-violet)",
+    danger: "var(--acc-danger)",
+    default: "var(--ink-1)",
+  };
+
   const currentDiscovery = discoveryQueue[0] ?? null;
 
   return (
-    <div className="fixed inset-x-0 top-[56px] bottom-[88px] md:top-[72px] md:bottom-0 flex flex-col bg-black text-gray-200 p-4 font-mono select-none overflow-hidden touch-none">
+    <div style={{
+      position: "fixed", inset: 0, top: 56, bottom: 88,
+      display: "flex", flexDirection: "column",
+      background: "var(--bg-0)", color: "var(--ink-0)",
+      fontFamily: "var(--font-mono)",
+      userSelect: "none", overflow: "hidden", touchAction: "none",
+      padding: "12px 16px 8px",
+    }} className="md:top-[72px] md:bottom-0">
 
-      {/* Top Title Banner */}
-      <div className="text-center text-[10px] text-neon-pink mb-2 tracking-widest uppercase animate-pulse">
-        ⚠️ PROTOCOL OMEGA: EPISODE 1 - THE COGNITIVE SEARCH INTERACTIVE ⚠️
+      {/* Episode title rail */}
+      <div style={{
+        textAlign: "center", marginBottom: 8, padding: "6px 0",
+        fontFamily: "var(--font-mono)", fontSize: 11,
+        textTransform: "uppercase", letterSpacing: "0.32em",
+        color: "var(--acc-amber)",
+        textShadow: "0 0 12px var(--acc-amber)",
+      }} className="caps-omega flicker">
+        ⚠ PROTOCOL OMEGA · EPISODE 01 — THE COGNITIVE SEARCH · INTERACTIVE ⚠
       </div>
 
-      {/* MOBILE TABS HEADER */}
-      <div className="md:hidden flex border-b border-space-850 mb-3 text-xs bg-space-950/80 rounded-xl overflow-hidden p-1 gap-1">
-        <button
-          onClick={() => setMobileTab("canvas")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "canvas" ? "bg-neon-pink text-white" : "text-gray-400"
-            }`}
-        >
-          🎮 GAME SCREEN
-        </button>
-        <button
-          onClick={() => setMobileTab("logs")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "logs" ? "bg-neon-purple text-white" : "text-gray-400"
-            }`}
-        >
-          📝 LOGS ({logs.length})
-        </button>
-        <button
-          onClick={() => setMobileTab("inventory")}
-          className={`flex-1 py-2 rounded-lg font-bold transition-all ${mobileTab === "inventory" ? "bg-alien-cyan text-black" : "text-gray-400"
-            }`}
-        >
-          🎒 INVENTORY ({profile?.inventory.length || 0})
-        </button>
+      {/* Tab bar — mobile: switches panels · desktop: highlights selected panel */}
+      <div style={{
+        display: "flex", gap: 4, marginBottom: 10,
+        borderBottom: "1px solid var(--line)", paddingBottom: 0,
+        flexShrink: 0,
+      }}>
+        {(["canvas", "logs", "inventory"] as const).map((tab) => {
+          const isActive = mobileTab === tab;
+          return (
+            <button key={tab} onClick={() => setMobileTab(tab)} style={{
+              flex: 1, padding: "8px 4px",
+              fontFamily: "var(--font-mono)", fontSize: 10,
+              textTransform: "uppercase", letterSpacing: "0.16em",
+              color: isActive ? "var(--acc-primary)" : "var(--ink-3)",
+              background: isActive ? "color-mix(in srgb, var(--acc-primary) 8%, transparent)" : "transparent",
+              border: "none",
+              borderBottom: `2px solid ${isActive ? "var(--acc-primary)" : "transparent"}`,
+              cursor: "pointer", transition: "all 0.15s",
+            }}>
+              {tab === "canvas" ? "GAME" : tab === "logs" ? `LOGS (${logs.length})` : `ITEMS (${profile?.inventory.length ?? 0})`}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Main Board Layout */}
-      <div className="flex flex-1 gap-4 overflow-hidden h-[calc(100%-80px)]">
+      {/* Main 3-panel grid */}
+      <div style={{ display: "flex", flex: 1, gap: 8, overflow: "hidden", minHeight: 0 }}>
 
-        {/* LEFT COLUMN: Terminal Logs (25% - Hidden on mobile unless active) */}
+        {/* ── LEFT: Terminal log ──────────────────────────────────────── */}
         <div
-          className={`${mobileTab === "logs" ? "flex" : "hidden"
-            } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#080112] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
+          className={`${mobileTab === "logs" ? "flex" : "hidden"} md:flex flex-col w-full md:w-60 flex-none`}
         >
-          <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-          <div ref={logContainerRef} className="flex flex-col gap-2 h-full overflow-y-auto pr-1 touch-auto">
-            <span className="text-[9px] text-gray-500 border-b border-space-850 pb-1.5 uppercase">
-              // TELEMETRY TERMINAL LOG
-            </span>
-            <div className="flex flex-col gap-2.5 text-[10px] text-term-green">
+          <div className="panel panel-bracket" style={{
+            flex: 1, display: "flex", flexDirection: "column",
+            overflow: "hidden", width: "100%",
+            boxShadow: mobileTab === "logs" ? "var(--glow-primary)" : undefined,
+            borderColor: mobileTab === "logs" ? "var(--acc-primary)" : undefined,
+          }}>
+            <span className="br-bl" /><span className="br-br" />
+            {/* Panel header */}
+            <div style={{
+              padding: "8px 14px", borderBottom: "1px solid var(--line)",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <span className="eyebrow" style={{ fontSize: 10 }}>// TELEMETRY · TERMINAL</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--acc-primary)", letterSpacing: "0.2em" }}>● LIVE</span>
+            </div>
+            {/* Log entries */}
+            <div ref={logContainerRef} style={{ flex: 1, overflowY: "auto", padding: "8px 14px 12px", touchAction: "auto" }}>
               {logs.map((log, idx) => (
-                <div key={idx} className="border-b border-space-950 pb-1.5 leading-relaxed">
-                  {log}
+                <div key={idx} style={{
+                  padding: "4px 0",
+                  borderBottom: "1px dashed var(--ink-4)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11, lineHeight: 1.55,
+                  color: LOG_COLORS[log.kind],
+                }}>
+                  <span style={{
+                    fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em",
+                    marginRight: 5, opacity: 0.7,
+                  }}>[{log.role}]</span>
+                  {log.text}
                 </div>
               ))}
             </div>
+            <div style={{
+              padding: "6px 14px", borderTop: "1px solid var(--line)",
+              fontFamily: "var(--font-mono)", fontSize: 9,
+              color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "0.16em",
+            }}>
+              SYSTEM STATUS: MONITORING SIGNALS
+            </div>
           </div>
-          <span className="text-[8px] text-gray-600 border-t border-space-850 pt-2 text-center">
-            SYSTEM STATUS: MONITORING SIGNALS
-          </span>
         </div>
 
-        {/* CENTER COLUMN: Point-and-Click Canvas (50% - Hidden on mobile unless active) */}
+        {/* ── CENTER: Game canvas ─────────────────────────────────────── */}
         <div
-          className={`${mobileTab === "canvas" ? "flex" : "hidden"
-            } md:flex w-full md:w-1/2 border-2 border-space-700 bg-space-950 rounded-xl relative flex-col items-center justify-between overflow-hidden`}
+          className={`${mobileTab === "canvas" ? "flex" : "hidden"} md:flex flex-col flex-1 min-w-0 relative`}
         >
-          <div className="crt-scanlines absolute inset-0 opacity-[0.06] pointer-events-none z-10" />
-
-          {/* Navigation Overlay */}
-          <div className="absolute top-3 left-3 right-3 z-20 flex gap-2 justify-between pointer-events-auto">
-            <div className="flex gap-1.5 bg-space-950/95 border border-space-800 px-3 py-1.5 rounded-lg items-center text-[10px] font-bold">
-              <Compass className="w-3.5 h-3.5 text-neon-pink" />
-              <span>ROOM: <span className="text-white font-bold">{currentRoom.replace("_", " ")}</span></span>
+          {/* Room nav bar */}
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "8px 12px", borderBottom: "1px solid var(--line)",
+            background: "var(--bg-1)", flexShrink: 0,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Compass size={12} style={{ color: "var(--acc-primary)" }} />
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink-2)", letterSpacing: "0.14em" }}>
+                ROOM: <span style={{ color: "var(--ink-0)", fontWeight: 500 }}>{currentRoom.replace("_", " ")}</span>
+              </span>
             </div>
-
-            <div className="flex gap-2">
-              {currentRoom !== "FRONT_YARD" && (
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {/* Hotspot calibration toggle — dev only */}
+              {process.env.NODE_ENV === "development" && (
                 <button
-                  onClick={() => changeRoom("FRONT_YARD")}
-                  className="bg-space-900 border border-space-700 hover:border-neon-pink text-white hover:text-neon-pink px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition-colors cursor-pointer"
+                  onClick={() => setCalibMode((v) => !v)}
+                  title="Toggle hotspot calibration overlay"
+                  style={{
+                    padding: "4px 8px", fontFamily: "var(--font-mono)", fontSize: 8,
+                    textTransform: "uppercase", letterSpacing: "0.12em", cursor: "pointer",
+                    border: `1px solid ${calibMode ? "var(--acc-amber)" : "var(--line)"}`,
+                    background: calibMode ? "color-mix(in srgb, var(--acc-amber) 15%, transparent)" : "transparent",
+                    color: calibMode ? "var(--acc-amber)" : "var(--ink-3)",
+                    transition: "all 0.15s",
+                  }}
                 >
+                  {calibMode ? "✕ CALIB" : "⊕ CALIB"}
+                </button>
+              )}
+              {currentRoom !== "FRONT_YARD" && (
+                <button onClick={() => changeRoom("FRONT_YARD")} style={{
+                  padding: "5px 10px", fontFamily: "var(--font-mono)", fontSize: 9,
+                  textTransform: "uppercase", letterSpacing: "0.14em",
+                  border: "1px solid var(--line-bright)", color: "var(--ink-2)",
+                  background: "transparent", cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--acc-primary)"; e.currentTarget.style.color = "var(--acc-primary)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--line-bright)"; e.currentTarget.style.color = "var(--ink-2)"; }}>
                   MOVE OUTSIDE
                 </button>
               )}
               {currentRoom !== "OFFICE" && (
-                <button
-                  onClick={() => changeRoom("OFFICE")}
-                  className="bg-space-900 border border-space-700 hover:border-neon-pink text-white hover:text-neon-pink px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition-colors cursor-pointer"
-                >
+                <button onClick={() => changeRoom("OFFICE")} style={{
+                  padding: "5px 10px", fontFamily: "var(--font-mono)", fontSize: 9,
+                  textTransform: "uppercase", letterSpacing: "0.14em",
+                  border: "1px solid var(--line-bright)", color: "var(--ink-2)",
+                  background: "transparent", cursor: "pointer", transition: "all 0.15s",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--acc-primary)"; e.currentTarget.style.color = "var(--acc-primary)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--line-bright)"; e.currentTarget.style.color = "var(--ink-2)"; }}>
                   GO TO OFFICE
                 </button>
               )}
               {currentRoom !== "STORAGE" && (
-                <button
-                  onClick={() => changeRoom("STORAGE")}
-                  className="bg-space-900 border border-space-700 hover:border-neon-pink text-white hover:text-neon-pink px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition-colors cursor-pointer"
-                >
+                <button onClick={() => changeRoom("STORAGE")} style={{
+                  padding: "5px 10px", fontFamily: "var(--font-mono)", fontSize: 9,
+                  textTransform: "uppercase", letterSpacing: "0.14em",
+                  border: "1px solid var(--line-bright)", color: "var(--ink-2)",
+                  background: "transparent", cursor: "pointer", transition: "all 0.15s",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--acc-primary)"; e.currentTarget.style.color = "var(--acc-primary)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--line-bright)"; e.currentTarget.style.color = "var(--ink-2)"; }}>
                   ENTER BACKROOM
                 </button>
               )}
             </div>
           </div>
 
-          {/* Core Interactive Backdrop */}
+          {/* Interactive canvas */}
           <div
-            style={{ touchAction: "manipulation" }}
-            className="relative w-full flex-1 flex items-center justify-center bg-black mt-14 overflow-hidden border-b border-space-900 select-none touch-manipulation"
+            ref={canvasRef}
+            className="crt-scan crt-vignette"
+            style={{
+              flex: 1, position: "relative", overflow: "hidden",
+              background: "var(--bg-0)", touchAction: "manipulation",
+              boxShadow: mobileTab === "canvas" ? "var(--glow-primary)" : undefined,
+              outline: mobileTab === "canvas" ? "1px solid var(--acc-primary)" : undefined,
+            }}
+            onMouseMove={calibMode ? (e) => {
+              const rect = canvasRef.current?.getBoundingClientRect();
+              if (!rect) return;
+              const x = ((e.clientX - rect.left) / rect.width * 100);
+              const y = ((e.clientY - rect.top) / rect.height * 100);
+              setCalibCursor({ x, y });
+            } : undefined}
+            onMouseLeave={calibMode ? () => setCalibCursor(null) : undefined}
           >
+            {/* Scan-roll beam */}
+            <div style={{
+              position: "absolute", left: 0, right: 0, height: 80, zIndex: 41,
+              background: "linear-gradient(180deg, transparent, rgba(158,255,94,0.05), transparent)",
+              animation: "scan-roll 6s linear infinite", pointerEvents: "none",
+            }} />
 
-            {/* Background Image depending on currentRoom */}
+            {/* Room background */}
             <img
-              src={
-                currentRoom === "OFFICE"
-                  ? "/images/substation_office.png"
-                  : currentRoom === "FRONT_YARD"
-                    ? "/images/hopo_farm_road_bg.png"
-                    : "/images/substation_storage.png"
-              }
+              src={currentRoom === "OFFICE" ? "/images/substation_office.png"
+                : currentRoom === "FRONT_YARD" ? "/images/hopo_farm_road_bg.png"
+                  : "/images/substation_storage.png"}
               alt={currentRoom}
-              className="absolute inset-0 w-full h-full object-cover opacity-80 transition-all duration-500 z-0 select-none pointer-events-none"
+              style={{
+                position: "absolute", inset: 0, width: "100%", height: "100%",
+                objectFit: "cover", opacity: 0.8, transition: "all 0.5s", zIndex: 0,
+                pointerEvents: "none", userSelect: "none",
+              }}
             />
 
-            {/* Dark vignette overlay */}
-            <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#040108]/30 to-[#040108]/90 z-1 pointer-events-none" />
+            {/* Vignette */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+              background: "radial-gradient(ellipse at center, transparent 40%, rgba(3,3,9,0.7) 100%)",
+            }} />
 
-            {/* Visual outlines for objects/hotspots */}
-            <div className="absolute inset-0 z-10 pointer-events-auto">
+            {/* Hotspots */}
+            <div style={{ position: "absolute", inset: 0, zIndex: 10 }}>
               {hotspots[currentRoom].map((spot) => (
-                <button
+                <HotspotMarker
                   key={spot.id}
-                  onMouseEnter={() => playSound("beep")}
-                  onClick={() => handleHotspotClick(spot)}
-                  className="absolute border border-dashed border-white/10 hover:border-neon-pink bg-white/0 hover:bg-neon-pink/10 transition-all rounded cursor-crosshair-target flex items-center justify-center group/spot"
-                  style={{
-                    top: spot.top,
-                    left: spot.left,
-                    width: spot.width,
-                    height: spot.height,
-                  }}
-                >
-                  <span className="hidden group-hover/spot:inline text-[8px] font-mono text-neon-pink bg-[#040108]/95 border border-neon-pink/60 px-2 py-1 rounded absolute -top-7 whitespace-nowrap shadow-[0_0_10px_rgba(255,0,127,0.6)] animate-pulse">
-                    {spot.hoverText}
-                  </span>
-                  <span className="w-1.5 h-1.5 bg-neon-pink rounded-full opacity-0 group-hover/spot:opacity-100 transition-opacity animate-ping" />
-                </button>
+                  x={spot.left} y={spot.top} w={spot.width} h={spot.height}
+                  label={spot.hoverText}
+                  status="idle"
+                  onEnter={() => !calibMode && playSound("beep")}
+                  onClick={() => !calibMode && handleHotspotClick(spot)}
+                />
               ))}
             </div>
 
-            {/* HUD Status label */}
-            <div className="absolute bottom-2 right-2 z-10 font-mono text-[8px] text-gray-500 uppercase tracking-widest bg-black/45 px-1.5 py-0.5 rounded border border-white/5 pointer-events-none">
-              FEED ACTIVE: {currentRoom.replace("_", " ")}
+            {/* ── CALIBRATION OVERLAY ─────────────────────────────────── */}
+            {calibMode && (
+              <div style={{ position: "absolute", inset: 0, zIndex: 50, pointerEvents: "none" }}>
+                {hotspots[currentRoom].map((spot, i) => {
+                  const COLORS = ["rgba(255,60,60,0.55)", "rgba(60,200,255,0.55)", "rgba(255,200,0,0.55)", "rgba(180,80,255,0.55)"];
+                  const c = COLORS[i % COLORS.length];
+                  return (
+                    <div key={spot.id} style={{
+                      position: "absolute",
+                      top: spot.top, left: spot.left,
+                      width: spot.width, height: spot.height,
+                      background: c.replace("0.55", "0.12"),
+                      border: `2px solid ${c.replace("0.55", "0.85")}`,
+                      boxSizing: "border-box",
+                    }}>
+                      <div style={{
+                        position: "absolute", top: 2, left: 2,
+                        fontFamily: "var(--font-mono)", fontSize: 9, color: "#fff",
+                        background: "rgba(0,0,0,0.75)", padding: "1px 5px",
+                        lineHeight: 1.5, pointerEvents: "none",
+                        maxWidth: "calc(100% - 4px)", overflow: "hidden",
+                      }}>
+                        <span style={{ color: c.replace("0.55", "1"), fontWeight: "bold" }}>#{i + 1} {spot.id}</span><br />
+                        top:{spot.top} left:{spot.left}<br />
+                        w:{spot.width} h:{spot.height}
+                      </div>
+                    </div>
+                  );
+                })}
+                {/* Cursor readout */}
+                {calibCursor && (
+                  <div style={{
+                    position: "absolute",
+                    top: `${calibCursor.y}%`, left: `${calibCursor.x}%`,
+                    transform: "translate(8px, 8px)", pointerEvents: "none", zIndex: 60,
+                    fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--acc-primary)",
+                    background: "rgba(0,0,0,0.85)", padding: "2px 8px",
+                    border: "1px solid var(--acc-primary)",
+                    whiteSpace: "nowrap",
+                  }}>
+                    x: {calibCursor.x.toFixed(1)}% · y: {calibCursor.y.toFixed(1)}%
+                  </div>
+                )}
+                {/* Crosshair lines */}
+                {calibCursor && <>
+                  <div style={{ position: "absolute", top: `${calibCursor.y}%`, left: 0, right: 0, height: 1, background: "rgba(158,255,94,0.3)", pointerEvents: "none" }} />
+                  <div style={{ position: "absolute", left: `${calibCursor.x}%`, top: 0, bottom: 0, width: 1, background: "rgba(158,255,94,0.3)", pointerEvents: "none" }} />
+                </>}
+              </div>
+            )}
+
+            {/* HUD corner label */}
+            <div style={{
+              position: "absolute", bottom: 10, right: 10, zIndex: 15, pointerEvents: "none",
+              fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--ink-3)",
+              textTransform: "uppercase", letterSpacing: "0.18em",
+              padding: "2px 8px", background: "var(--bg-0)", border: "1px solid var(--line)",
+            }}>
+              FEED ACTIVE · {currentRoom.replace("_", " ")}
             </div>
           </div>
 
-          {/* Lower Story Text Box */}
-          <div className="w-full bg-[#080112] border-t-2 border-space-850 p-4 h-[120px] shrink-0 relative z-20 flex flex-col gap-1 text-[11px] leading-relaxed text-term-amber">
-            <span className="text-[8px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">
-              // SEARCH LOG DIALOGUE
+          {/* Story text box */}
+          <div style={{
+            background: "var(--bg-1)", borderTop: "1px solid var(--line)",
+            padding: "14px 16px", minHeight: 110, flexShrink: 0,
+          }}>
+            <span className="eyebrow" style={{ fontSize: 9, marginBottom: 6, display: "block" }}>
+              // SEARCH LOG · DIALOGUE
             </span>
-            <p className="flex-1 font-sans overflow-y-auto touch-auto">{currentText}</p>
+            <p style={{
+              fontFamily: "var(--font-serif)", fontStyle: "italic",
+              fontSize: 14, color: "var(--ink-0)", lineHeight: 1.55,
+              overflowY: "auto", maxHeight: 72, touchAction: "auto",
+            }}>
+              {currentText}
+            </p>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: UGC Inventory (25% - Hidden on mobile unless active) */}
+        {/* ── RIGHT: Inventory / Artifact Deck ────────────────────────── */}
         <div
-          className={`${mobileTab === "inventory" ? "flex" : "hidden"
-            } md:flex w-full md:w-1/4 border-2 border-space-800 bg-[#0a0114] rounded-xl p-3 flex-col justify-between overflow-hidden relative shadow-[0_0_20px_rgba(216,0,255,0.05)]`}
+          className={`${mobileTab === "inventory" ? "flex" : "hidden"} md:flex flex-col w-full md:w-56 flex-none`}
         >
-          <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-
-          <div className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
-            <div className="border-b border-space-850 pb-2 flex justify-between items-center">
-              <span className="text-[9px] text-gray-500 uppercase font-mono tracking-widest">
-                // ARTIFACT DECK
-              </span>
-              <span className="text-[9px] text-neon-pink font-bold">
-                {profile?.inventory.length || 0} / 5
-              </span>
+          <div className="panel panel-bracket" style={{
+            flex: 1, display: "flex", flexDirection: "column", overflow: "hidden",
+            boxShadow: mobileTab === "inventory" ? "var(--glow-primary)" : undefined,
+            borderColor: mobileTab === "inventory" ? "var(--acc-primary)" : undefined,
+          }}>
+            <span className="br-bl" /><span className="br-br" />
+            <div style={{
+              padding: "8px 14px", borderBottom: "1px solid var(--line)",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <span className="eyebrow" style={{ fontSize: 10 }}>// ARTIFACT DECK</span>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: 10,
+                color: "var(--acc-primary)", letterSpacing: "0.12em",
+              }}>{profile?.inventory.length ?? 0} / 5</span>
             </div>
 
-            {/* Inventory Items list */}
-            <div className="flex flex-col gap-2.5">
+            <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
               {["Screwdriver", "Cabinet Key", "80s Radio", "Torn ID Tag", "Green Alien Slime"].map((item) => {
-                const isSecured = profile?.inventory.includes(item);
+                const isSecured = profile?.inventory.includes(item) ?? false;
                 const isActive = activeItem === item;
-
                 return (
                   <button
                     key={item}
                     disabled={!isSecured}
-                    onClick={() => {
-                      playSound("beep");
-                      setActiveItem(isActive ? null : item);
+                    onClick={() => { playSound("beep"); setActiveItem(isActive ? null : item); }}
+                    style={{
+                      display: "flex", alignItems: "stretch", gap: 10, padding: 10,
+                      border: `1px solid ${isActive ? "var(--acc-primary)" : isSecured ? "var(--line)" : "var(--line)"}`,
+                      background: isActive ? "color-mix(in srgb, var(--acc-primary) 4%, transparent)"
+                        : isSecured ? "var(--bg-2)" : "var(--bg-1)",
+                      boxShadow: isActive ? "var(--glow-primary)" : "none",
+                      opacity: isSecured ? 1 : 0.35,
+                      cursor: isSecured ? "pointer" : "not-allowed",
+                      textAlign: "left", transition: "all 0.15s",
                     }}
-                    className={`border text-left rounded-xl p-2 flex gap-3 items-center transition-all ${isSecured
-                      ? isActive
-                        ? "bg-neon-pink/15 border-neon-pink shadow-[0_0_12px_rgba(255,0,127,0.2)]"
-                        : "bg-space-950 border-space-850 hover:border-space-700 cursor-pointer"
-                      : "bg-space-950/20 border-space-900 border-dashed opacity-35 cursor-not-allowed"
-                      }`}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-black/40 border border-space-800 flex items-center justify-center overflow-hidden shrink-0">
+                    {/* Glyph slot */}
+                    <div style={{
+                      width: 48, height: 48, flexShrink: 0,
+                      background: "var(--bg-3)", border: "1px solid var(--line)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontFamily: "var(--font-display)", fontSize: 22,
+                      color: isActive ? "var(--acc-primary)" : isSecured ? "var(--ink-1)" : "var(--ink-4)",
+                      textShadow: isActive ? "0 0 12px var(--acc-primary)" : "none",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}>
                       {isSecured ? (
-                        <img src={ITEM_IMAGES[item]} alt={item} className="w-full h-full object-cover" />
+                        <>
+                          <img
+                            src={ITEM_IMAGES[item]} alt=""
+                            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.45 }}
+                          />
+                          <span style={{ position: "relative", zIndex: 1 }}>{ITEM_GLYPHS[item]}</span>
+                        </>
                       ) : (
-                        <span className="text-gray-700 text-[10px] font-bold">LKD</span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink-4)" }}>LKD</span>
                       )}
+                      <span style={{ position: "absolute", top: 2, left: 2, fontFamily: "var(--font-mono)", fontSize: 6, color: "var(--ink-4)" }}>+</span>
+                      <span style={{ position: "absolute", bottom: 2, right: 2, fontFamily: "var(--font-mono)", fontSize: 6, color: "var(--ink-4)" }}>+</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center w-full">
-                        <span className={`text-[10px] font-bold truncate ${isActive ? "text-neon-pink" : "text-white"}`}>
-                          {item}
-                        </span>
-                        {isActive && <Check className="w-3 h-3 text-neon-pink shrink-0 ml-1" />}
-                      </div>
-                      {isSecured && (
-                        <span className="text-[8px] font-mono text-gray-500 uppercase tracking-widest mt-0.5 block truncate">
-                          {isActive ? "[ EQUIPPED ]" : "[ CLICK TO EQUIP ]"}
-                        </span>
-                      )}
+                    {/* Text info */}
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 2, minWidth: 0 }}>
+                      <span style={{
+                        fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 500,
+                        color: isActive ? "var(--acc-primary)" : "var(--ink-0)", display: "block",
+                      }}>{item}</span>
+                      <span style={{
+                        fontFamily: "var(--font-mono)", fontSize: 9,
+                        color: "var(--ink-2)", textTransform: "uppercase", letterSpacing: "0.14em",
+                      }}>
+                        {isSecured ? (isActive ? "▸ EQUIPPED" : "[ TAP TO EQUIP ]") : "LOCKED"}
+                      </span>
                     </div>
                   </button>
                 );
               })}
             </div>
+
+            <div style={{
+              padding: "6px 14px", borderTop: "1px solid var(--line)",
+              display: "flex", justifyContent: "space-between",
+              fontFamily: "var(--font-mono)", fontSize: 9,
+              color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "0.14em",
+            }}>
+              <span>SLOTS: READY</span>
+              <span>UGC LOCK</span>
+            </div>
           </div>
-
-          <div className="border-t border-space-850 pt-2 text-[9px] text-gray-600 flex justify-between uppercase">
-            <span>SLOTS: READY</span>
-            <span>UGC SYSTEM LOCK</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* BOTTOM STATUS BAR */}
-      <div className="w-full bg-[#080112] border-2 border-space-850 rounded-xl px-4 py-2 mt-3 flex flex-col sm:flex-row justify-between items-center gap-2 font-mono text-[9px] text-gray-400 relative overflow-hidden shadow-inner">
-        <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-
-        <div className="flex items-center gap-1.5 relative z-10">
-          <span className="w-1.5 h-1.5 rounded-full bg-term-green animate-ping" />
-          <span>NETWORK: <span className="text-term-green font-bold">SOLANA CLOUD ACTIVE</span></span>
-        </div>
-
-        <div className="relative z-10 text-center sm:text-left">
-          CLEARANCE LEVEL: <span className="text-white font-bold">{profile && profile.tokenBalance >= 5000 ? "SECRET (>=5000)" : "RESTRICTED (<5000)"}</span>
-        </div>
-
-        <div className="flex items-center gap-3 relative z-10">
-          <span>BALANCE: <span className="text-alien-cyan font-bold">{profile?.tokenBalance.toLocaleString()} $NAHOPE</span></span>
-          <span className="text-gray-700">|</span>
-          <span className="text-neon-pink font-bold">EPISODE 01</span>
         </div>
       </div>
 
-      {/* Item Discovery Modal — z-50, always takes priority over end overlay */}
+      {/* ── Status bar ──────────────────────────────────────────────────── */}
+      <div style={{
+        marginTop: 8, flexShrink: 0,
+        border: "1px solid var(--line-bright)",
+        background: "var(--bg-1)",
+        padding: "10px 16px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        flexWrap: "wrap", gap: 12,
+      }}>
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          {/* Network */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em" }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--acc-primary)", boxShadow: "0 0 6px var(--acc-primary)", animation: "pulse-glow 2s infinite", flexShrink: 0 }} />
+            <span style={{ color: "var(--ink-3)" }}>NETWORK:</span>
+            <span style={{ color: "var(--acc-primary)", textShadow: "0 0 8px var(--acc-primary)" }}>SOLANA · ACTIVE</span>
+          </div>
+          {/* Location */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em" }}>
+            <span style={{ color: "var(--ink-3)" }}>LOCATION:</span>
+            <span style={{ color: "var(--ink-1)" }}>HOPO SUBSTATION</span>
+          </div>
+          {/* Clearance */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em" }}>
+            <span style={{ color: "var(--ink-3)" }}>CLEARANCE:</span>
+            <span style={{ color: "var(--acc-amber)", textShadow: "0 0 6px var(--acc-amber)" }}>
+              {profile && profile.tokenBalance >= 5000 ? "SECRET (≥5000)" : "RESTRICTED (<5000)"}
+            </span>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          {/* Balance */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em" }}>
+            <span style={{ color: "var(--ink-3)" }}>BALANCE:</span>
+            <span style={{ color: "var(--acc-violet)", textShadow: "0 0 8px var(--acc-violet)" }}>
+              {profile?.tokenBalance.toLocaleString() ?? "0"} $NAHOPE
+            </span>
+          </div>
+          {/* Episode */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em" }}>
+            <span style={{ color: "var(--ink-3)" }}>EPISODE:</span>
+            <span style={{ color: "var(--acc-danger)", textShadow: "0 0 6px var(--acc-danger)" }}>01</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Item Discovery Modal ─────────────────────────────────────────── */}
       {discoveryQueue.length > 0 && (
-        <div className="fixed inset-0 z-50 bg-[#040108]/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative max-w-xs w-full bg-[#080112] border-2 border-alien-cyan/60 rounded-2xl p-6 font-mono shadow-[0_0_50px_rgba(0,255,200,0.12)] flex flex-col gap-4">
-            <div className="crt-scanlines absolute inset-0 opacity-[0.06] pointer-events-none rounded-2xl" />
-
-            {/* Header */}
-            <div className="flex items-center gap-2 border-b border-space-800 pb-3 relative z-10">
-              <span className="w-2 h-2 bg-alien-cyan rounded-full animate-ping shrink-0" />
-              <span className="text-[9px] text-alien-cyan uppercase tracking-widest font-bold">// ARTIFACT ACQUIRED</span>
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 50,
+          background: "rgba(3,3,9,0.88)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+        }}>
+          <div className="panel panel-bracket" style={{
+            maxWidth: 320, width: "100%",
+            borderColor: "var(--acc-violet)", padding: 0,
+            "--acc-primary": "var(--acc-violet)",
+          } as React.CSSProperties}>
+            <span className="br-bl" /><span className="br-br" />
+            {/* Header tab */}
+            <div style={{
+              padding: "10px 16px", borderBottom: "1px solid var(--line)",
+              display: "flex", alignItems: "center", gap: 8,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--acc-violet)", boxShadow: "0 0 8px var(--acc-violet)", animation: "pulse-glow 2s infinite" }} />
+              <span className="eyebrow" style={{ fontSize: 9, color: "var(--acc-violet)" }}>// DISCOVERY · ARTIFACT</span>
             </div>
-
             {/* Item display */}
-            <div className="flex flex-col items-center gap-3 py-5 border border-dashed border-alien-cyan/30 rounded-xl bg-space-900/60 relative z-10 w-full px-4">
-              <div className="w-24 h-24 rounded-xl border border-alien-cyan/40 bg-black/60 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,200,0.15)] overflow-hidden">
-                <img src={ITEM_IMAGES[currentDiscovery]} alt={currentDiscovery} className="w-full h-full object-cover" />
+            <div style={{ padding: "20px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 96, height: 96,
+                background: "var(--bg-3)", border: "1px solid var(--acc-violet)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "var(--font-display)", fontSize: 40,
+                color: "var(--acc-violet)",
+                textShadow: "0 0 20px var(--acc-violet)",
+                position: "relative", overflow: "hidden",
+                boxShadow: "var(--glow-violet)",
+              }}>
+                {currentDiscovery && (
+                  <img src={ITEM_IMAGES[currentDiscovery]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.4 }} />
+                )}
+                <span style={{ position: "relative", zIndex: 1 }}>{currentDiscovery ? ITEM_GLYPHS[currentDiscovery] : "⌬"}</span>
               </div>
-              <span className="text-base font-bold text-white text-center px-2 leading-snug">{currentDiscovery}</span>
-              <span className="text-[8px] text-gray-500 uppercase tracking-widest">SECURED TO ARTIFACT DECK</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 500, color: "var(--ink-0)", textAlign: "center" }}>{currentDiscovery}</span>
+              <span className="eyebrow" style={{ fontSize: 9 }}>SECURED TO ARTIFACT DECK</span>
+              <div style={{ display: "flex", justifyContent: "space-between", width: "100%", paddingTop: 8, borderTop: "1px solid var(--line)" }}>
+                <span className="eyebrow" style={{ fontSize: 9 }}>ARTIFACT DECK</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--acc-violet)" }}>{profile?.inventory.length ?? 0} / 5</span>
+              </div>
             </div>
-
-            {/* Inventory count */}
-            <div className="flex justify-between items-center text-[9px] text-gray-600 relative z-10">
-              <span>ARTIFACT DECK</span>
-              <span className="text-alien-cyan font-bold">{profile?.inventory.length ?? 0} / 5 SLOTS FILLED</span>
+            {/* Confirm */}
+            <div style={{ padding: "0 16px 16px" }}>
+              <button
+                onClick={dismissDiscovery}
+                style={{
+                  width: "100%", padding: "11px 16px",
+                  fontFamily: "var(--font-mono)", fontSize: 10,
+                  textTransform: "uppercase", letterSpacing: "0.18em",
+                  border: "1px solid var(--acc-violet)", color: "var(--acc-violet)",
+                  background: "transparent", cursor: "pointer", transition: "all 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--acc-violet)"; e.currentTarget.style.color = "var(--bg-0)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--acc-violet)"; }}
+              >
+                [ CONFIRM ACQUISITION ]
+              </button>
             </div>
-
-            {/* Confirm button */}
-            <button
-              onClick={dismissDiscovery}
-              className="w-full bg-alien-cyan/10 hover:bg-alien-cyan/20 border border-alien-cyan/40 hover:border-alien-cyan text-alien-cyan font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all cursor-pointer relative z-10 shadow-[0_0_15px_rgba(0,255,200,0.05)]"
-            >
-              [ CONFIRM ACQUISITION ]
-            </button>
           </div>
         </div>
       )}
 
-      {/* WALLET CONNECT MODAL */}
+      {/* ── Wallet Connect Modal ─────────────────────────────────────────── */}
       <WalletConnectModal
         isOpen={showWalletModal}
         onClose={() => setShowWalletModal(false)}
@@ -759,116 +860,121 @@ export default function GamePage() {
         reason="episode2"
       />
 
-      {/* Episode complete overlay — only when no discovery modal is queued */}
+      {/* ── Episode complete overlay ─────────────────────────────────────── */}
       {showEndOverlay && discoveryQueue.length === 0 && (
-        <div className="fixed inset-0 z-50 bg-[#040108]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="crt-screen max-w-xl w-full rounded-2xl p-6 border-2 border-neon-pink/40 shadow-[0_0_40px_rgba(255,0,127,0.2)] relative flex flex-col gap-5 font-mono text-gray-200 text-left">
-            <div className="crt-scanlines absolute inset-0 opacity-[0.08] pointer-events-none" />
-
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 50,
+          background: "rgba(3,3,9,0.96)", backdropFilter: "blur(6px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 16, overflowY: "auto",
+        }}>
+          <div className="panel panel-bracket crt-scan" style={{
+            maxWidth: 560, width: "100%", borderColor: "var(--acc-danger)",
+            "--acc-primary": "var(--acc-danger)",
+          } as React.CSSProperties}>
+            <span className="br-bl" /><span className="br-br" />
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-space-800 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-alert-red animate-ping" />
-                <h2 className="text-xs sm:text-sm font-bold text-neon-pink uppercase tracking-widest">
-                  PROTOCOL OMEGA: DECIPHER COMPLETE
-                </h2>
+            <div style={{
+              padding: "12px 20px", borderBottom: "1px solid var(--line)",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--acc-danger)", boxShadow: "0 0 10px var(--acc-danger)", animation: "pulse-glow 1s infinite" }} />
+                <span className="eyebrow" style={{ fontSize: 10, color: "var(--acc-danger)" }}>// TRANSMISSION · INTERCEPTED · PROTOCOL OMEGA COMPLETE</span>
               </div>
-              <span className="text-[10px] text-gray-500 font-bold">STATUS: TERMINATED</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--ink-3)", letterSpacing: "0.14em" }}>STATUS: TERMINATED</span>
             </div>
 
-            {/* Dossier Body */}
-            <div className="flex flex-col gap-4 text-xs leading-relaxed">
-              <div className="bg-space-950/60 p-4 border border-space-900 rounded-xl flex flex-col gap-3">
-                <span className="text-[9px] text-neon-purple font-bold tracking-widest uppercase">
-                  // DECLASSIFIED SIGNAL ANALYSIS //
-                </span>
-                <p className="text-gray-300 font-sans">
-                  The <span className="text-alien-cyan font-bold">Green Alien Slime</span> scraped from the typewriter was the final link.
-                  By injecting its molecular resonance data into the 80s military radio, the glitched radar suddenly resolves...
+            <div style={{ padding: "20px 20px 0" }}>
+              {/* Declassified body */}
+              <div style={{
+                background: "var(--bg-1)", border: "1px solid var(--line)",
+                padding: 16, marginBottom: 16, display: "flex", flexDirection: "column", gap: 10,
+              }}>
+                <span className="eyebrow" style={{ fontSize: 9, color: "var(--acc-violet)" }}>// DECLASSIFIED SIGNAL ANALYSIS //</span>
+                <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 14, color: "var(--ink-1)", lineHeight: 1.6 }}>
+                  The <span style={{ color: "var(--acc-cyan)", fontStyle: "normal", fontFamily: "var(--font-mono)", fontSize: 12 }}>Green Alien Slime</span> scraped from the typewriter was the final link. By injecting its molecular resonance data into the 80s military radio, the glitched radar suddenly resolves...
                 </p>
-                <p className="text-gray-300 font-sans">
-                  Officer Bum-seok stares at the pulsing CRT screen, his eyes hollow and dead.
-                  <span className="text-term-amber font-mono italic"> &quot;아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)...&quot; </span>
-                  he whispers as the power grid short-circuits.
+                <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 14, color: "var(--ink-1)", lineHeight: 1.6 }}>
+                  Officer Bum-seok stares at the pulsing CRT screen, his eyes hollow and dead.{" "}
+                  <span style={{ color: "var(--acc-amber)", fontStyle: "italic" }}>&quot;아이복판이 죽어 있냐 씨 (Are its eyes dead, damn)...&quot;</span>{" "}he whispers as the power grid short-circuits.
                 </p>
-                <p className="text-gray-300 font-sans border-t border-space-900/60 pt-2.5">
-                  The incoming signal wasn&apos;t an SOS from the mainland. It was an orbital beacon broadcasting the outpost&apos;s bio-signatures.
-                  Outcast Sung-ki has disappeared into the freezing fog of the DMZ, and a towering, dark humanoid silhouette is rising from the coastal waters of Hopo Port.
+                <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 14, color: "var(--ink-1)", lineHeight: 1.6, borderTop: "1px solid var(--line)", paddingTop: 10 }}>
+                  The incoming signal wasn&apos;t an SOS from the mainland. It was an orbital beacon broadcasting the outpost&apos;s bio-signatures. Outcast Sung-ki has disappeared into the freezing fog of the DMZ, and a towering, dark humanoid silhouette is rising from the coastal waters of Hopo Port.
                 </p>
               </div>
 
-              {/* Status and Gate requirement */}
-              <div className="border border-dashed border-space-800 rounded-xl p-3 bg-space-900/40 flex flex-col gap-2">
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-gray-500 font-bold uppercase">NEXT STAGE:</span>
-                  <span className="text-white font-bold text-neon-purple tracking-wider uppercase text-[10px]">EPISODE 02: DISCONNECTED SIGNALS</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
-                  <span className="text-gray-500 font-bold uppercase">REQUIRED CLEARANCE:</span>
-                  <span className="text-alien-cyan font-bold">5,000 $NAHOPE TOKENS</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
-                  <span className="text-gray-500 font-bold uppercase">YOUR BALANCE:</span>
-                  <span className={`font-bold ${profile && profile.tokenBalance >= 5000 ? "text-term-green" : "text-alert-red"}`}>
-                    {profile?.tokenBalance.toLocaleString() || "0"} $NAHOPE
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
-                  <span className="text-gray-500 font-bold uppercase">WALLET:</span>
-                  {connected ? (
-                    <span className="text-term-green font-bold uppercase">// CONNECTED //</span>
-                  ) : (
-                    <span className="text-alert-red font-bold uppercase">// NOT CONNECTED //</span>
-                  )}
-                </div>
-                <div className="flex justify-between items-center text-[10px] border-t border-space-950 pt-2">
-                  <span className="text-gray-500 font-bold uppercase">STAGE ACCESS:</span>
-                  {connected && profile && profile.tokenBalance >= 5000 ? (
-                    <span className="text-term-green font-bold uppercase animate-pulse">// ACCESS GRANTED //</span>
-                  ) : (
-                    <span className="text-alert-red font-bold uppercase animate-pulse">// ACCESS DENIED //</span>
-                  )}
-                </div>
+              {/* Gate requirements */}
+              <div style={{ border: "1px solid var(--line-bright)", padding: 14, marginBottom: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { label: "NEXT STAGE", value: "EPISODE 02: DISCONNECTED SIGNALS", color: "var(--acc-violet)" },
+                  { label: "REQUIRED CLEARANCE", value: "5,000 $NAHOPE TOKENS", color: "var(--acc-cyan)" },
+                  { label: "YOUR BALANCE", value: `${profile?.tokenBalance.toLocaleString() || "0"} $NAHOPE`, color: profile && profile.tokenBalance >= 5000 ? "var(--acc-primary)" : "var(--acc-danger)" },
+                  { label: "WALLET", value: connected ? "// CONNECTED //" : "// NOT CONNECTED //", color: connected ? "var(--acc-primary)" : "var(--acc-danger)" },
+                  { label: "STAGE ACCESS", value: connected && profile && profile.tokenBalance >= 5000 ? "// ACCESS GRANTED //" : "// ACCESS DENIED //", color: connected && profile && profile.tokenBalance >= 5000 ? "var(--acc-primary)" : "var(--acc-danger)" },
+                ].map((row) => (
+                  <div key={row.label} style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    fontFamily: "var(--font-mono)", fontSize: 10,
+                    textTransform: "uppercase", letterSpacing: "0.14em",
+                    borderBottom: "1px dashed var(--ink-4)", paddingBottom: 6,
+                  }}>
+                    <span style={{ color: "var(--ink-3)" }}>{row.label}</span>
+                    <span style={{ color: row.color, textShadow: `0 0 6px ${row.color}` }}>{row.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-col gap-2 mt-2">
+            <div style={{ padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
               <Link
                 href="/community"
-                onClick={() => {
-                  playSound("unlock");
-                  hasClosedOverlay.current = true;
-                  setShowEndOverlay(false);
+                onClick={() => { playSound("unlock"); hasClosedOverlay.current = true; setShowEndOverlay(false); }}
+                style={{
+                  display: "block", width: "100%", padding: "12px 16px",
+                  fontFamily: "var(--font-mono)", fontSize: 10,
+                  textTransform: "uppercase", letterSpacing: "0.18em",
+                  background: "var(--acc-primary)", color: "var(--bg-0)",
+                  border: "1px solid var(--acc-primary)", textDecoration: "none",
+                  textAlign: "center", cursor: "pointer", transition: "all 0.15s",
+                  boxShadow: "var(--glow-primary)",
                 }}
-                className="w-full bg-gradient-to-r from-neon-pink to-neon-purple hover:scale-[1.01] active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl text-center text-xs tracking-wider transition-all shadow-[0_0_15px_rgba(255,0,127,0.2)] border border-white/10 uppercase"
               >
-                PROPOSE PART 2 STORY TO NA HONG-JIN (GO TO COMMUNITY)
+                PROPOSE PART 2 STORY TO NA HONG-JIN — GO TO COMMUNITY
               </Link>
-
-              <div className="grid grid-cols-2 gap-2">
+              <div style={{ display: "grid", gridTemplateColumns: connected ? "1fr" : "1fr 1fr", gap: 8 }}>
                 {!connected && (
                   <button
                     onClick={() => setShowWalletModal(true)}
-                    className="col-span-2 flex items-center justify-center gap-2 bg-space-900 border border-neon-purple/30 hover:border-neon-purple/60 text-neon-purple font-bold py-2.5 px-4 rounded-xl text-[10px] tracking-wider transition-colors cursor-pointer uppercase"
+                    style={{
+                      padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: 10,
+                      textTransform: "uppercase", letterSpacing: "0.16em",
+                      border: "1px solid var(--acc-violet)", color: "var(--acc-violet)",
+                      background: "transparent", cursor: "pointer", display: "flex",
+                      alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "var(--acc-violet)"; e.currentTarget.style.color = "var(--bg-0)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--acc-violet)"; }}
                   >
-                    <Wallet className="w-3.5 h-3.5" />
-                    CONNECT WALLET FOR EP.2
+                    <Wallet size={11} /> CONNECT WALLET FOR EP.2
                   </button>
                 )}
                 <button
-                  onClick={() => {
-                    playSound("move");
-                    hasClosedOverlay.current = true;
-                    setShowEndOverlay(false);
+                  onClick={() => { playSound("move"); hasClosedOverlay.current = true; setShowEndOverlay(false); }}
+                  style={{
+                    padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: 10,
+                    textTransform: "uppercase", letterSpacing: "0.16em",
+                    border: "1px solid var(--line-bright)", color: "var(--ink-2)",
+                    background: "transparent", cursor: "pointer", transition: "all 0.15s",
                   }}
-                  className="bg-space-950 border border-space-850 hover:border-gray-500 text-gray-400 hover:text-white font-bold py-2.5 px-4 rounded-xl text-center text-[10px] tracking-wider transition-colors cursor-pointer uppercase"
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--ink-1)"; e.currentTarget.style.color = "var(--ink-0)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--line-bright)"; e.currentTarget.style.color = "var(--ink-2)"; }}
                 >
                   CLOSE FILE & EXPLORE
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       )}

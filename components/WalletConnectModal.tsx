@@ -147,12 +147,13 @@ export default function WalletConnectModal({
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-sm glass-panel border border-neon-pink/30 rounded-2xl p-6 shadow-[0_0_40px_rgba(255,0,127,0.15)]">
+      <div className="panel panel-bracket relative z-10 w-full max-w-sm p-6" style={{ boxShadow: "var(--glow-primary)" }}>
+        <span className="br-bl" /><span className="br-br" />
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-neon-pink" />
-            <span className="font-mono text-xs uppercase tracking-widest text-neon-pink">
+            <Wallet className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
+            <span className="font-mono text-xs uppercase tracking-widest" style={{ color: "var(--acc-primary)" }}>
               {msg.title}
             </span>
           </div>
@@ -171,13 +172,14 @@ export default function WalletConnectModal({
         {/* If wallet already connected, show finalize button */}
         {publicKey ? (
           <div className="space-y-3">
-            <div className="bg-space-900 border border-neon-green/20 rounded-xl px-4 py-3 text-xs font-mono text-neon-green">
+            <div className="px-4 py-3 font-mono text-xs" style={{ background: "var(--bg-1)", border: "1px solid color-mix(in srgb, var(--acc-primary) 30%, transparent)", color: "var(--acc-primary)" }}>
               Connected: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
             </div>
             <button
               onClick={handleFinalize}
               disabled={isConnecting}
-              className="w-full bg-neon-pink/10 border border-neon-pink/40 hover:bg-neon-pink/20 text-neon-pink font-mono text-xs uppercase tracking-widest px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full font-mono text-xs uppercase tracking-widest px-4 py-3 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ background: "color-mix(in srgb, var(--acc-primary) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--acc-primary) 40%, transparent)", color: "var(--acc-primary)" }}
             >
               {isConnecting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -193,7 +195,8 @@ export default function WalletConnectModal({
                   key={wallet.adapter.name}
                   onClick={() => handleSelectWallet(wallet.adapter.name)}
                   disabled={isConnecting}
-                  className="w-full flex items-center gap-3 bg-space-900 hover:bg-space-800 border border-space-700 hover:border-neon-pink/30 rounded-xl px-4 py-3 transition-all disabled:opacity-50"
+                  className="w-full flex items-center gap-3 px-4 py-3 transition-all disabled:opacity-50"
+                  style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)" }}
                 >
                   {wallet.adapter.icon && (
                     <img
@@ -205,7 +208,7 @@ export default function WalletConnectModal({
                   <span className="font-mono text-xs text-white">
                     {wallet.adapter.name}
                   </span>
-                  <span className="ml-auto text-[10px] text-neon-green font-mono uppercase">
+                  <span className="ml-auto font-mono uppercase" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
                     Detected
                   </span>
                 </button>
@@ -221,7 +224,8 @@ export default function WalletConnectModal({
                     href={wallet.adapter.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-space-900 border border-space-700 hover:border-neon-pink/20 rounded-xl px-4 py-3 transition-all mb-2 w-full"
+                    className="flex items-center gap-3 px-4 py-3 transition-all mb-2 w-full"
+                  style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)" }}
                   >
                     {wallet.adapter.icon && (
                       <img

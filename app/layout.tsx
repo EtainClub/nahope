@@ -1,17 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Righteous, Inter } from "next/font/google";
+import { Major_Mono_Display, JetBrains_Mono, Cormorant_Garamond, VT323 } from "next/font/google";
 import "./globals.css";
 import Navigation from "../components/Navigation";
 import ProvidersWrapper from "../components/ProvidersWrapper";
 
-const righteous = Righteous({
+const majorMono = Major_Mono_Display({
   weight: "400",
-  variable: "--font-righteous",
+  variable: "--font-major-mono",
   subsets: ["latin"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+});
+
+const cormorant = Cormorant_Garamond({
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+});
+
+const vt323 = VT323({
+  weight: "400",
+  variable: "--font-vt323",
   subsets: ["latin"],
 });
 
@@ -115,7 +129,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${righteous.variable} ${inter.variable} h-full antialiased dark`}
+      className={`${majorMono.variable} ${jetbrainsMono.variable} ${cormorant.variable} ${vt323.variable} h-full antialiased dark`}
     >
       <head>
         <script
@@ -125,7 +139,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/images/nahope_logo.png" />
       </head>
-      <body className="min-h-full flex flex-col bg-space-950 font-sans text-gray-100 pb-24 md:pb-0">
+      <body className="min-h-full flex flex-col bg-space-950 font-mono text-gray-100 pb-24 md:pb-0">
         <ProvidersWrapper>
           <Navigation />
           <div className="flex-1 flex flex-col">

@@ -127,9 +127,11 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
   const [submitted, setSubmitted] = useState(false);
   const [showScenarioForm, setShowScenarioForm] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
+  const logContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = logContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [logs]);
 
   const handleHotspotHover = () => {
@@ -204,45 +206,41 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12">
       <div className="text-center mb-6">
-        <h2 className="font-righteous text-3xl font-bold text-white tracking-widest uppercase">
+        <h2 className="display text-3xl uppercase" style={{ color: "var(--ink-0)", letterSpacing: "0.1em" }}>
           HOPO OUTPOST SEARCH TERMINAL
         </h2>
-        <p className="text-xs text-gray-500 font-sans mt-1 uppercase tracking-widest">
-          // Episode 1 Interactive Point-and-Click Teaser (Isaku Style)
-        </p>
-        <div className="w-24 h-[2px] bg-neon-pink mx-auto mt-2" />
+        <p className="eyebrow mt-1">// Episode 1 Interactive Point-and-Click Teaser (Isaku Style)</p>
+        <div className="w-24 h-[2px] mx-auto mt-2" style={{ background: "var(--acc-primary)" }} />
       </div>
 
       {/* 4-Panel Grid layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         
         {/* Panel 1: Left Story Log (3 columns) */}
-        <div className="lg:col-span-3 crt-screen rounded-xl p-4 flex flex-col justify-between h-[450px] lg:h-[550px]">
-          <div className="crt-scanlines absolute inset-0 opacity-[0.05] pointer-events-none" />
+        <div className="panel panel-bracket lg:col-span-3 crt-scan p-4 flex flex-col justify-between h-[450px] lg:h-[550px]" style={{ position: "relative" }}>
+          <span className="br-bl" /><span className="br-br" />
           
-          <div className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
-            <div className="border-b border-space-800/40 pb-2 text-[9px] text-gray-500 font-mono">
+          <div ref={logContainerRef} className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
+            <div className="pb-2 eyebrow" style={{ borderBottom: "1px solid var(--line-bright)" }}>
               // INVESTIGATION DIARIES
             </div>
-            
-            <div className="flex flex-col gap-2 font-mono text-[11px] leading-relaxed text-term-green">
+
+            <div className="flex flex-col gap-2 font-mono leading-relaxed" style={{ fontSize: 11, color: "var(--acc-primary)" }}>
               {logs.map((log, idx) => (
-                <div key={idx} className="border-b border-space-900/30 pb-1.5">
+                <div key={idx} className="pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
                   {log}
                 </div>
               ))}
-              <div ref={logEndRef} />
             </div>
           </div>
 
-          <div className="border-t border-space-850 pt-2 text-[9px] text-gray-600 font-mono text-center">
+          <div className="pt-2 text-center eyebrow" style={{ borderTop: "1px solid var(--line-bright)" }}>
             SYS STATUS: TRANSMITTING LOGS
           </div>
         </div>
 
         {/* Panel 2: Center Search Canvas (6 columns) */}
-        <div className="lg:col-span-6 crt-screen rounded-xl relative h-[450px] lg:h-[550px] flex items-center justify-center cursor-crosshair-target group">
-          <div className="crt-scanlines absolute inset-0 opacity-[0.08] pointer-events-none z-10" />
+        <div className="lg:col-span-6 panel crt-scan crt-vignette relative h-[450px] lg:h-[550px] flex items-center justify-center cursor-crosshair-target group" style={{ overflow: "hidden" }}>
 
           {/* Eerie Backdrop Image */}
           <div className="absolute inset-0 z-0">
@@ -265,19 +263,45 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                 key={spot.id}
                 onMouseEnter={handleHotspotHover}
                 onClick={() => handleHotspotClick(spot)}
-                className="absolute border border-dashed border-alien-cyan/15 hover:border-neon-pink bg-white/0 hover:bg-neon-pink/15 transition-all duration-150 rounded cursor-crosshair-target flex items-center justify-center group/spot glitch-hover"
+                className="absolute cursor-crosshair-target flex items-center justify-center group/spot"
                 style={{
                   top: spot.top,
                   left: spot.left,
                   width: spot.width,
                   height: spot.height,
+                  background: "transparent",
+                  border: "none",
                 }}
               >
-                {/* Micro target HUD */}
-                <span className="hidden group-hover/spot:inline text-[9px] font-mono text-neon-pink bg-space-950/90 border border-neon-pink px-1 rounded absolute -top-6 whitespace-nowrap shadow-[0_0_8px_rgba(255,0,127,0.5)]">
+                {/* SVG crosshair marker */}
+                <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" className="absolute inset-0" style={{ opacity: 0.5 }}>
+                  {/* Corner brackets */}
+                  <path d="M0 12 L0 0 L12 0" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                  <path d="M48 0 L60 0 L60 12" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                  <path d="M0 48 L0 60 L12 60" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                  <path d="M60 48 L60 60 L48 60" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                  <circle cx="30" cy="30" r="6" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <circle cx="30" cy="30" r="1.5" fill="rgba(255,255,255,0.4)" />
+                </svg>
+                <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" className="absolute inset-0 opacity-0 group-hover/spot:opacity-100 transition-opacity duration-150">
+                  <path d="M0 12 L0 0 L12 0" strokeWidth="1.5" stroke="var(--acc-primary)" />
+                  <path d="M48 0 L60 0 L60 12" strokeWidth="1.5" stroke="var(--acc-primary)" />
+                  <path d="M0 48 L0 60 L12 60" strokeWidth="1.5" stroke="var(--acc-primary)" />
+                  <path d="M60 48 L60 60 L48 60" strokeWidth="1.5" stroke="var(--acc-primary)" />
+                  <circle cx="30" cy="30" r="6" stroke="var(--acc-primary)" strokeWidth="1" />
+                  <line x1="30" y1="20" x2="30" y2="24" stroke="var(--acc-primary)" strokeWidth="1" />
+                  <line x1="30" y1="36" x2="30" y2="40" stroke="var(--acc-primary)" strokeWidth="1" />
+                  <line x1="20" y1="30" x2="24" y2="30" stroke="var(--acc-primary)" strokeWidth="1" />
+                  <line x1="36" y1="30" x2="40" y2="30" stroke="var(--acc-primary)" strokeWidth="1" />
+                  <circle cx="30" cy="30" r="1.5" fill="var(--acc-primary)" />
+                </svg>
+                {/* Label */}
+                <span
+                  className="hidden group-hover/spot:inline font-mono absolute -top-7 whitespace-nowrap px-1.5 py-0.5"
+                  style={{ fontSize: 9, color: "var(--acc-primary)", border: "1px solid var(--acc-primary)", background: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
+                >
                   {spot.glitchLabel}
                 </span>
-                <span className="w-1.5 h-1.5 bg-neon-pink/70 rounded-full scale-0 group-hover/spot:scale-100 transition-transform" />
               </button>
             ))}
           </div>
@@ -290,53 +314,52 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   playSound("unlock");
                   setShowScenarioForm(true);
                 }}
-                className="bg-gradient-to-r from-neon-pink via-neon-purple to-alien-cyan text-white font-bold font-righteous px-6 py-3.5 rounded-xl text-xs tracking-widest hover:scale-[1.03] transition-all shadow-[0_0_20px_rgba(255,0,127,0.5)] border border-white/20 animate-bounce"
+                className="display font-bold px-6 py-3.5 text-xs uppercase tracking-widest hover:scale-[1.03] transition-all"
+                style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)", animation: "pulse-glow 1.5s ease infinite" }}
               >
-                🔓 OMEGA PROTOCOL ACTIVE: WRITE SCENARIO
+                OMEGA PROTOCOL ACTIVE: WRITE SCENARIO
               </button>
             </div>
           )}
 
           {/* Investigative Popup */}
           {selectedHotspot && !showScenarioForm && !submitted && (
-            <div className="absolute inset-0 bg-black/85 z-20 flex items-center justify-center p-6 transition-all">
-              <div className="w-full max-w-[360px] glass-panel border border-neon-pink/40 rounded-xl p-5 relative shadow-2xl flex flex-col gap-4 font-mono text-xs">
-                {/* Corner crosshairs decoration */}
-                <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-neon-pink" />
-                <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-neon-pink" />
-                <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-neon-pink" />
-                <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-neon-pink" />
+            <div className="absolute inset-0 z-20 flex items-center justify-center p-6 transition-all" style={{ background: "rgba(0,0,0,0.85)" }}>
+              <div className="panel panel-bracket w-full max-w-[360px] p-5 relative flex flex-col gap-4 font-mono text-xs" style={{ boxShadow: "var(--glow-primary)" }}>
+                <span className="br-bl" /><span className="br-br" />
 
-                <div className="flex justify-between items-center border-b border-space-800 pb-2">
-                  <span className="text-neon-pink font-bold uppercase tracking-wider">
+                <div className="flex justify-between items-center pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
+                  <span className="font-bold uppercase tracking-wider" style={{ color: "var(--acc-primary)" }}>
                     // EXAMINING ARTIFACT
                   </span>
-                  <button 
+                  <button
                     onClick={() => { playSound("beep"); setSelectedHotspot(null); }}
-                    className="text-gray-500 hover:text-white font-bold"
+                    className="font-bold transition-colors"
+                    style={{ color: "var(--ink-3)" }}
                   >
                     CLOSE [X]
                   </button>
                 </div>
 
-                <div className="text-white font-righteous text-sm tracking-wide">
+                <div className="display text-sm" style={{ color: "var(--ink-0)", letterSpacing: "0.05em" }}>
                   {selectedHotspot.name}
                 </div>
 
-                <p className="text-gray-400 font-sans text-[11px] leading-relaxed">
+                <p className="font-sans leading-relaxed" style={{ fontSize: 11, color: "var(--ink-2)" }}>
                   {selectedHotspot.lore}
                 </p>
 
-                <div className="bg-space-950 p-2.5 rounded border border-space-850 text-term-green text-[10px] leading-normal italic">
+                <div className="p-2.5 italic" style={{ background: "var(--bg-0)", border: "1px solid var(--line)", color: "var(--acc-primary)", fontSize: 10, lineHeight: 1.6 }}>
                   {selectedHotspot.investigationText}
                 </div>
 
                 <button
                   onClick={handleSecureArtifact}
-                  className="w-full bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold py-2.5 rounded-lg text-[11px] tracking-wider hover:scale-[1.02] transition-transform shadow-[0_0_10px_rgba(255,0,127,0.3)]"
+                  className="w-full font-bold py-2.5 text-xs tracking-wider hover:scale-[1.02] transition-transform"
+                  style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
                 >
-                  {inventory.includes(selectedHotspot.name) 
-                    ? "ALREADY SECURED" 
+                  {inventory.includes(selectedHotspot.name)
+                    ? "ALREADY SECURED"
                     : "SECURE & LOCK TO INVENTORY"}
                 </button>
               </div>
@@ -345,25 +368,23 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
 
           {/* Scenario Submission Form Overlay */}
           {showScenarioForm && !submitted && (
-            <div className="absolute inset-0 bg-black/90 z-20 flex items-center justify-center p-6">
-              <form 
+            <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,0.9)" }}>
+              <form
                 onSubmit={handleSubmitScenario}
-                className="w-full max-w-[420px] glass-panel border border-neon-purple/40 rounded-xl p-5 relative flex flex-col gap-4 font-mono text-xs"
+                className="panel panel-bracket w-full max-w-[420px] p-5 relative flex flex-col gap-4 font-mono text-xs"
+                style={{ borderColor: "var(--acc-violet)", boxShadow: "var(--glow-violet)", "--acc-primary": "var(--acc-violet)" } as React.CSSProperties}
               >
-                {/* Corner crosshairs decoration */}
-                <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-neon-purple" />
-                <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-neon-purple" />
-                <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-neon-purple" />
-                <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-neon-purple" />
+                <span className="br-bl" /><span className="br-br" />
 
-                <div className="flex justify-between items-center border-b border-space-800 pb-2">
-                  <span className="text-neon-purple font-bold uppercase tracking-wider">
+                <div className="flex justify-between items-center pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
+                  <span className="font-bold uppercase tracking-wider" style={{ color: "var(--acc-violet)" }}>
                     // OMEGA SCENARIO TRANSMITTER
                   </span>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => { playSound("beep"); setShowScenarioForm(false); }}
-                    className="text-gray-500 hover:text-white font-bold"
+                    className="font-bold"
+                    style={{ color: "var(--ink-3)" }}
                   >
                     CANCEL [X]
                   </button>
@@ -380,20 +401,23 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   placeholder="Write your English proposal for 'HOPE Part 2' scenario (e.g. Sung-ki discovers the military's underground bunker, utilizing salvaged translator frequencies...)"
                   rows={6}
                   maxLength={1000}
-                  className="w-full bg-space-950/80 border border-space-800 rounded-xl p-3 text-xs font-sans text-white focus:outline-none focus:border-neon-pink/40 focus:ring-1 focus:ring-neon-pink/20 resize-none leading-relaxed"
+                  className="w-full p-3 font-sans text-xs resize-none leading-relaxed focus:outline-none"
+                  style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)", color: "var(--ink-0)" }}
                 />
 
                 <div className="flex justify-between items-center mt-2">
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="text-[10px] text-alert-red hover:underline"
+                    className="font-mono hover:underline"
+                    style={{ fontSize: 10, color: "var(--acc-danger)" }}
                   >
                     RESET ALL
                   </button>
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold px-4 py-2 rounded-lg text-[10px] tracking-wider hover:scale-[1.02] transition-transform shadow-[0_0_10px_rgba(255,0,127,0.3)]"
+                    className="font-bold px-4 py-2 font-mono tracking-wider hover:scale-[1.02] transition-transform"
+                    style={{ fontSize: 10, background: "var(--acc-violet)", color: "var(--bg-0)", boxShadow: "var(--glow-violet)" }}
                   >
                     TRANSMIT TO FEED
                   </button>
@@ -404,43 +428,41 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
 
           {/* Submitted Success Screen Overlay */}
           {submitted && (
-            <div className="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-6 text-center gap-4">
-              <div className="text-alien-cyan font-righteous text-2xl font-bold tracking-widest uppercase animate-pulse">
-                📡 SCENARIO TRANSMITTED
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center gap-4" style={{ background: "rgba(0,0,0,0.9)" }}>
+              <div className="display text-2xl uppercase tracking-widest" style={{ color: "var(--acc-cyan)", animation: "pulse-glow 1.5s ease infinite" }}>
+                SCENARIO TRANSMITTED
               </div>
-              <p className="max-w-md text-xs text-gray-400 font-sans leading-relaxed">
-                Your scenario proposal for &quot;HOPE Part 2&quot; has been successfully encrypted and posted to the public dashboard feed. 
+              <p className="max-w-md font-sans leading-relaxed" style={{ fontSize: 11, color: "var(--ink-2)" }}>
+                Your scenario proposal for &quot;HOPE Part 2&quot; has been successfully encrypted and posted to the public dashboard feed.
                 Let the community review your theory!
               </p>
               <div className="flex gap-4 mt-2">
                 <button
                   onClick={handleReset}
-                  className="px-6 py-2 border border-space-800 hover:border-white/20 text-gray-400 hover:text-white rounded-lg text-xs font-mono transition-colors"
+                  className="px-6 py-2 font-mono text-xs transition-colors"
+                  style={{ border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
                 >
                   RESET AREA
                 </button>
                 <a
                   href="#feed"
-                  className="bg-space-900 border border-neon-purple/40 hover:bg-space-850 px-6 py-2 rounded-lg text-xs font-bold text-white font-mono transition-colors"
+                  className="px-6 py-2 font-mono font-bold text-xs transition-colors"
+                  style={{ background: "var(--bg-1)", border: "1px solid color-mix(in srgb, var(--acc-violet) 40%, transparent)", color: "var(--ink-0)" }}
                 >
                   VIEW PUBLIC FEED
                 </a>
               </div>
             </div>
           )}
-
-          {/* Center scanline filter overlay */}
-          <div className="vignette-overlay absolute inset-0 z-10 pointer-events-none" />
         </div>
 
         {/* Panel 3: Right UGC Inventory (3 columns) */}
-        <div className="lg:col-span-3 glass-panel rounded-xl p-4 flex flex-col justify-between h-[450px] lg:h-[550px] border border-white/5">
+        <div className="panel panel-bracket lg:col-span-3 p-4 flex flex-col justify-between h-[450px] lg:h-[550px]" style={{ position: "relative" }}>
+          <span className="br-bl" /><span className="br-br" />
           <div className="flex flex-col gap-4">
             <div>
-              <div className="text-neon-purple font-mono text-[9px] tracking-widest uppercase mb-1">
-                // SECURED ARTIFACTS
-              </div>
-              <h3 className="font-righteous text-lg font-bold text-white uppercase tracking-wider">
+              <div className="eyebrow mb-1" style={{ color: "var(--acc-violet)" }}>// SECURED ARTIFACTS</div>
+              <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
                 UGC INVENTORY
               </h3>
             </div>
@@ -450,19 +472,24 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
               {HOTSPOTS.map((spot, idx) => {
                 const isSecured = inventory.includes(spot.name);
                 return (
-                  <div 
-                    key={idx} 
-                    className={`border rounded-xl p-3 flex flex-col gap-2 transition-all ${
-                      isSecured 
-                        ? "bg-space-950/60 border-neon-purple/30 shadow-[0_0_10px_rgba(216,0,255,0.05)]" 
-                        : "bg-space-950/20 border-space-850 border-dashed opacity-50"
-                    }`}
+                  <div
+                    key={idx}
+                    className="p-3 flex flex-col gap-2 transition-all"
+                    style={isSecured ? {
+                      border: "1px solid color-mix(in srgb, var(--acc-violet) 30%, transparent)",
+                      background: "var(--bg-0)",
+                      boxShadow: "0 0 10px color-mix(in srgb, var(--acc-violet) 8%, transparent)",
+                    } : {
+                      border: "1px dashed var(--line-bright)",
+                      background: "transparent",
+                      opacity: 0.5,
+                    }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-white truncate max-w-[150px]">
+                      <span className="font-mono font-bold truncate max-w-[150px]" style={{ fontSize: 11, color: "var(--ink-0)" }}>
                         {isSecured ? spot.name : "LOCKED SLOT 0" + (idx + 1)}
                       </span>
-                      <span className="text-[9px] font-mono font-bold text-neon-pink">
+                      <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-primary)" }}>
                         {isSecured ? "SECURED" : "EMPTY"}
                       </span>
                     </div>
@@ -470,7 +497,8 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                     {isSecured && (
                       <button
                         onClick={() => handleShareOnX(spot.name)}
-                        className="w-full text-[10px] font-mono bg-neon-purple/10 border border-neon-purple/30 text-neon-purple hover:bg-neon-purple hover:text-white py-1 rounded transition-all flex items-center justify-center gap-1.5"
+                        className="w-full font-mono py-1 transition-all flex items-center justify-center gap-1.5"
+                        style={{ fontSize: 10, background: "color-mix(in srgb, var(--acc-violet) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--acc-violet) 30%, transparent)", color: "var(--acc-violet)" }}
                       >
                         <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -484,7 +512,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
             </div>
           </div>
 
-          <div className="border-t border-space-850 pt-3 text-[10px] text-gray-500 font-mono flex justify-between">
+          <div className="pt-3 font-mono flex justify-between eyebrow" style={{ borderTop: "1px solid var(--line-bright)" }}>
             <span>SECURED: {inventory.length} / 3</span>
             <span>UGC SLOTS READY</span>
           </div>
@@ -493,22 +521,20 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
       </div>
 
       {/* Panel 4: Bottom Status Bar */}
-      <div className="w-full bg-[#080112] border-2 border-[#220538] rounded-xl px-4 py-2 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono text-[10px] text-gray-400 relative overflow-hidden shadow-md">
-        <div className="crt-scanlines absolute inset-0 opacity-[0.04] pointer-events-none" />
-        
+      <div className="w-full px-4 py-2 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono relative overflow-hidden" style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", fontSize: 10, color: "var(--ink-2)" }}>
         <div className="flex items-center gap-2 relative z-10">
-          <span className="w-1.5 h-1.5 rounded-full bg-term-green animate-ping" />
-          <span>SYS STATE: <span className="text-term-green font-bold">SOLANA LOGGED IN</span></span>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
+          <span>SYS STATE: <span className="font-bold" style={{ color: "var(--acc-primary)" }}>SOLANA LOGGED IN</span></span>
         </div>
 
         <div className="relative z-10 text-center sm:text-left">
-          CURRENT LOCATION: <span className="text-white font-bold uppercase">HOPO FARM ROAD - SECTION 01</span>
+          CURRENT LOCATION: <span className="font-bold uppercase" style={{ color: "var(--ink-0)" }}>HOPO FARM ROAD - SECTION 01</span>
         </div>
 
         <div className="flex items-center gap-3 relative z-10">
-          <span>BALANCE: <span className="text-alien-cyan font-bold">25,000 $NAHOPE</span></span>
-          <span className="text-gray-700">|</span>
-          <span className="text-neon-pink font-bold">EPISODE 1 STAGE UNLOCKED</span>
+          <span>BALANCE: <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>25,000 $NAHOPE</span></span>
+          <span style={{ color: "var(--line-bright)" }}>|</span>
+          <span className="font-bold" style={{ color: "var(--acc-primary)" }}>EPISODE 1 STAGE UNLOCKED</span>
         </div>
       </div>
     </div>

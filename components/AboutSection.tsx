@@ -50,13 +50,11 @@ export default function AboutSection() {
         
         {/* Left Col: Narrative & Movie info */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="text-neon-pink font-mono text-sm tracking-widest uppercase">
-            // OFFICIAL PRODUCTION DATABASE
-          </div>
-          <h2 className="font-righteous text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-            Na Hong-jin&apos;s Sci-Fi Epic: <span className="text-oil-slick font-bold">HOPE</span>
+          <div className="eyebrow" style={{ color: "var(--acc-primary)" }}>// OFFICIAL PRODUCTION DATABASE</div>
+          <h2 className="display text-3xl sm:text-4xl leading-tight" style={{ color: "var(--ink-0)" }}>
+            Na Hong-jin&apos;s Sci-Fi Epic: <span className="glitch-text" data-text="HOPE" style={{ color: "var(--acc-primary)" }}>HOPE</span>
           </h2>
-          <div className="w-12 h-1 bg-gradient-to-r from-neon-pink via-neon-purple to-alien-cyan" />
+          <div className="w-12 h-[2px]" style={{ background: "linear-gradient(90deg, var(--acc-primary), var(--acc-violet), var(--acc-cyan))" }} />
           
           <p className="text-gray-400 leading-relaxed font-sans text-sm sm:text-base">
             Renowned for his dark masterpieces <em>&apos;The Chaser&apos;</em>, <em>&apos;The Yellow Sea&apos;</em>, and <em>&apos;The Wailing&apos;</em>, 
@@ -70,13 +68,13 @@ export default function AboutSection() {
           </p>
 
           {/* Chicken Meme Card */}
-          <div className="mt-6 glass-panel rounded-xl p-5 border-l-4 border-l-alien-cyan relative overflow-hidden">
+          <div className="panel panel-bracket mt-6 p-5 relative overflow-hidden" style={{ borderLeftColor: "var(--acc-cyan)", borderLeftWidth: 3 }}>
             <div className="absolute -right-8 -bottom-8 opacity-[0.03] rotate-12 pointer-events-none">
               <span className="text-9xl font-bold">🐔</span>
             </div>
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">🐔</span>
-              <h4 className="font-righteous text-sm font-bold text-white uppercase tracking-wider">
+              <h4 className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
                 The Legendary Alien-Slayer Chicken
               </h4>
             </div>
@@ -93,29 +91,28 @@ export default function AboutSection() {
 
         {/* Right Col: Cast dossiers */}
         <div id="casting" className="lg:col-span-7 flex flex-col gap-6">
-          <div className="text-neon-pink font-mono text-sm tracking-widest uppercase">
-            // CONFIDENTIAL PROFILE LOGS
-          </div>
-          <h3 className="font-righteous text-2xl font-bold text-white">
+          <div className="eyebrow" style={{ color: "var(--acc-primary)" }}>// CONFIDENTIAL PROFILE LOGS</div>
+          <h3 className="display text-2xl" style={{ color: "var(--ink-0)" }}>
             Official Cast &amp; Character Files
           </h3>
 
           <div className="flex flex-col gap-4">
             {CAST_LIST.map((cast, index) => (
-              <div 
-                key={index} 
-                className="glass-panel rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:bg-space-900/60 border border-white/5 hover:border-neon-purple/40"
+              <div
+                key={index}
+                className="panel panel-bracket p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all"
               >
+                <span className="br-bl" /><span className="br-br" />
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-space-800 text-gray-300">
+                    <span className="font-mono px-2 py-0.5" style={{ fontSize: 10, background: "var(--bg-2)", color: "var(--ink-2)" }}>
                       FILE 0{index + 1}
                     </span>
-                    <h5 className="font-righteous text-base font-bold text-white">
+                    <h5 className="display text-base" style={{ color: "var(--ink-0)" }}>
                       {cast.name}
                     </h5>
                   </div>
-                  <div className="text-xs text-neon-pink font-medium mb-1">
+                  <div className="font-mono text-xs mb-1" style={{ color: "var(--acc-primary)" }}>
                     ROLE: {cast.role}
                   </div>
                   <p className="text-xs text-gray-400 font-sans max-w-lg">
@@ -123,15 +120,23 @@ export default function AboutSection() {
                   </p>
                 </div>
                 
-                <span className={`text-[10px] font-mono font-bold px-2 py-1 rounded border tracking-wider ${
-                  cast.status === "ACTIVE" 
-                    ? "text-alien-cyan border-alien-cyan/20 bg-alien-cyan/5"
-                    : cast.status === "CLASSIFIED"
-                      ? "text-neon-purple border-neon-purple/20 bg-neon-purple/5"
-                      : cast.status === "EXTRATERRESTRIAL"
-                        ? "text-neon-pink border-neon-pink/20 bg-neon-pink/5"
-                        : "text-alert-red border-alert-red/20 bg-alert-red/5"
-                }`}>
+                <span
+                  className="font-mono font-bold px-2 py-1"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.14em",
+                    border: "1px solid",
+                    color: cast.status === "ACTIVE" ? "var(--acc-cyan)"
+                      : cast.status === "CLASSIFIED" ? "var(--acc-violet)"
+                      : cast.status === "EXTRATERRESTRIAL" ? "var(--acc-primary)"
+                      : "var(--acc-danger)",
+                    borderColor: cast.status === "ACTIVE" ? "color-mix(in srgb, var(--acc-cyan) 30%, transparent)"
+                      : cast.status === "CLASSIFIED" ? "color-mix(in srgb, var(--acc-violet) 30%, transparent)"
+                      : cast.status === "EXTRATERRESTRIAL" ? "color-mix(in srgb, var(--acc-primary) 30%, transparent)"
+                      : "color-mix(in srgb, var(--acc-danger) 30%, transparent)",
+                    background: "var(--bg-0)",
+                  }}
+                >
                   {cast.status}
                 </span>
               </div>

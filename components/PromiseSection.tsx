@@ -6,13 +6,11 @@ export default function PromiseSection() {
       <div className="absolute left-0 bottom-1/4 w-[300px] h-[300px] bg-neon-pink/3 rounded-full blur-[90px] pointer-events-none" />
 
       <div className="text-center max-w-3xl mx-auto flex flex-col items-center gap-4 mb-16">
-        <div className="text-neon-pink font-mono text-sm tracking-widest uppercase">
-          // SAFE PLAY & TRANSPARENCY
-        </div>
-        <h2 className="font-righteous text-3xl sm:text-4xl font-extrabold text-white">
+        <div className="eyebrow" style={{ color: "var(--acc-primary)" }}>// SAFE PLAY & TRANSPARENCY</div>
+        <h2 className="display text-3xl sm:text-4xl" style={{ color: "var(--ink-0)" }}>
           Developer&apos;s Promise &amp; Tokenomics
         </h2>
-        <div className="w-12 h-1 bg-gradient-to-r from-neon-pink to-neon-purple" />
+        <div className="w-12 h-[2px]" style={{ background: "linear-gradient(90deg, var(--acc-primary), var(--acc-violet))" }} />
         <p className="text-gray-400 font-sans text-sm sm:text-base leading-relaxed">
           In the Solana meme ecosystem, trust and transparency are paramount. 
           To eliminate rug-pull anxieties and build a sustainable community-driven culture, 
@@ -23,61 +21,59 @@ export default function PromiseSection() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Card 1: LP Burned */}
-        <div className="glass-panel-glow-pink rounded-2xl p-6 border border-neon-pink/10 relative overflow-hidden flex flex-col gap-4">
-          <div className="w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/30 flex items-center justify-center text-neon-pink text-2xl font-bold">
+        <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col gap-4" style={{ borderColor: "var(--acc-primary)", boxShadow: "var(--glow-primary)" }}>
+          <span className="br-bl" /><span className="br-br" />
+          <div className="w-12 h-12 flex items-center justify-center text-2xl font-bold" style={{ background: "color-mix(in srgb, var(--acc-primary) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--acc-primary) 30%, transparent)" }}>
             🔥
           </div>
-          <h3 className="font-righteous text-lg font-bold text-white uppercase tracking-wider">
+          <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
             LIQUIDITY POOL 100% BURNED
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
             Upon graduating to the Raydium liquidity pool, 100% of the LP tokens are instantly burned. 
             This permanently locks the pool, making it mathematically impossible to withdraw liquidity.
           </p>
-          <div className="text-[10px] text-neon-pink font-mono mt-auto uppercase">
-            // GUARANTEED PERMANENT LOCK
-          </div>
+          <div className="eyebrow mt-auto" style={{ color: "var(--acc-primary)" }}>// GUARANTEED PERMANENT LOCK</div>
         </div>
 
         {/* Card 2: Ownership Renounced */}
-        <div className="glass-panel rounded-2xl p-6 border border-white/5 relative overflow-hidden flex flex-col gap-4">
-          <div className="w-12 h-12 rounded-xl bg-space-850 border border-space-700/50 flex items-center justify-center text-alien-cyan text-2xl font-bold">
+        <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col gap-4">
+          <span className="br-bl" /><span className="br-br" />
+          <div className="w-12 h-12 flex items-center justify-center text-2xl font-bold" style={{ background: "var(--bg-3)", border: "1px solid var(--line-bright)" }}>
             🛡️
           </div>
-          <h3 className="font-righteous text-lg font-bold text-white uppercase tracking-wider">
+          <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
             OWNERSHIP RENOUNCED
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
             Smart contract authority is permanently disabled. No mint authority or freeze authority exists, 
             guaranteeing that the total supply cannot be altered or manipulated.
           </p>
-          <div className="text-[10px] text-alien-cyan font-mono mt-auto uppercase">
-            // 100% IMMUTABLE CONTRACT
-          </div>
+          <div className="eyebrow mt-auto" style={{ color: "var(--acc-cyan)" }}>// 100% IMMUTABLE CONTRACT</div>
         </div>
 
         {/* Card 3: Minimal Dev Holding */}
-        <div className="glass-panel-glow-purple rounded-2xl p-6 border border-neon-purple/10 relative overflow-hidden flex flex-col gap-4">
-          <div className="w-12 h-12 rounded-xl bg-neon-purple/10 border border-neon-purple/30 flex items-center justify-center text-neon-purple text-2xl font-bold">
+        <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col gap-4" style={{ borderColor: "var(--acc-violet)", boxShadow: "var(--glow-violet)" }}>
+          <span className="br-bl" /><span className="br-br" />
+          <div className="w-12 h-12 flex items-center justify-center text-2xl font-bold" style={{ background: "color-mix(in srgb, var(--acc-violet) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--acc-violet) 30%, transparent)" }}>
             🤝
           </div>
-          <h3 className="font-righteous text-lg font-bold text-white uppercase tracking-wider">
+          <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
             DEV HOLDS ONLY 1.5%
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
             The developer and marketing wallet is capped at a tiny 1.5% of the total supply. 
             This prevents massive dumps and keeps the price action community-controlled.
           </p>
-          <div className="text-[10px] text-neon-purple font-mono mt-auto uppercase">
-            // COMMUNITY DRIVEN ECONOMY
-          </div>
+          <div className="eyebrow mt-auto" style={{ color: "var(--acc-violet)" }}>// COMMUNITY DRIVEN ECONOMY</div>
         </div>
 
       </div>
 
       {/* Tokenomics Infographic Box */}
-      <div className="mt-12 glass-panel rounded-2xl p-6 md:p-8 border border-white/5">
-        <h4 className="font-righteous text-base font-bold text-white mb-6 uppercase tracking-wider">
+      <div className="panel panel-bracket mt-12 p-6 md:p-8">
+        <span className="br-bl" /><span className="br-br" />
+        <h4 className="display text-base mb-6 uppercase" style={{ color: "var(--ink-0)" }}>
           Token Allocation Details
         </h4>
         
@@ -91,19 +87,19 @@ export default function PromiseSection() {
                 <span>COMMUNITY LIQUIDITY POOL (PUMP.FUN)</span>
                 <span className="text-white">98.5%</span>
               </div>
-              <div className="h-2 w-full bg-space-950 rounded-full overflow-hidden p-[1px]">
-                <div className="h-full bg-gradient-to-r from-neon-pink to-neon-purple rounded-full shadow-[0_0_10px_rgba(255,0,127,0.3)]" style={{ width: "98.5%" }} />
+              <div className="h-2 w-full overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+                <div className="h-full" style={{ width: "98.5%", background: "linear-gradient(90deg, var(--acc-primary), var(--acc-violet))", boxShadow: "var(--glow-primary)" }} />
               </div>
             </div>
 
             {/* Developer allocation */}
             <div>
-              <div className="flex justify-between text-xs font-mono font-medium text-gray-400 mb-1">
+              <div className="flex justify-between font-mono text-xs mb-1" style={{ color: "var(--ink-2)" }}>
                 <span>DEVELOPER & MARKETING RESERVE</span>
-                <span className="text-white">1.5%</span>
+                <span style={{ color: "var(--ink-0)" }}>1.5%</span>
               </div>
-              <div className="h-2 w-full bg-space-950 rounded-full overflow-hidden p-[1px]">
-                <div className="h-full bg-space-700 rounded-full" style={{ width: "1.5%" }} />
+              <div className="h-2 w-full overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+                <div className="h-full" style={{ width: "1.5%", background: "var(--bg-3)" }} />
               </div>
             </div>
 
