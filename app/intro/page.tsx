@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Shield, Radio, Eye, Clapperboard, FlaskConical, Wrench, Globe, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "영화 HOPE 소개 | Film Profile",
+  title: "Film Profile | HOPE by Na Hong-jin",
   description:
     "나홍진 감독의 SF 코즈믹 호러 영화 HOPE(호프) 상세 정보. 황정민, 조인성, 정호연, 마이클 패스벤더, 알리시아 비칸데르 출연. 시놉시스, 캐릭터 소개, 감독 프로필. Cast, synopsis, and director profile for Na Hong-jin's sci-fi cosmic horror film 'HOPE'.",
   openGraph: {
-    title: "영화 HOPE(호프) | 나홍진 감독 SF 코즈믹 호러",
+    title: "HOPE | Na Hong-jin's Sci-Fi Cosmic Horror Film",
     description:
       "황정민, 조인성, 정호연, 마이클 패스벤더 출연. 호포항에 나타난 외계 존재와 생존자들의 이야기. Na Hong-jin's cosmic horror film starring Hwang Jung-min, Jo In-sung, and Jung Ho-yeon.",
     images: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "영화 HOPE | 나홍진 감독 코즈믹 호러",
+    title: "HOPE | Na Hong-jin's Cosmic Horror Film",
     description:
       "황정민, 조인성, 정호연, 마이클 패스벤더 출연. Na Hong-jin's cosmic horror film HOPE.",
     images: ["/images/og-banner.png"],

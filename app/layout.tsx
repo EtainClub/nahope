@@ -41,7 +41,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://nahope.com"),
   title: {
-    default: "HOPO PORT: OMEGA PROTOCOL | 나홍진 영화 HOPE 인터랙티브 RPG",
+    default: "HOPO PORT: OMEGA PROTOCOL | Na Hong-jin's HOPE Interactive RPG",
     template: "%s | HOPO PORT",
   },
   description: "나홍진 감독의 SF 코즈믹 호러 영화 'HOPE(호프)'에서 영감을 받은 인터랙티브 시네마틱 RPG. 포인트 앤 클릭으로 호포항을 탐험하고, 아이템을 수집하고, 커뮤니티와 함께 Part 2 시나리오를 만들어 감독에게 전달하세요. Enter Hopo Port Control Zone: an interactive cinematic RPG inspired by Na Hong-jin's upcoming film 'HOPE'.",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HOPO PORT: OMEGA PROTOCOL | 나홍진 감독 HOPE 인터랙티브 RPG",
+    title: "HOPO PORT: OMEGA PROTOCOL | Na Hong-jin's HOPE Interactive RPG",
     description: "나홍진 감독의 코즈믹 호러 영화 HOPE에서 영감을 받은 인터랙티브 RPG. 호포항 파출소를 탐험하고, 아이템을 수집하고, 외계 유물의 비밀을 밝혀내세요. An interactive cinematic RPG inspired by Na Hong-jin's sci-fi film 'HOPE'.",
     type: "website",
     locale: "ko_KR",
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@nahope_port",
     creator: "@nahope_port",
-    title: "HOPO PORT: OMEGA PROTOCOL | 나홍진 HOPE RPG",
+    title: "HOPO PORT: OMEGA PROTOCOL | Na Hong-jin's HOPE RPG",
     description: "나홍진 감독의 코즈믹 호러 영화 HOPE 인터랙티브 RPG. 포인트 앤 클릭으로 호포항을 탐험하세요. Interactive cinematic RPG inspired by Na Hong-jin's 'HOPE'.",
     images: [
       {

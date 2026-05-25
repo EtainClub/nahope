@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" shape-rendering="crispEdges">
+  <rect width="100" height="100" fill="#efe6cf"/>
+  <rect x="8" y="8" width="84" height="68" fill="#1a1208"/>
+  <circle cx="50" cy="40" r="22" fill="#3a2a16"/>
+  <!-- boy face outline -->
+  <circle cx="50" cy="38" r="14" fill="#c8b48a"/>
+  <!-- hair -->
+  <path d="M 34 32 Q 50 18 66 32 L 66 22 L 34 22 Z" fill="#1a1208"/>
+  <!-- eyes -->
+  <circle cx="45" cy="36" r="1.5" fill="#1a1208"/>
+  <circle cx="55" cy="36" r="1.5" fill="#1a1208"/>
+  <!-- smile -->
+  <path d="M 44 44 Q 50 48 56 44" fill="none" stroke="#1a1208" stroke-width="1.5"/>
+  <!-- Omega mark on forehead -->
+  <path d="M 46 28 Q 50 25 54 28 M 46 28 L 48 28 M 54 28 L 52 28" fill="none" stroke="#ef4444" stroke-width="1.2"/>
+  <!-- border/text -->
+  <text x="50" y="88" font-family="monospace" font-size="8" fill="#1a1208" text-anchor="middle" letter-spacing="1">1950.08</text>
+</svg>

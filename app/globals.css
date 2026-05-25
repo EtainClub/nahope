@@ -377,3 +377,104 @@ body {
 
 /* ── Crosshair cursor (game canvas) ──────────────────────────────────────── */
 .cursor-crosshair-target { cursor: crosshair; }
+
+/* ── Episode 1: situation-board tokens ───────────────────────────────────── */
+:root {
+  --paper-stain: #c8b48a;
+  --redact-black: #0a0a0a;
+}
+.pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
+.polaroid-frame {
+  background: #efe6cf;
+  border: 8px solid #efe6cf;
+  border-bottom-width: 32px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.4);
+  transform: rotate(-1.2deg);
+}
+.paper-redact {
+  background: var(--paper-stain);
+  color: #1a1208;
+  position: relative;
+}
+.paper-redact .redact {
+  background: var(--redact-black);
+  color: transparent;
+  user-select: none;
+}
+@keyframes polaroid-develop {
+  0%   { filter: brightness(0) contrast(0.4); opacity: 0; }
+  40%  { filter: brightness(1.3) contrast(0.7); opacity: 0.9; }
+  100% { filter: none; opacity: 1; }
+}
+.polaroid-develop { animation: polaroid-develop 1.2s ease-out both; }
+@keyframes turn-tick-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--acc-danger) 35%, transparent); }
+  50%      { box-shadow: 0 0 0 6px color-mix(in srgb, var(--acc-danger) 0%, transparent); }
+}
+.turn-tick { animation: turn-tick-pulse 1.6s ease-out infinite; }
+
+@keyframes hotspot-glitch-shift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-1px, 0.5px); }
+  40% { transform: translate(0.5px, -1px); }
+  60% { transform: translate(-0.5px, 0.5px); }
+  80% { transform: translate(1px, 0); }
+}
+.hotspot-glitch { animation: hotspot-glitch-shift 0.18s linear infinite; }
+
+/* ── Global navigation visibility — explicit, viewport-driven ─────────────
+ * Mobile (<768px): bottom nav + mobile top bar visible, desktop header hidden
+ * Desktop (>=768px): top header visible, bottom nav + mobile top bar hidden
+ * This is enforced here in plain CSS so it works regardless of Tailwind class
+ * compilation order or specificity quirks.
+ */
+@media (min-width: 768px) {
+  [data-global-bottom-nav],
+  [data-global-top-bar] {
+    display: none !important;
+  }
+}
+@media (max-width: 767px) {
+  [data-global-top-header] {
+    display: none !important;
+  }
+}
+
+/* ── Game route ──────────────────────────────────────────────────────────
+ * Desktop: each panel scrolls independently inside a fixed-height viewport.
+ * Mobile: panels are shown/hidden by tab; bottom nav + tab strip both fixed.
+ */
+.game-grid {
+  grid-template-columns: 1fr 2fr 1fr;
+}
+
+.game-pane {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-pane {
+    display: none;
+  }
+
+  .game-pane.active {
+    display: block;
+    overflow-y: auto;
+  }
+
+  body.is-game-route { padding-bottom: 140px !important; }
+  body.is-game-route .game-mobile-tabs {
+    position: fixed;
+    bottom: 76px;
+    left: 12px; right: 12px;
+    z-index: 45;
+    background: var(--bg-1);
+    border: 1px solid var(--line-bright);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+}

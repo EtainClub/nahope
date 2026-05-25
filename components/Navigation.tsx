@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Home, Film, Gamepad2, Users, User, Wallet } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Home, Film, Gamepad2, Users, User, Wallet, Settings, BookOpen, HelpCircle } from "lucide-react";
 import { database, UserProfile } from "../lib/firebase";
 import PaletteSwitcher from "./PaletteSwitcher";
 import packageJson from "../package.json";
@@ -23,6 +23,126 @@ function RadarDial({ size = 28 }: { size?: number }) {
         style={{ transformOrigin: "18px 18px", animation: "orbit 4s linear infinite" }} />
       <circle cx="18" cy="18" r="1.5" fill="var(--acc-primary)" />
     </svg>
+  );
+}
+
+function SettingsMenu({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, []);
+
+  // Close after route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const items: Array<{ href: string; label: string; icon: React.ComponentType<{ size?: number }> }> = [
+    { href: "/guide", label: "FIELD GUIDE", icon: BookOpen },
+    { href: "/guide#troubleshoot", label: "TROUBLESHOOTING", icon: HelpCircle },
+  ];
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        aria-label="Settings menu"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 32,
+          height: 32,
+          background: open ? "color-mix(in srgb, var(--acc-primary) 10%, transparent)" : "var(--bg-2)",
+          border: `1px solid ${open ? "var(--acc-primary)" : "var(--line-bright)"}`,
+          color: open ? "var(--acc-primary)" : "var(--ink-2)",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        <Settings size={14} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          style={{
+            position: "absolute",
+            top: "calc(100% + 6px)",
+            right: 0,
+            minWidth: 200,
+            background: "var(--bg-1)",
+            border: "1px solid var(--acc-primary)",
+            boxShadow: "var(--glow-primary)",
+            zIndex: 100,
+            padding: 4,
+          }}
+        >
+          <div
+            style={{
+              padding: "6px 10px 8px",
+              fontFamily: "var(--font-mono)",
+              fontSize: 9,
+              letterSpacing: "0.2em",
+              color: "var(--acc-primary)",
+              textTransform: "uppercase",
+              borderBottom: "1px dashed var(--line)",
+            }}
+          >
+            // SETTINGS · MENU
+          </div>
+          {items.map((it) => {
+            const Icon = it.icon;
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "10px 10px",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  letterSpacing: "0.14em",
+                  color: "var(--ink-1)",
+                  textDecoration: "none",
+                  textTransform: "uppercase",
+                  transition: "all 0.12s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "color-mix(in srgb, var(--acc-primary) 10%, transparent)";
+                  e.currentTarget.style.color = "var(--acc-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--ink-1)";
+                }}
+              >
+                <Icon size={12} />
+                {it.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -66,14 +186,17 @@ export default function Navigation() {
   return (
     <>
       {/* ── DESKTOP TOP NAV ──────────────────────────────────────────────── */}
-      <header style={{
-        display: "none",
-        position: "sticky", top: 0, zIndex: 50,
-        width: "100%",
-        background: "var(--bg-1)",
-        borderBottom: "1px solid var(--line)",
-        boxShadow: "0 1px 0 rgba(255,255,255,0.02)",
-      }} className="md:flex items-center justify-between px-6 py-0">
+      <header
+        data-global-top-header
+        style={{
+          position: "sticky", top: 0, zIndex: 50,
+          width: "100%",
+          background: "var(--bg-1)",
+          borderBottom: "1px solid var(--line)",
+          boxShadow: "0 1px 0 rgba(255,255,255,0.02)",
+        }}
+        className="hidden md:flex items-center justify-between px-6 py-0"
+      >
 
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", flexShrink: 0 }}>
@@ -132,9 +255,10 @@ export default function Navigation() {
           })}
         </nav>
 
-        {/* Right cluster: PaletteSwitcher + RadarDial + Wallet */}
+        {/* Right cluster: PaletteSwitcher + Settings + RadarDial + Wallet */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
           <PaletteSwitcher />
+          <SettingsMenu pathname={pathname} />
           <RadarDial size={28} />
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -154,7 +278,7 @@ export default function Navigation() {
       </header>
 
       {/* ── MOBILE TOP BAR ───────────────────────────────────────────────── */}
-      <div className="md:hidden" style={{
+      <div data-global-top-bar className="md:hidden" style={{
         width: "100%",
         background: "var(--bg-1)",
         borderBottom: "1px solid var(--line)",
@@ -178,6 +302,7 @@ export default function Navigation() {
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <PaletteSwitcher />
+          <SettingsMenu pathname={pathname} />
           <div style={{
             display: "flex", alignItems: "center", gap: 6,
             border: "1px solid var(--line-bright)", background: "var(--bg-2)",
@@ -191,7 +316,7 @@ export default function Navigation() {
       </div>
 
       {/* ── MOBILE BOTTOM NAV ────────────────────────────────────────────── */}
-      <nav className="md:hidden" style={{
+      <nav data-global-bottom-nav className="md:hidden" style={{
         position: "fixed", bottom: 12, left: 12, right: 12,
         zIndex: 50,
         background: "var(--bg-1)",

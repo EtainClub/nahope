@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" shape-rendering="crispEdges">
+  <rect width="100" height="100" fill="#2a1f12"/>
+  <!-- folded card -->
+  <polygon points="12,18 84,14 88,82 16,86" fill="#efe6cf" stroke="#c8b48a" stroke-width="2"/>
+  <!-- folding crease lines -->
+  <line x1="50" y1="16" x2="52" y2="84" stroke="#c8b48a" stroke-width="1" opacity="0.6"/>
+  <!-- Greek letters grid -->
+  <g font-family="monospace" font-size="8" fill="#1a1208" text-anchor="middle">
+    <text x="24" y="32">α</text><text x="38" y="32">β</text><text x="52" y="32">γ</text><text x="66" y="32">δ</text>
+    <text x="24" y="46">ε</text><text x="38" y="46">ζ</text><text x="52" y="46">η</text><text x="66" y="46">θ</text>
+    <text x="24" y="60">ι</text><text x="38" y="60">κ</text><text x="52" y="60">λ</text><text x="66" y="60">μ</text>
+    <text x="24" y="74">π</text><text x="38" y="74">ρ</text><text x="52" y="74">σ</text><text x="66" y="74" font-weight="bold">Ω</text>
+  </g>
+  <!-- Red circle around Omega -->
+  <ellipse cx="66" cy="71" rx="7" ry="6" fill="none" stroke="#ef4444" stroke-width="1.6"/>
+</svg>

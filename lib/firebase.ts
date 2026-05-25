@@ -77,6 +77,13 @@ if (typeof window !== "undefined") {
 }
 
 // Interfaces
+export interface Ep1State {
+  endingId: "A" | "B" | "C" | "D";
+  flags: string[];
+  lostItems: string[];
+  completedAt: number;
+}
+
 export interface UserProfile {
   solanaAddress: string;
   firebaseUid?: string;    // anonymous Firebase UID — updated each session
@@ -86,6 +93,8 @@ export interface UserProfile {
   lastCheckIn: string | null;
   createdAt?: number;
   lastSeen?: number;
+  ep1?: Ep1State;
+  completedEndings?: string[];
 }
 
 export interface CommunityPost {

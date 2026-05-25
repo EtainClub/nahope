@@ -127,16 +127,6 @@ export default function Home() {
         {/* Section 3: Gated Episode Roadmap */}
         <div className="relative">
           <EpisodeRoadmap />
-
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12 -mt-4 text-center">
-            <Link
-              href="/game"
-              className="inline-flex items-center gap-2 text-xs font-mono text-neon-purple hover:underline"
-            >
-              🧩 Open the Episode 1 Search Terminal to secure tools and begin investigations
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
         </div>
 
         {/* Section 4: Scenario Feed list with redirection */}

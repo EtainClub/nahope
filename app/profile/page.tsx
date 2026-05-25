@@ -301,9 +301,9 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
-                <span className="text-gray-500">SECURED GEAR:</span>
+                <span className="text-gray-500">ENDINGS SECURED:</span>
                 <span className="font-bold" style={{ color: "var(--acc-primary)" }}>
-                  {profile?.inventory.length || 0} / 5
+                  {profile?.completedEndings?.filter(e => e !== "ep1_clear").length || 0} / 4
                 </span>
               </div>
             </div>
@@ -319,31 +319,24 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 mb-4 pb-2" style={{ borderBottom: "1px solid var(--line)" }}>
               <Award className="w-4 h-4" style={{ color: "var(--acc-cyan)" }} />
               <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
-                Gear Secured List
+                Clear & Ending Badges
               </span>
             </div>
 
             <div className="grid grid-cols-5 gap-2 font-mono text-[9px] text-center">
               {[
-                "Screwdriver",
-                "Cabinet Key",
-                "80s Radio",
-                "Torn ID Tag",
-                "Green Alien Slime",
-              ].map((item) => {
-                const isSecured = profile?.inventory.includes(item);
-                const itemImages: Record<string, string> = {
-                  "Screwdriver": "/images/items/screwdriver.png",
-                  "Cabinet Key": "/images/items/cabinet_key.png",
-                  "80s Radio": "/images/items/80s_radio.png",
-                  "Torn ID Tag": "/images/items/torn_id_tag.png",
-                  "Green Alien Slime": "/images/items/green_alien_slime.png",
-                };
+                { id: "ep1_A", name: "Ending A", sub: "Tragedy", art: "/images/endings/ep1_a.svg" },
+                { id: "ep1_B", name: "Ending B", sub: "Arrest", art: "/images/endings/ep1_b.svg" },
+                { id: "ep1_C", name: "Ending C", sub: "Witness", art: "/images/endings/ep1_c.svg" },
+                { id: "ep1_D", name: "Ending D", sub: "Apostate", art: "/images/endings/ep1_d.svg" },
+                { id: "ep1_clear", name: "Clear Ep.1", sub: "DMZ Clear", art: "/images/endings/ep1_clear.svg" },
+              ].map((badge) => {
+                const isSecured = profile?.completedEndings?.includes(badge.id);
 
                 return (
                   <div
-                    key={item}
-                    className="border p-2 flex flex-col items-center justify-center gap-2 min-h-[95px] transition-all"
+                    key={badge.id}
+                    className="border p-2 flex flex-col items-center justify-center gap-2 min-h-[105px] transition-all"
                     style={isSecured ? {
                       background: "color-mix(in srgb, var(--acc-cyan) 5%, transparent)",
                       borderColor: "color-mix(in srgb, var(--acc-cyan) 30%, transparent)",
@@ -353,7 +346,7 @@ export default function ProfilePage() {
                       background: "color-mix(in srgb, var(--bg-0) 20%, transparent)",
                       borderColor: "var(--line)",
                       borderStyle: "dashed",
-                      opacity: 0.4,
+                      opacity: 0.35,
                     }}
                   >
                     <div
@@ -367,17 +360,19 @@ export default function ProfilePage() {
                       }}
                     >
                       {isSecured ? (
-                        <img src={itemImages[item]} alt={item} className="w-full h-full object-cover" />
+                        <img src={badge.art} alt={badge.name} className="w-full h-full object-cover" />
                       ) : (
                         <Star className="w-4 h-4 text-gray-700" />
                       )}
                     </div>
-                    <span
-                      className="font-bold leading-normal truncate w-full"
-                      title={item}
-                    >
-                      {item.split(" ").slice(-1)[0]}
-                    </span>
+                    <div className="flex flex-col w-full truncate">
+                      <span className="font-bold leading-normal truncate w-full" title={badge.name}>
+                        {badge.name}
+                      </span>
+                      <span className="text-[7.5px] text-gray-500 leading-normal truncate w-full" title={badge.sub}>
+                        {badge.sub}
+                      </span>
+                    </div>
                   </div>
                 );
               })}

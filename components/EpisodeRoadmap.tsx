@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function EpisodeRoadmap() {
   return (
     <section id="roadmap" className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-16 border-t border-space-800/40">
@@ -20,7 +22,7 @@ export default function EpisodeRoadmap() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         
         {/* Episode 1 Card */}
-        <div className="panel panel-bracket p-5 relative overflow-hidden flex flex-col justify-between min-h-[300px]" style={{ borderColor: "var(--acc-primary)", boxShadow: "var(--glow-primary)" }}>
+        <Link href="/game" className="panel panel-bracket p-5 relative overflow-hidden flex flex-col justify-between min-h-[300px] cursor-pointer transition-all hover:scale-[1.02] hover:brightness-110" style={{ borderColor: "var(--acc-primary)", boxShadow: "var(--glow-primary)" }}>
           <span className="br-bl" /><span className="br-br" />
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-start">
@@ -37,9 +39,9 @@ export default function EpisodeRoadmap() {
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line-bright)", color: "var(--acc-primary)" }}>
-            STATUS: ACTIVE TEASER PLAYABLE
+            STATUS: ACTIVE TEASER PLAYABLE →
           </div>
-        </div>
+        </Link>
 
         {/* Episode 2 Card */}
         <div className="panel panel-bracket p-5 relative overflow-hidden flex flex-col justify-between min-h-[300px] opacity-80">
