@@ -3,53 +3,7 @@
 import { useState, useEffect } from "react";
 
 export default function CannesCountdown() {
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [statusText, setStatusText] = useState("STATUS: SPECTRAL SIGNALS BROADCASTING FROM LA CROISETTE");
-
   const [bondingProgress, setBondingProgress] = useState(74.28);
-
-  // Countdown timer to the actual Cannes Film Festival closing awards ceremony
-  useEffect(() => {
-    const targetDate = new Date("2026-05-23T17:15:00Z"); // May 23, 2026, 19:15 CEST
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = targetDate.getTime() - now.getTime();
-
-      if (diff <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        const twoHours = 2 * 60 * 60 * 1000;
-        if (Math.abs(diff) < twoHours) {
-          setStatusText("STATUS: CEREMONY IN PROGRESS - LIVE STREAM ACTIVE");
-        } else {
-          setStatusText("STATUS: CEREMONY CONCLUDED - OMEGA DOSSIER FINALIZED");
-        }
-        return false;
-      } else {
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-        setTimeLeft({ hours, minutes, seconds });
-        setStatusText("STATUS: SPECTRAL SIGNALS BROADCASTING FROM LA CROISETTE");
-        return true;
-      }
-    };
-
-    updateCountdown();
-
-    const timer = setInterval(() => {
-      const active = updateCountdown();
-      if (!active) {
-        clearInterval(timer);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Fetch real bonding curve progress from GeckoTerminal API
   useEffect(() => {
@@ -68,60 +22,67 @@ export default function CannesCountdown() {
       }
     };
 
-    // Initial fetch
     fetchProgress();
-
-    // Refresh every 60 seconds to avoid hitting rate limits
     const interval = setInterval(fetchProgress, 60000);
-
     return () => clearInterval(interval);
   }, []);
 
+  const remaining = Math.max(0, 100 - bondingProgress);
+  const solRemaining = Math.max(0, (85 * remaining) / 100);
+  const isGraduated = bondingProgress >= 100;
+
+  const ep2StatusText = isGraduated
+    ? "STATUS: GRADUATED — EPISODE 02 UNLOCKED · DISCONNECTED SIGNALS LIVE"
+    : "STATUS: BONDING IN PROGRESS — EPISODE 02 SEALED UNTIL GRADUATION";
+
   return (
     <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch mb-8 px-4 md:px-0">
-      
-      {/* 24h Cannes Countdown Box */}
+
+      {/* Episode 2 Unlock Countdown — driven by bonding curve graduation */}
       <div className="panel panel-bracket p-6 relative overflow-hidden flex flex-col justify-between" style={{ boxShadow: "var(--glow-primary)" }}>
         <span className="br-bl" /><span className="br-br" />
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
-            <span className="eyebrow" style={{ color: "var(--acc-primary)" }}>// LIVE COUNTDOWN TIMER</span>
+            <span className="w-2 h-2 rounded-full" style={{ background: isGraduated ? "var(--acc-primary)" : "var(--acc-amber)", animation: "pulse-glow 1s ease infinite" }} />
+            <span className="eyebrow" style={{ color: isGraduated ? "var(--acc-primary)" : "var(--acc-amber)" }}>
+              // EPISODE 02 · UNLOCK SEQUENCE
+            </span>
           </div>
           <h3 className="display text-2xl" style={{ color: "var(--ink-0)" }}>
-            CANNES CLOSING CEREMONY COUNTDOWN
+            EPISODE 02 GRADUATION COUNTDOWN
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
-            Франции Канны. The clock is ticking down to the Cannes Film Festival closing awards ceremony. 
-            Will director Na Hong-jin claim the Golden Palm (Palme d&apos;Or) for this 160-minute masterpiece?
+            <span style={{ color: "var(--acc-violet)" }}>Episode 02: Disconnected Signals</span> is sealed inside the omega vault.
+            It unlocks automatically the instant the $NAHOPE bonding curve graduates to the Raydium pool at 100%.
+            No clock. No release date. Only the pool decides.
           </p>
         </div>
 
-        {/* Timer display */}
-        <div className="grid grid-cols-3 gap-4 py-6 text-center">
-          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
-            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-primary)" }}>
-              {String(timeLeft.hours).padStart(2, "0")}
+        {/* Countdown display — progress-based, not time-based */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 py-6 text-center">
+          <div className="p-2 sm:p-3 min-w-0 overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display font-mono text-2xl sm:text-3xl lg:text-4xl tabular-nums truncate" style={{ color: "var(--acc-primary)" }}>
+              {bondingProgress.toFixed(1)}
             </div>
-            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>HOURS</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>BONDED %</div>
           </div>
-          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
-            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-violet)" }}>
-              {String(timeLeft.minutes).padStart(2, "0")}
+          <div className="p-2 sm:p-3 min-w-0 overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display font-mono text-2xl sm:text-3xl lg:text-4xl tabular-nums truncate" style={{ color: "var(--acc-violet)" }}>
+              {remaining.toFixed(1)}
             </div>
-            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>MINUTES</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>REMAINING %</div>
           </div>
-          <div className="p-3" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
-            <div className="display text-4xl sm:text-5xl font-mono" style={{ color: "var(--acc-cyan)" }}>
-              {String(timeLeft.seconds).padStart(2, "0")}
+          <div className="p-2 sm:p-3 min-w-0 overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
+            <div className="display font-mono text-2xl sm:text-3xl lg:text-4xl tabular-nums truncate" style={{ color: "var(--acc-cyan)" }}>
+              {solRemaining.toFixed(1)}
             </div>
-            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>SECONDS</div>
+            <div className="eyebrow mt-1" style={{ fontSize: 9 }}>SOL TO GO</div>
           </div>
         </div>
 
-        <div className="font-mono text-center" style={{ fontSize: 10, color: "var(--acc-primary)", letterSpacing: "0.12em" }}>
-          {statusText}
+        <div className="font-mono text-center" style={{ fontSize: 10, color: isGraduated ? "var(--acc-primary)" : "var(--acc-amber)", letterSpacing: "0.12em" }}>
+          {ep2StatusText}
         </div>
       </div>
 
@@ -139,12 +100,12 @@ export default function CannesCountdown() {
             BONDING CURVE GRADUATION BAR
           </h3>
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
-            The token pool is bonding. Upon reaching 100% progress, $NAHOPE will graduate to the Raydium liquidity pool, 
-            automatically triggering the **Episode 1: Golden Palm Hope Release Event**.
+            The token pool is bonding. Upon reaching 100% progress, $NAHOPE will graduate to the Raydium liquidity pool,
+            automatically triggering the <span style={{ color: "var(--acc-violet)" }}>Episode 02: Disconnected Signals</span> unlock event.
           </p>
-          <div className="mt-1 flex items-center justify-between p-2.5" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
-            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Contract Address</span>
-            <code className="text-xs text-alien-cyan font-mono select-all cursor-copy" title="Click to select">
+          <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 p-2.5 min-w-0 overflow-hidden" style={{ background: "var(--bg-0)", border: "1px solid var(--line-bright)" }}>
+            <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider flex-shrink-0">Contract Address</span>
+            <code className="text-[10px] sm:text-xs text-alien-cyan font-mono select-all cursor-copy block w-full sm:w-auto min-w-0 truncate sm:text-right" title="Click to select">
               CvKFHHfXqusmcrU18d6pvCWhJrWyteziqi99xJgjpump
             </code>
           </div>
@@ -165,13 +126,13 @@ export default function CannesCountdown() {
           </div>
 
           <div className="flex justify-between font-mono mt-1" style={{ fontSize: 10, color: "var(--ink-3)" }}>
-            <span>CURRENT STAGE: GRADUATING</span>
+            <span>CURRENT STAGE: {isGraduated ? "GRADUATED" : "GRADUATING"}</span>
             <span>TARGET: 85 SOL (100%)</span>
           </div>
         </div>
 
         <div className="font-mono text-center" style={{ fontSize: 10, color: "var(--acc-cyan)", letterSpacing: "0.12em" }}>
-          UNLOCKED AT 100%: EPISODE 1 SCENARIO PLAYROOM EVENT
+          UNLOCKED AT 100%: EPISODE 02 — DISCONNECTED SIGNALS
         </div>
       </div>
 

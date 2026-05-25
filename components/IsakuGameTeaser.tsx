@@ -123,6 +123,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
 
   const [inventory, setInventory] = useState<string[]>([]);
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
+  const [mobileTab, setMobileTab] = useState<"logs" | "canvas" | "inventory">("canvas");
   const [scenarioText, setScenarioText] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showScenarioForm, setShowScenarioForm] = useState(false);
@@ -213,11 +214,38 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
         <div className="w-24 h-[2px] mx-auto mt-2" style={{ background: "var(--acc-primary)" }} />
       </div>
 
+      {/* Mobile tab switcher — hidden on lg+ */}
+      <div className="lg:hidden flex gap-1 mb-3" style={{ borderBottom: "1px solid var(--line)" }}>
+        {([
+          { id: "logs", label: `LOGS (${logs.length})` },
+          { id: "canvas", label: "SEARCH" },
+          { id: "inventory", label: `ITEMS (${inventory.length}/3)` },
+        ] as const).map((t) => {
+          const isActive = mobileTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => { playSound("beep"); setMobileTab(t.id); }}
+              className="flex-1 py-2 px-2 font-mono uppercase transition-all"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.14em",
+                color: isActive ? "var(--acc-primary)" : "var(--ink-3)",
+                background: isActive ? "color-mix(in srgb, var(--acc-primary) 8%, transparent)" : "transparent",
+                borderBottom: `2px solid ${isActive ? "var(--acc-primary)" : "transparent"}`,
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* 4-Panel Grid layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        
+
         {/* Panel 1: Left Story Log (3 columns) */}
-        <div className="panel panel-bracket lg:col-span-3 crt-scan p-4 flex flex-col justify-between h-[450px] lg:h-[550px]" style={{ position: "relative" }}>
+        <div className={`${mobileTab === "logs" ? "flex" : "hidden"} lg:flex panel panel-bracket lg:col-span-3 crt-scan p-4 flex-col justify-between h-[450px] lg:h-[550px]`} style={{ position: "relative" }}>
           <span className="br-bl" /><span className="br-br" />
           
           <div ref={logContainerRef} className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
@@ -240,7 +268,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
         </div>
 
         {/* Panel 2: Center Search Canvas (6 columns) */}
-        <div className="lg:col-span-6 panel crt-scan crt-vignette relative h-[450px] lg:h-[550px] flex items-center justify-center cursor-crosshair-target group" style={{ overflow: "hidden" }}>
+        <div className={`${mobileTab === "canvas" ? "flex" : "hidden"} lg:flex lg:col-span-6 panel crt-scan crt-vignette relative h-[450px] lg:h-[550px] items-center justify-center cursor-crosshair-target group`} style={{ overflow: "hidden" }}>
 
           {/* Eerie Backdrop Image */}
           <div className="absolute inset-0 z-0">
@@ -457,7 +485,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
         </div>
 
         {/* Panel 3: Right UGC Inventory (3 columns) */}
-        <div className="panel panel-bracket lg:col-span-3 p-4 flex flex-col justify-between h-[450px] lg:h-[550px]" style={{ position: "relative" }}>
+        <div className={`${mobileTab === "inventory" ? "flex" : "hidden"} lg:flex panel panel-bracket lg:col-span-3 p-4 flex-col justify-between h-[450px] lg:h-[550px]`} style={{ position: "relative" }}>
           <span className="br-bl" /><span className="br-br" />
           <div className="flex flex-col gap-4">
             <div>

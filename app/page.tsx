@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-space-950 text-gray-100 selection:bg-neon-pink selection:text-white">
-      
+
       {/* Ambient background decoration */}
       <div className="absolute top-0 inset-x-0 h-[600px] bg-gradient-to-b from-space-900/30 to-transparent pointer-events-none z-0" />
 
@@ -52,7 +52,7 @@ export default function Home() {
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col py-8">
-        
+
         {/* Cinematic Welcome Banner & Quick Links */}
         <section className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-6 border-b border-space-900/40 pb-8">
           <div>
@@ -63,7 +63,7 @@ export default function Home() {
               Select a classified terminal frequency below to begin your decryption sequence.
             </p>
           </div>
-          
+
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/intro"
@@ -92,13 +92,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 1: Cannes Countdown Ceremony Timer & Progress Bar */}
-        <CannesCountdown />
 
-        {/* Section 2: RPG Interface (Isaku-style Point-and-Click Teaser with redirection banner) */}
+        {/* Section 1: RPG Interface (Isaku-style Point-and-Click Teaser with redirection banner) */}
         <div className="relative">
           <IsakuGameTeaser onScenarioSubmit={handleScenarioSubmit} />
-          
+
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12 -mt-4">
             <Link
               href="/game"
@@ -122,10 +120,14 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Section 2: Cannes Countdown Ceremony Timer & Progress Bar */}
+        <CannesCountdown />
+
+
         {/* Section 3: Gated Episode Roadmap */}
         <div className="relative">
           <EpisodeRoadmap />
-          
+
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12 -mt-4 text-center">
             <Link
               href="/game"
@@ -159,12 +161,12 @@ export default function Home() {
               Deliver the Scenario Book to Director Na Hong-jin
             </h4>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              The highest-voted storyline on our dashboard will be compiled, designed, and professionally printed 
+              The highest-voted storyline on our dashboard will be compiled, designed, and professionally printed
               as a high-fidelity &quot;Cosmic Classified Dossier&quot; book.
             </p>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Just ahead of the film&apos;s release, the Hopo Port Survivor Community will deliver this physical scenario book, 
-              along with a donation receipt funded by project proceeds, directly to Na Hong-jin&apos;s production office (Forged Films). 
+              Just ahead of the film&apos;s release, the Hopo Port Survivor Community will deliver this physical scenario book,
+              along with a donation receipt funded by project proceeds, directly to Na Hong-jin&apos;s production office (Forged Films).
               Let your voice shape the future of the trilogy.
             </p>
           </div>
@@ -174,7 +176,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="relative z-10 bg-space-950 border-t border-space-900/80 py-12 px-4 md:px-8 text-center text-gray-500 text-xs font-sans">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          
+
           <div className="flex flex-col items-center md:items-start gap-1">
             <div className="flex items-center gap-2">
               <span className="display text-sm" style={{ color: "var(--ink-0)" }}>
@@ -189,8 +191,8 @@ export default function Home() {
           </div>
 
           <p className="max-w-md text-[10px] text-gray-600 leading-relaxed md:text-left">
-            Disclaimer: Hopo Port: Omega Protocol is a community-driven campaign inspired by the movie &apos;HOPE&apos;. 
-            It holds no official partnership with director Na Hong-jin or Forged Films. 
+            Disclaimer: Hopo Port: Omega Protocol is a community-driven campaign inspired by the movie &apos;HOPE&apos;.
+            It holds no official partnership with director Na Hong-jin or Forged Films.
             All crypto assets involved are purely speculative in nature. Do Your Own Research.
           </p>
 

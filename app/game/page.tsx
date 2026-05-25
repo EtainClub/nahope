@@ -340,18 +340,16 @@ export default function GamePage() {
       position: "fixed", inset: 0, top: 56, bottom: 88,
       background: "var(--bg-0)", color: "var(--ink-0)",
       fontFamily: "var(--font-mono)",
-      userSelect: "none", overflow: "hidden", touchAction: "none",
-    }} className="md:top-[72px] md:bottom-0">
-      <div style={{
-        maxWidth: 1440,
-        width: "100%",
-        margin: "0 auto",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        padding: "12px 16px 8px",
-        overflow: "hidden",
-      }}>
+      userSelect: "none",
+    }} className="md:top-[72px] md:bottom-0 overflow-y-auto overflow-x-hidden md:overflow-hidden">
+      <div
+        className="mx-auto w-full flex flex-col md:h-full md:overflow-hidden"
+        style={{
+          maxWidth: 1440,
+          padding: "12px 16px 8px",
+          minHeight: "100%",
+        }}
+      >
 
         {/* Episode title rail */}
         <div style={{
@@ -390,11 +388,11 @@ export default function GamePage() {
         </div>
 
         {/* Main 3-panel grid */}
-        <div style={{ display: "flex", flex: 1, gap: 8, overflow: "hidden", minHeight: 0 }}>
+        <div className="flex flex-col md:flex-row gap-2 md:flex-1 md:overflow-hidden md:min-h-0">
 
           {/* ── LEFT: Terminal log ──────────────────────────────────────── */}
           <div
-            className={`${mobileTab === "logs" ? "flex" : "hidden"} md:flex flex-col w-full md:w-[260px] md:flex-none md:flex-shrink-0 overflow-hidden`}
+            className={`${mobileTab === "logs" ? "flex" : "hidden"} md:flex flex-col w-full min-h-[60vh] md:min-h-0 md:w-[260px] md:flex-none md:flex-shrink-0 overflow-hidden`}
           >
             <div className="panel panel-bracket" style={{
               flex: 1, display: "flex", flexDirection: "column",
@@ -455,7 +453,7 @@ export default function GamePage() {
                   ROOM: <span style={{ color: "var(--ink-0)", fontWeight: 500 }}>{currentRoom.replace("_", " ")}</span>
                 </span>
               </div>
-              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                 {/* Hotspot calibration toggle — dev only */}
                 {process.env.NODE_ENV === "development" && (
                   <button
@@ -514,17 +512,11 @@ export default function GamePage() {
             </div>
 
             {/* Interactive canvas — flex:1 wrapper → square canvas determines center column width */}
-            <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "stretch", justifyContent: "center" }}>
+            <div className="flex items-stretch justify-center md:flex-1 md:overflow-hidden">
               <div
                 ref={canvasRef}
-                className="crt-scan crt-vignette"
+                className="crt-scan crt-vignette relative overflow-hidden w-full aspect-square md:w-auto md:h-full md:aspect-square"
                 style={{
-                  /* Square canvas matching 1024×1024 source images.
-                     height: 100% fills the wrapper, aspectRatio makes width = height.
-                     This auto-sizes the center column so sidebars fill remaining space. */
-                  aspectRatio: "1 / 1",
-                  height: "100%", width: "auto",
-                  position: "relative", overflow: "hidden",
                   touchAction: "manipulation",
                   boxShadow: mobileTab === "canvas" ? "var(--glow-primary)" : undefined,
                   outline: mobileTab === "canvas" ? "1px solid var(--acc-primary)" : undefined,
@@ -661,7 +653,7 @@ export default function GamePage() {
 
           {/* ── RIGHT: Inventory / Artifact Deck ────────────────────────── */}
           <div
-            className={`${mobileTab === "inventory" ? "flex" : "hidden"} md:flex flex-col w-full md:w-[260px] md:flex-none md:flex-shrink-0 overflow-hidden`}
+            className={`${mobileTab === "inventory" ? "flex" : "hidden"} md:flex flex-col w-full min-h-[60vh] md:min-h-0 md:w-[260px] md:flex-none md:flex-shrink-0 overflow-hidden`}
           >
             <div className="panel panel-bracket" style={{
               flex: 1, display: "flex", flexDirection: "column", overflow: "hidden",
@@ -757,12 +749,12 @@ export default function GamePage() {
         </div>
 
         {/* ── Status bar ──────────────────────────────────────────────────── */}
-        <div style={{
+        <div className="hidden md:flex" style={{
           marginTop: 8, flexShrink: 0,
           border: "1px solid var(--line-bright)",
           background: "var(--bg-1)",
           padding: "10px 16px",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
+          justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: 12,
         }}>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
