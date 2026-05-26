@@ -96,11 +96,12 @@ export default function GuidePage() {
               ["05", "Playing Episode 1", "#episode1"],
               ["06", "Trigger-Belt Puzzles", "#puzzles"],
               ["07", "Inventory & Items", "#inventory"],
-              ["08", "Episode 2 Unlock", "#episode2"],
-              ["09", "Community & Scenarios", "#community"],
-              ["10", "UGC Sharing on X", "#ugc"],
-              ["11", "Glossary", "#glossary"],
-              ["12", "Troubleshooting", "#troubleshoot"],
+              ["08", "Endings", "#endings"],
+              ["09", "Episode 2 Unlock", "#episode2"],
+              ["10", "Community & Scenarios", "#community"],
+              ["11", "UGC Sharing on X", "#ugc"],
+              ["12", "Glossary", "#glossary"],
+              ["13", "Troubleshooting", "#troubleshoot"],
             ].map(([num, label, href]) => (
               <li key={href}>
                 <a
@@ -228,38 +229,46 @@ export default function GuidePage() {
         {/* ── 05. Playing Episode 1 ──────────────────────────────────── */}
         <Section id="episode1" title="05 · PLAYING EPISODE 1" icon={Gamepad2}>
           <P>
-            Episode 1 — <B>&quot;The Cognitive Search&quot;</B> — takes place
-            inside the Hopo Substation. You have three rooms to investigate:
+            Episode 1 — <B>&quot;Ignorance: The Omega Mark on the Cow&quot;</B> —
+            begins at 18:40 on 1983.08.◯◯. You have <B>20 turns</B> before the
+            fog claims the village youth Bong-sik. Six locations to explore:
           </P>
           <ul style={{ paddingLeft: 18, color: "var(--ink-1)", fontSize: 13, lineHeight: 1.7 }}>
             <li>
-              <B style={{ color: "var(--acc-primary)" }}>OFFICE</B> — Chief
-              Bum-seok&apos;s desk, the Goldstar typewriter, the Blue House
-              rotary phone, the glitched green radar screen.
+              <B style={{ color: "var(--acc-primary)" }}>OFFICE</B> — Sgt. Sung-ki sleeping at his desk, the Chief&apos;s locked drawer, the Calivan rifle on the rack, a Goldstar typewriter, a field radio.
             </li>
             <li>
-              <B style={{ color: "var(--acc-primary)" }}>FRONT YARD</B> —
-              Officer Sung-ae on guard, the mutilated cow carcass, a torn ID
-              tag on the barbed-wire fence.
+              <B style={{ color: "var(--acc-primary)" }}>ARMORY LOCKER</B> — A steel locker (needs a key), dark space behind it, empty top shelf.
             </li>
             <li>
-              <B style={{ color: "var(--acc-primary)" }}>STORAGE</B> — Outcast
-              Sung-ki on a beacon terminal, the workbench, the locked weapon
-              cabinet.
+              <B style={{ color: "var(--acc-primary)" }}>FRONT YARD</B> — Radio antenna, village youth Bong-sik near the gate, the gate to the field (needs coordinates).
+            </li>
+            <li>
+              <B style={{ color: "var(--acc-primary)" }}>DMZ · MILLET FIELD</B> — A mutilated cow, disturbed soil beside it, the forest edge.
+            </li>
+            <li>
+              <B style={{ color: "var(--acc-primary)" }}>PINE FOREST</B> — A solid fog wall, a clearing deeper in, a hidden coastal path. <em>Locked until you burn the fog.</em>
+            </li>
+            <li>
+              <B style={{ color: "var(--acc-primary)" }}>FOGGY COAST</B> — An iron hatch, an inscription in a language that is not Greek. <em>Hidden ending path.</em>
             </li>
           </ul>
           <P>
-            Use the room buttons (<B>MOVE OUTSIDE / GO TO OFFICE / ENTER
-            BACKROOM</B>) at the top of the canvas to navigate. Click any
-            highlighted hotspot to investigate. Hovering plays a beep;
-            clicking opens dialogue and may reveal an item.
+            Navigation buttons appear <B>below the canvas image</B>. Click any
+            highlighted hotspot to investigate. Hovering shows a crosshair and
+            label; clicking triggers dialogue and may reveal an item.
           </P>
           <P>
             <B>How to use an item on a hotspot:</B> open the right-side
-            <B> Artifact Deck</B>, tap an item to <B>EQUIP</B> it, then click
-            the relevant hotspot. If the item is the correct trigger, the
-            game will reveal a hidden artifact (a &quot;Synergy Success&quot;).
+            <B> DECK</B> panel, tap an item to <B>EQUIP</B> it (it shows in the
+            Active bar beneath the canvas), then click the target hotspot. If
+            the item matches the trigger, a hidden artifact is revealed —
+            a &quot;Synergy Success&quot;.
           </P>
+          <Callout color="amber">
+            ⏱ Turn budget: every meaningful action costs 1–3 turns. Idle
+            inspections cost 0. You have 20 turns total — spend them carefully.
+          </Callout>
         </Section>
 
         {/* ── 06. Trigger-Belt Puzzles ───────────────────────────────── */}
@@ -267,66 +276,156 @@ export default function GuidePage() {
           <P>
             HOPO PORT&apos;s core mechanic is the <B>&quot;trigger belt&quot;</B>:
             a strict chain of cause-and-effect where thoughtless clicking
-            leads to dead ends. To complete Episode 1 you must execute the
-            sequence in the correct order.
+            leads to dead ends or turn waste. Episode 1 has four possible
+            endings — the canonical path is <B>Ending C · Witness</B>.
           </P>
           <Callout color="amber">
-            ⚠ SPOILER ZONE — the sequence below reveals the Episode 1
-            solution. Skip this section if you want to puzzle it out yourself.
+            ⚠ SPOILER ZONE — full Episode 1 solution below. Skip if you want
+            to discover it yourself.
           </Callout>
+          <P><B style={{ color: "var(--acc-primary)" }}>Ending C · Witness (canonical path)</B></P>
           <ol style={{ paddingLeft: 18, color: "var(--ink-1)", fontSize: 13, lineHeight: 1.75 }}>
             <li>
-              Enter <B>STORAGE</B>. Search the <B>Workbench</B> drawer —
-              you&apos;ll secure the <B>Screwdriver</B> and the{" "}
-              <B>Cabinet Key</B> in one search.
+              <B>OFFICE</B> — Click <B>Sung-ki&apos;s Pocket</B> while he sleeps
+              (do NOT turn on the radio first — the noise wakes him → Ending B).
+              You receive the <B>Armory Key</B> and <B>Brass Lighter</B>.
             </li>
             <li>
-              Still in STORAGE: equip the <B>Cabinet Key</B>, then click the
-              <B> Locked Weapon Cabinet</B>. You secure the <B>80s Radio</B>.
+              Move to <B>ARMORY LOCKER</B>. Equip <B>Armory Key</B>, click the
+              <B> Steel Locker</B> → <B>Lubricating Oil</B> + <B>Spare Magazine</B>.
+              Then click <B>Behind the Locker</B> → <B>Field Report p.1</B>.
             </li>
             <li>
-              Move to the <B>OFFICE</B>. Equip the <B>Screwdriver</B>, then
-              click the <B>Goldstar Typewriter</B>. You scrape out the{" "}
-              <B>Green Alien Slime</B>.
+              Return to <B>OFFICE</B>. Equip <B>Lubricating Oil</B>, click
+              <B> Chief&apos;s Drawer</B> → <B>Confiscated Screwdriver</B> +
+              <B> Polaroid (1950)</B>.
             </li>
             <li>
-              Slime collected → the Episode 1 finale overlay appears with the
-              declassified signal analysis and a call to action for Episode 2.
+              Still in OFFICE. Equip <B>Screwdriver</B>, click <B>Calivan Rifle</B>
+              → <B>Green Alien Slime</B> + <B>Translator Fragment</B>.
+              <em style={{ color: "var(--acc-danger)" }}> Do NOT equip Spare Magazine on the rifle — it destroys the Slime.</em>
             </li>
             <li>
-              (Optional lore) Visit the <B>FRONT YARD</B>, examine the cow
-              carcass and the metallic object on the fence to secure the{" "}
-              <B>Torn ID Tag</B> and trigger atmospheric narration.
+              Move to <B>FRONT YARD</B>. With both Slime and Translator Fragment
+              in inventory, click <B>Radio Antenna</B> → <B>80s Field Radio</B>
+              + coordinates unlocked.
+            </li>
+            <li>
+              Click <B>Gate to Field</B> (now passable) → enter <B>DMZ · MILLET FIELD</B>.
+            </li>
+            <li>
+              FIELD — first equip <B>Polaroid (1950)</B>, click <B>Typewriter</B>
+              in OFFICE to pry the frame and get the <B>Magnifying Glass</B> if
+              you skipped it. Then equip <B>Magnifying Glass</B>, click
+              <B> The Cow</B> → <B>COW_INSPECTED</B> flag + Ω mark revealed.
+            </li>
+            <li>
+              Click <B>Disturbed Soil</B> beside the cow (before turn 17) →
+              <B> Hopo License Plate</B>. After turn 16 crows take it.
+            </li>
+            <li>
+              Click <B>Forest Edge</B> (requires COW_INSPECTED) →{" "}
+              <B>PINE FOREST</B>.
+            </li>
+            <li>
+              FOREST — equip <B>Brass Lighter</B>, click <B>The Fog</B> (you
+              must also carry <B>Field Report p.1</B>) → fog burns back,
+              <B> FOG_BURNED</B> flag.
+            </li>
+            <li>
+              Click <B>The Clearing</B> (before turn 20) →{" "}
+              <B>Ending C · Witness</B>. Bong-sik lives. You receive the
+              <B> Omega Mark</B> artifact.
             </li>
           </ol>
+
+          <p style={{ marginTop: 8, fontSize: 13, color: "var(--ink-1)", lineHeight: 1.7, fontFamily: "var(--font-sans, var(--font-mono))" }}><B style={{ color: "var(--acc-violet)" }}>Ending D · Apostate (hidden path)</B></p>
+          <ol style={{ paddingLeft: 18, color: "var(--ink-1)", fontSize: 13, lineHeight: 1.75 }}>
+            <li>Complete steps 1–10 above (fog must be burned).</li>
+            <li>
+              FOREST — equip <B>Translator Fragment</B>, click <B>The Clearing</B>
+              → you hesitate and choose not to save him (<B>APOSTATE_STEP_1</B>).
+            </li>
+            <li>
+              Click <B>Path to the Coast</B> → <B>COAST_OPEN</B>, then enter
+              <B> FOGGY COAST</B>.
+            </li>
+            <li>
+              COAST — equip <B>Translator Fragment</B>, click <B>Inscription</B>
+              → <B>APOSTATE_STEP_2</B>.
+            </li>
+            <li>
+              Equip <B>Green Alien Slime</B>, click <B>Iron Hatch</B> →
+              <B> Ending D · Apostate</B>. You receive the
+              <B> Ω Mark (Apostate)</B> artifact.
+            </li>
+          </ol>
+
+          <Callout color="danger">
+            Ending A (bad): run out of turns before reaching the Clearing.
+            Bong-sik dies. · Ending B (restart): turn on the radio while
+            Sung-ki is sleeping, then touch his pocket.
+          </Callout>
         </Section>
 
         {/* ── 07. Inventory & Items ──────────────────────────────────── */}
         <Section id="inventory" title="07 · INVENTORY & ITEMS" icon={Package}>
           <P>
-            Episode 1 contains <B>5 secureable artifacts</B>. Your Artifact
-            Deck on the right-hand panel shows all 5 slots; locked slots are
-            faded out, secured items can be tapped to equip.
+            Episode 1 contains <B>14 items</B>. Your Artifact Deck (DECK
+            panel on the right) shows all secured items; tap any to equip.
+            Items marked <B style={{ color: "var(--acc-primary)" }}>ARTIFACT</B> persist to your profile and unlock community
+            submission. Items marked <B style={{ color: "var(--acc-danger)" }}>LOSABLE</B> can be destroyed if
+            you act too late.
           </P>
           <Table
             rows={[
-              ["ITEM", "FOUND IN", "PURPOSE"],
-              ["Screwdriver", "Storage · Workbench", "Disassembles the Goldstar typewriter"],
-              ["Cabinet Key", "Storage · Workbench", "Opens the locked weapon cabinet"],
-              ["80s Radio", "Storage · Weapon Cabinet", "Lore artifact · used in Episode 2 setup"],
-              ["Torn ID Tag", "Front Yard · Fence", "Lore artifact · proves missing reservist"],
-              ["Green Alien Slime", "Office · Typewriter", "Episode 1 finale trigger"],
+              ["ITEM", "FOUND IN", "NOTES"],
+              ["Armory Key", "Office · Sung-ki's Pocket", "Opens the Steel Locker in the Armory"],
+              ["Brass Lighter", "Office · Sung-ki's Pocket", "Burns the Fog Wall (needs Field Report p.1)"],
+              ["Lubricating Oil", "Armory · Steel Locker", "Unsticks Chief's Drawer"],
+              ["Spare Magazine", "Armory · Steel Locker", "Wrong caliber — destroys Slime if used on rifle"],
+              ["Confiscated Screwdriver", "Office · Chief's Drawer", "Disassembles the Calivan Rifle"],
+              ["Polaroid (1950)", "Office · Chief's Drawer", "Use on Typewriter to extract Magnifying Glass"],
+              ["Magnifying Glass", "Office · Typewriter", "Reveals Ω brand on the cow"],
+              ["Green Alien Slime ★", "Office · Calivan Rifle", "ARTIFACT · unlocks the Coast hatch (Ending D)"],
+              ["Translator Fragment ★", "Office · Calivan Rifle", "ARTIFACT · tunes the Antenna + Apostate path"],
+              ["Field Report p.1 ◆", "Armory · Behind Locker", "LOSABLE · required to burn the fog"],
+              ["Hopo License Plate ◆", "Field · Disturbed Soil", "LOSABLE · expires after turn 16"],
+              ["80s Field Radio", "Yard · Radio Antenna", "Lore artifact · unlocks gate to field"],
+              ["Omega Mark ★", "Forest · The Clearing", "ARTIFACT · granted on Ending C"],
+              ["Ω Mark (Apostate) ★", "Coast · Iron Hatch", "ARTIFACT · granted on Ending D only"],
             ]}
           />
           <P>
-            Securing all 5 maxes out your Episode 1 Artifact Deck. Items
-            persist in your profile, so you can return later for additional
-            dialogue or share them on X.
+            Artifacts (★) persist in your profile and can be shared on X.
+            Losable items (◆) disappear if you wait too long — move quickly.
           </P>
         </Section>
 
-        {/* ── 08. Episode 2 Unlock ───────────────────────────────────── */}
-        <Section id="episode2" title="08 · EPISODE 2 UNLOCK" icon={Coins}>
+        {/* ── 08. Endings ────────────────────────────────────────────── */}
+        <Section id="endings" title="08 · ENDINGS" icon={ShieldAlert}>
+          <P>
+            Episode 1 has four endings. Only C and D grant artifacts and mark
+            the episode as cleared.
+          </P>
+          <Table
+            rows={[
+              ["ENDING", "CONDITION", "RESULT"],
+              ["A · Ignorance-Born Tragedy", "Reach the Clearing on turn 20 or later", "Bad end — Bong-sik dies, no artifacts"],
+              ["B · Court-Martial", "Wake Sgt. Sung-ki (turn on radio, then pickpocket)", "Forced restart, no artifacts"],
+              ["C · Witness", "Pull Bong-sik from the Clearing before turn 20", "Grants Omega Mark ★, Green Alien Slime ★, Translator Fragment ★"],
+              ["D · Apostate", "Complete the hidden Coast path instead of saving him", "Grants Ω Mark (Apostate) ★, Green Alien Slime ★, Translator Fragment ★"],
+            ]}
+          />
+          <Callout color="violet">
+            Endings C and D both unlock the Episode 2 gate — but the artifact
+            you receive differs. The Apostate path requires strict ordering
+            across three distinct actions; see Section 06.
+          </Callout>
+        </Section>
+
+        {/* ── 09. Episode 2 Unlock ───────────────────────────────────── */}
+        <Section id="episode2" title="09 · EPISODE 2 UNLOCK" icon={Coins}>
           <P>
             Episode 2 — <B>&quot;Disconnected Signals&quot;</B> — is sealed
             inside the omega vault. The unlock is <B>event-driven</B>, not
@@ -349,18 +448,18 @@ export default function GuidePage() {
           </P>
         </Section>
 
-        {/* ── 09. Community ──────────────────────────────────────────── */}
-        <Section id="community" title="09 · COMMUNITY & SCENARIOS" icon={Users}>
+        {/* ── 10. Community ──────────────────────────────────────────── */}
+        <Section id="community" title="10 · COMMUNITY & SCENARIOS" icon={Users}>
           <P>
             The <Link href="/community" style={linkStyle}>COMMUNITY</Link>{" "}
             page is the public transmission feed where survivors propose
             their Part 2 storylines.
           </P>
           <Step n={1} title="Collect at least 3 rare artifacts">
-            The Elite Submission gate opens after you secure 3+ rare items
-            (e.g. Omega Mark, Translator Fragment, Alien Core in later
-            episodes; for now: Screwdriver, Cabinet Key, 80s Radio qualify
-            via the teaser).
+            The Elite Submission gate opens after you secure 3+ artifact items
+            (★ tier). Episode 1 artifacts: <B>Green Alien Slime</B>,{" "}
+            <B>Translator Fragment</B>, and either <B>Omega Mark</B> (Ending C)
+            or <B>Ω Mark (Apostate)</B> (Ending D).
           </Step>
           <Step n={2} title="Write your scenario">
             Use the on-canvas <B>OMEGA PROTOCOL · WRITE SCENARIO</B> button.
@@ -375,8 +474,8 @@ export default function GuidePage() {
           </Step>
         </Section>
 
-        {/* ── 10. UGC Sharing ────────────────────────────────────────── */}
-        <Section id="ugc" title="10 · UGC SHARING ON X" icon={Share2}>
+        {/* ── 11. UGC Sharing ────────────────────────────────────────── */}
+        <Section id="ugc" title="11 · UGC SHARING ON X" icon={Share2}>
           <P>
             Every secured artifact in your inventory has a <B>SHARE MEME ON
             X</B> button. Tapping it opens a pre-filled tweet referencing
@@ -390,24 +489,28 @@ export default function GuidePage() {
           </P>
         </Section>
 
-        {/* ── 11. Glossary ───────────────────────────────────────────── */}
-        <Section id="glossary" title="11 · GLOSSARY" icon={BookOpen}>
+        {/* ── 12. Glossary ───────────────────────────────────────────── */}
+        <Section id="glossary" title="12 · GLOSSARY" icon={BookOpen}>
           <Table
             rows={[
               ["TERM", "MEANING"],
               ["Omega Protocol (Ω)", "The cosmic-horror containment protocol. The carved Greek letter Ω marks every anomaly."],
-              ["Trigger Belt", "A strict puzzle chain — wrong order = bad ending."],
-              ["Bonding Curve", "Pump.fun&apos;s automated price mechanism. Reaches 100% to graduate to Raydium."],
+              ["Trigger Belt", "A strict cause-and-effect puzzle chain — wrong order wastes turns or locks you into a bad ending."],
+              ["Turn", "A unit of action. Meaningful actions cost 1–3 turns; idle inspections cost 0. Episode 1 cap: 20 turns."],
+              ["Synergy Success", "When the correct equipped item unlocks a hotspot's hidden interaction."],
+              ["Artifact (★)", "A rare item that persists to your profile and qualifies you for community submission."],
+              ["Losable (◆)", "An item that can be permanently destroyed if you wait too long (Field Report p.1, License Plate)."],
+              ["FOG_BURNED", "The flag that opens the Pine Forest after using the Brass Lighter on the fog wall."],
+              ["APOSTATE_STEP", "A three-part hidden flag chain required to access Ending D via the Foggy Coast."],
+              ["Bonding Curve", "Pump.fun's automated price mechanism. Reaches 100% to graduate to Raydium."],
               ["Graduation", "When a pump.fun token migrates to a real DEX pool. Triggers Episode 2 unlock."],
-              ["Artifact Deck", "Your in-game inventory of 5 secured items."],
-              ["Synergy Success", "When the correct equipped item unlocks a hotspot's hidden artifact."],
               ["CGC", "Collective Generated Content — community storytelling for Part 2."],
             ]}
           />
         </Section>
 
-        {/* ── 12. Troubleshooting ────────────────────────────────────── */}
-        <Section id="troubleshoot" title="12 · TROUBLESHOOTING" icon={HelpCircle}>
+        {/* ── 13. Troubleshooting ────────────────────────────────────── */}
+        <Section id="troubleshoot" title="13 · TROUBLESHOOTING" icon={HelpCircle}>
           <FaqItem
             q="The wallet button does nothing."
             a="Make sure Phantom, Solflare or Backpack is installed in your browser. On mobile, open the page inside the wallet's built-in browser. If still stuck, refresh and try again."
@@ -418,11 +521,19 @@ export default function GuidePage() {
           />
           <FaqItem
             q="A hotspot isn't reacting."
-            a="It probably requires an item. Open the Artifact Deck, equip the right item (it glows green when active), then click the hotspot."
+            a="It probably requires an equipped item. Open the DECK panel on the right, tap an item to equip it (shown in the Active bar below the canvas), then click the hotspot. A wrongly-equipped item makes the hotspot border glow red."
           />
           <FaqItem
-            q="The Episode 1 finale overlay won't appear."
-            a="You haven't collected the Green Alien Slime yet. You need the Screwdriver equipped on the Goldstar Typewriter in the OFFICE."
+            q="I can't get into the Pine Forest."
+            a="The Forest is locked until you burn the fog. You need both the Brass Lighter equipped AND Field Report p.1 in your inventory. Get the Report from behind the Armory locker after opening it."
+          />
+          <FaqItem
+            q="The ending overlay won't appear."
+            a="For Ending C: reach The Clearing in the Pine Forest before turn 20 (without Translator Fragment equipped). For Ending D: complete all three APOSTATE_STEP actions — in the Clearing, at the Inscription, then on the Hatch."
+          />
+          <FaqItem
+            q="I lost my Field Report or License Plate."
+            a="Both are losable items (◆). Field Report p.1 is not consumed when you burn the fog, but if you somehow skipped the Armory it won't be there. License Plate disappears after turn 16 — inspect the cow first and move quickly."
           />
           <FaqItem
             q="When does Episode 2 release?"
@@ -430,7 +541,7 @@ export default function GuidePage() {
           />
           <FaqItem
             q="Mobile UI looks cramped."
-            a="The game page uses a tab switcher on mobile (GAME / LOGS / ITEMS). Tap the tabs to swap panels. The canvas itself fills the full screen width."
+            a="The game page uses a tab switcher on mobile (PLATE / DOSSIER / DECK). Tap the tabs at the bottom to swap panels. Navigation buttons appear below the canvas image so they never cover hotspots."
           />
         </Section>
 
