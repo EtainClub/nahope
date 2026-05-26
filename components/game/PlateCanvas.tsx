@@ -17,6 +17,7 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
   const [hover, setHover] = useState<string | null>(null);
 
   return (
+    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
     <div
       style={{
         position: "relative",
@@ -122,12 +123,14 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
         );
       })}
 
-      {/* Exits */}
+    </div>
+
+    {/* Exits — rendered below the canvas so they never cover hotspots */}
+    {neighbors.length > 0 && (
       <div
         style={{
-          position: "absolute", bottom: 10, left: 10, right: 10,
           display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap",
-          pointerEvents: "none",
+          padding: "8px 4px 0",
         }}
       >
         {neighbors.map((n) => (
@@ -136,11 +139,10 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
             disabled={n.locked}
             onClick={() => onMove(n.id)}
             style={{
-              pointerEvents: "auto",
               fontFamily: "var(--font-mono)", fontSize: 10,
               letterSpacing: "0.18em", textTransform: "uppercase",
               padding: "6px 12px",
-              background: "color-mix(in srgb, var(--bg-0) 80%, transparent)",
+              background: "transparent",
               border: `1px solid ${n.locked ? "var(--line-dim)" : "var(--acc-primary)"}`,
               color: n.locked ? "var(--text-2)" : "var(--acc-primary)",
               cursor: n.locked ? "not-allowed" : "pointer",
@@ -151,6 +153,7 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
           </button>
         ))}
       </div>
+    )}
     </div>
   );
 }
