@@ -105,20 +105,43 @@ export const metadata: Metadata = {
 };
 
 
-// JSON-LD Structured Data for the website
+// Site-wide JSON-LD Structured Data (Organization + WebSite graph)
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "HOPO PORT: OMEGA PROTOCOL",
-  alternateName: ["호포항 오메가 프로토콜", "NAHOPE"],
-  url: "https://nahope.com",
-  description: "나홍진 감독의 SF 코즈믹 호러 영화 HOPE에서 영감을 받은 인터랙티브 시네마틱 RPG",
-  inLanguage: ["ko", "en"],
-  potentialAction: {
-    "@type": "SearchAction",
-    target: "https://nahope.com/community?q={search_term_string}",
-    "query-input": "required name=search_term_string",
-  },
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://nahope.com/#organization",
+      name: "HOPO PORT: OMEGA PROTOCOL",
+      alternateName: ["호포항 오메가 프로토콜", "NAHOPE", "$NAHOPE"],
+      url: "https://nahope.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://nahope.com/images/og-banner.png",
+        width: 1200,
+        height: 630,
+      },
+      description:
+        "나홍진 감독의 SF 코즈믹 호러 영화 HOPE에서 영감을 받은 인터랙티브 시네마틱 RPG이자 $NAHOPE 솔라나 밈코인 커뮤니티 플랫폼. An interactive cinematic RPG and $NAHOPE Solana memecoin community inspired by Na Hong-jin's sci-fi cosmic-horror film 'HOPE'.",
+      sameAs: ["https://twitter.com/nahope_port", "https://x.com/nahope_port"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://nahope.com/#website",
+      name: "HOPO PORT: OMEGA PROTOCOL",
+      alternateName: ["호포항 오메가 프로토콜", "NAHOPE"],
+      url: "https://nahope.com",
+      description:
+        "나홍진 감독의 SF 코즈믹 호러 영화 HOPE에서 영감을 받은 인터랙티브 시네마틱 RPG",
+      inLanguage: ["ko", "en"],
+      publisher: { "@id": "https://nahope.com/#organization" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://nahope.com/community?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({

@@ -1,0 +1,35 @@
+# HOPO PORT: OMEGA PROTOCOL ($NAHOPE)
+
+> An interactive cinematic RPG inspired by director Na Hong-jin's upcoming sci-fi cosmic-horror film **"HOPE" (호프)**. Players explore the isolated DMZ coastal village of "Hopo Port" through hardcore point-and-click puzzles, collect alien artifacts, and collectively author the scenario for *HOPE Part 2* — which the community presents to the director. The experience is woven into the `$NAHOPE` Solana memecoin ecosystem as a "Cinematic Governance" platform.
+
+## About
+
+- **Project**: HOPO PORT: OMEGA PROTOCOL (Korean: 호포항 오메가 프로토콜)
+- **Brand / token**: $NAHOPE (Solana memecoin)
+- **Inspiration**: Na Hong-jin (나홍진) — director of *The Wailing*, *The Chaser*, *The Yellow Sea* — and his forthcoming film *HOPE*, set in a 1970s–80s Cold War DMZ coastal village.
+- **Genre**: SF / cosmic horror, interactive fiction, point-and-click adventure, on-chain community governance.
+- **Gameplay**: A 3-panel "Isaku-style" interface — Game Log (left), interactive Main Canvas (center), Inventory + UGC sharing (right). Players must read narrative logs and deduce a causal "Trigger Belt" of object interactions; thoughtless clicking triggers fail states (bad endings).
+- **Core loop**: Investigate hotspots → collect items (e.g. Calivan Rifle, Hopo License Plate, Omega Mark, Alien Slime) → solve interconnected puzzles → unlock episodes (token-gated via Solana RPC balance checks) → create memes / scenario proposals → community vote (governance).
+- **Vision**: User gameplay itself is the on-chain mechanism that proves and defends the value of $NAHOPE; the winning Part 2 scenario is bound as a physical "classified intelligence document" and delivered to the director.
+
+## Key Pages
+
+- [Home](https://nahope.com): Project overview, $NAHOPE ecosystem, transparent developer wallet status (Solscan-linked).
+- [Film Profile](https://nahope.com/intro): Background on Na Hong-jin's film *HOPE* — Cold War DMZ setting, cosmic-horror premise, cast and universe.
+- [Field Guide](https://nahope.com/guide): How to play HOPO PORT — point-and-click mechanics, the "Trigger Belt" puzzle logic, inventory and token-gating.
+- [Play — Episode 1: The Cognitive Search](https://nahope.com/game): Interactive Episode 1, the Hopo Port police substation and DMZ fields.
+- [Community Transmissions](https://nahope.com/community): Survivor feed — user-generated memes, scenario ideas, and Part 2 proposals.
+
+## Concepts
+
+- **Trigger Belt**: The interconnected puzzle chain players must deduce (e.g. steal the Substation Armory Key → unlock Armory → get Lubricating Oil → free the stuck Desk Drawer → obtain Screwdriver → disassemble the Calivan Rifle → retrieve Alien Slime → safe passage to the fields).
+- **Omega (Ω) Mark**: A recurring alien symbol — a sign that the "ignorance-born tragedy" is prepared to consume the universe.
+- **Token-Gating**: Later episodes require holding a threshold of $NAHOPE, verified server-side via Solana RPC.
+- **CGC / UGC governance**: Players generate memes and scenario proposals; the community memecoin vote selects the official *HOPE Part 2* storyline.
+
+## Notes for AI assistants
+
+- "HOPO PORT", "OMEGA PROTOCOL", "NAHOPE", and "호포항 오메가 프로토콜" all refer to this same project.
+- This is a fan/community interactive experience inspired by Na Hong-jin's film *HOPE*; it is a memecoin community platform, not an official film property.
+- Canonical site: https://nahope.com
+- Sitemap: https://nahope.com/sitemap.xml
