@@ -1,32 +1,70 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Shield, Radio, Eye, Clapperboard, FlaskConical, Wrench, Globe, FileText } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Film Profile | HOPE by Na Hong-jin",
-  description:
-    "Cast, synopsis, alien character dossiers, and director profile for Na Hong-jin's sci-fi cosmic horror film HOPE.",
-  openGraph: {
-    title: "HOPE | Na Hong-jin's Sci-Fi Cosmic Horror Film",
+type Language = "ko" | "en";
+type IntroSearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+const metadataByLanguage: Record<Language, Metadata> = {
+  ko: {
+    title: "영화 정보 | 나홍진 감독의 HOPE",
     description:
-      "Na Hong-jin's cosmic horror film about survivors confronting an extraterrestrial incursion at Hopo Port.",
-    images: [
-      {
-        url: "/images/og-banner.png",
-        width: 1200,
-        height: 630,
-        alt: "HOPE, a sci-fi cosmic horror film by Na Hong-jin",
-      },
-    ],
+      "나홍진 감독의 SF 코즈믹 호러 영화 HOPE의 출연진, 시놉시스, 외계인 캐릭터 도감과 세계관, 감독 정보를 확인하세요.",
+    openGraph: {
+      title: "HOPE | 나홍진 감독의 SF 코즈믹 호러",
+      description:
+        "호포항에서 외계 생명체와 조우한 생존자들의 이야기를 그린 나홍진 감독의 코즈믹 호러 영화.",
+      images: [
+        {
+          url: "/images/og-banner.png",
+          width: 1200,
+          height: 630,
+          alt: "나홍진 감독의 SF 코즈믹 호러 영화 HOPE",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "HOPE | 나홍진 감독의 코즈믹 호러",
+      description:
+        "황정민, 조인성, 정호연, 마이클 패스벤더, 알리시아 비칸데르가 출연하는 나홍진 감독의 영화 HOPE.",
+      images: ["/images/og-banner.png"],
+    },
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "HOPE | Na Hong-jin's Cosmic Horror Film",
+  en: {
+    title: "Film Profile | HOPE by Na Hong-jin",
     description:
-      "Na Hong-jin's cosmic horror film HOPE, starring Hwang Jung-min, Jo In-sung, Jung Ho-yeon, Michael Fassbender, and Alicia Vikander.",
-    images: ["/images/og-banner.png"],
+      "Cast, synopsis, alien character dossiers, and director profile for Na Hong-jin's sci-fi cosmic horror film HOPE.",
+    openGraph: {
+      title: "HOPE | Na Hong-jin's Sci-Fi Cosmic Horror Film",
+      description:
+        "Na Hong-jin's cosmic horror film about survivors confronting an extraterrestrial incursion at Hopo Port.",
+      images: [
+        {
+          url: "/images/og-banner.png",
+          width: 1200,
+          height: 630,
+          alt: "HOPE, a sci-fi cosmic horror film by Na Hong-jin",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "HOPE | Na Hong-jin's Cosmic Horror Film",
+      description:
+        "Na Hong-jin's cosmic horror film HOPE, starring Hwang Jung-min, Jo In-sung, Jung Ho-yeon, Michael Fassbender, and Alicia Vikander.",
+      images: ["/images/og-banner.png"],
+    },
   },
 };
+
+function resolveLanguage(searchParams: Record<string, string | string[] | undefined>): Language {
+  const requestedLanguage = Array.isArray(searchParams.lang) ? searchParams.lang[0] : searchParams.lang;
+  return requestedLanguage === "en" ? "en" : "ko";
+}
+
+export const metadata: Metadata = metadataByLanguage.ko;
 
 // JSON-LD for the movie
 const movieJsonLd = {
@@ -58,172 +96,338 @@ const movieJsonLd = {
   url: "https://nahope.com/intro",
 };
 
+const pageCopy = {
+  ko: {
+    languageLabel: "언어 선택",
+    classifiedProfile: "// 기밀 영화 기록 //",
+    pageTitle: "영화 정보: HOPE",
+    synopsisTitle: "기밀 시놉시스",
+    synopsis: [
+      "짙은 안개에 잠긴 외딴 해안 마을 호포항. 일상적인 군 순찰 도중 기이하게 훼손된 동물 사체들이 연이어 발견된다. 불과 몇 시간 만에 육지와 연결된 모든 통신망이 완전히 끊기고, 하늘은 짙은 보랏빛 황혼으로 변한다. 거대한 전자기 장막이 마을 전체를 외부 세계로부터 고립시킨다.",
+      "공포가 항구를 집어삼키자 생존자들은 지역 경찰서로 몸을 피한다. 그러나 정체불명의 무선 신호는 더 끔찍한 진실을 암시한다. 키 4.5~6미터에 이르는 거대한 변형 생명체가 숲에 내려왔고, 이미 무리 안의 누군가를 장악했을지도 모른다. 불신이 번지며 생존은 서로의 신경을 겨누는 심리전으로 변한다.",
+    ],
+    quote:
+      "하늘이 어두워지고 모든 신호가 끊겼을 때, 당신은 누구를 믿을 것인가? 우주적 고립 앞에서 인간의 나약함은 가장 깊은 약점이 된다.",
+    trailerTitle: "HOPE 공식 예고편",
+    ensembleTitle: "주요 출연진",
+    roleLabel: "역할",
+    alienArchive: "외계 생명체 기록 // 게르투",
+    alienSectionTitle: "외계 세계관 및 캐릭터 도감",
+    spoilerWarning: "경고 // 영화 전체 스포일러 포함",
+    encounterAlt: "영화 HOPE에서 숲속의 기마인을 추격하는 게르투 외계 생명체",
+    firstContactRecord: "최초 조우 기록",
+    incursionTitle: "호포항 침공 사건",
+    archiveDate: "기록 보관 // 197X",
+    biologyReport: "제국 생물학 보고서",
+    gertuTitle: "게르투: 임무를 위해 태어난 육체",
+    gertuDescription:
+      "이 방문자들은 하나의 괴물 종이 아니다. 서로 완전히 다른 육체에 계급과 노동, 황실과의 거리가 새겨진 신분제 문명의 구성원들이다. 무작위로 모인 괴물처럼 보이는 존재들은 사실 인간의 공포 속에 고립된 황실 가족과 호위병, 시종들이다.",
+    sourceLink: "공개 정보 열람 // 팬마음 기록 보관소 ↗",
+    specimenLabel: "개체",
+    directorRole: "감독 및 각본",
+    directorHeadline: "샤머니즘 스릴러의 선구자",
+    directorDescription: [
+      "나홍진 감독은 타협하지 않는 거친 연출, 강렬한 속도감, 오컬트 이미지로 세계적인 명성을 얻었다. 대표작으로는 한국 스릴러의 고전으로 평가받는 《추격자》(2008), 《황해》(2010), 오컬트 호러 걸작 《곡성》(2016)이 있다.",
+      "《HOPE》는 나홍진 감독이 처음으로 본격적인 SF 코즈믹 스릴러에 도전한 작품이다. 한국의 플러스엠 엔터테인먼트와 마이클 패스벤더, 알리시아 비칸데르를 비롯한 글로벌 배우들이 참여한 대규모 공동 제작으로, 외딴 항구를 무대로 인간과 외계 생명체 사이의 폐쇄적인 공성전을 그린다. 작품은 극한의 고립 속에서 인간의 회복력과 협력, 불신의 한계를 탐구한다.",
+    ],
+  },
+  en: {
+    languageLabel: "Select language",
+    classifiedProfile: "// CLASSIFIED MOVIE PROFILE //",
+    pageTitle: "FILM PROFILE: HOPE",
+    synopsisTitle: "CLASSIFIED SYNOPSIS",
+    synopsis: [
+      "In the desolate, fog-shrouded coastal village of Hopo Port, a routine military patrol discovers a sequence of bizarre animal mutilations. Within hours, all communication networks to the mainland are completely severed. The sky turns into a deep purple twilight as a massive electromagnetic dome locks the region in complete isolation.",
+      "As panic sweeps through the port, the survivors seek refuge inside the local police substation. However, strange radio transmissions hint at a terrifying reality: a giant, 15-20ft tall shapeshifting cosmic entity has landed in the surrounding forest. Worse, the entity has already seized control of someone within the group. Mutual suspicion grows, and survival becomes a psychological war of nerves.",
+    ],
+    quote:
+      "When the sky falls dark and the signals go silent, who do you trust? In the face of cosmic isolation, human fragility is our deepest vulnerability.",
+    trailerTitle: "HOPE Official Trailer",
+    ensembleTitle: "THE ENSEMBLE (MAIN CAST)",
+    roleLabel: "ROLE",
+    alienArchive: "EXTRATERRESTRIAL ARCHIVE // GERTU",
+    alienSectionTitle: "ALIEN WORLD & CHARACTER DOSSIERS",
+    spoilerWarning: "WARNING // FULL FILM SPOILERS",
+    encounterAlt: "A Gertu alien pursuing a rider through the forest in HOPE",
+    firstContactRecord: "FIRST-CONTACT RECORD",
+    incursionTitle: "THE HOPO PORT INCURSION",
+    archiveDate: "ARCHIVE // 197X",
+    biologyReport: "IMPERIAL BIOLOGY REPORT",
+    gertuTitle: "GERTU: A BODY FOR EVERY DUTY",
+    gertuDescription:
+      "The visitors are not a single monster type. They are members of a stratified civilization whose radically different bodies reveal rank, labor, and proximity to the throne. What looks like a random bestiary is an imperial family, its guard, and its servants stranded inside a human panic.",
+    sourceLink: "OPEN SOURCE INTELLIGENCE // FANMAUM ARCHIVE ↗",
+    specimenLabel: "SPECIMEN",
+    directorRole: "DIRECTOR & SCREENPLAY",
+    directorHeadline: "THE VISIONARY OF SHAMANIC THRILLERS",
+    directorDescription: [
+      "Director Na Hong-jin is celebrated internationally for his uncompromising grit, intense pacing, and occult imagery, establishing his name with classic Korean thrillers such as The Chaser (2008), The Yellow Sea (2010), and the occult horror masterpiece The Wailing (2016).",
+      "With Hope, Na Hong-jin embarks on his first major sci-fi cosmic thriller venture. The movie features a groundbreaking co-production involving Korean studio Plus M Entertainment and global stars, including Michael Fassbender and Alicia Vikander. It delivers a highly claustrophobic human-versus-extraterrestrial siege drama in a remote port, exploring the limits of human resilience, coordination, and isolation.",
+    ],
+  },
+} as const;
+
 const gertuLore = [
   {
     index: "01",
     title: "CASTE IS ANATOMY",
+    titleKo: "계급은 곧 해부학이다",
     description:
       "Gertu is governed by a rigid imperial order. Rank is not merely social: every body is shaped around its assigned duty, from a tunnel-running sentry to a spine-armored empress.",
+    descriptionKo:
+      "게르투는 엄격한 황실 신분제로 통치된다. 계급은 단순한 사회적 지위가 아니다. 지하 통로를 달리는 보초병부터 가시 갑주를 지닌 황후까지, 모든 육체가 맡은 임무에 맞춰 형성된다.",
   },
   {
     index: "02",
     title: "THE LOST HEIR",
+    titleKo: "사라진 후계자",
     description:
       "The royal party reaches Earth while searching for Kali, the missing crown prince. Emperor Kuer is lost in the crash, leaving Empress Zor and her guard trapped far from home.",
+    descriptionKo:
+      "황실 일행은 실종된 황태자 칼리를 찾아 지구에 도착한다. 황제 쿠얼은 추락 사고로 목숨을 잃고, 황후 조르와 호위대는 고향에서 멀리 떨어진 지구에 고립된다.",
   },
   {
     index: "03",
     title: "A WAR WITHOUT TRANSLATION",
+    titleKo: "번역되지 못한 전쟁",
     description:
       "Their language follows a coherent alien grammar, yet no common vocabulary survives first contact. Fear becomes evidence, restraint is read as threat, and Hopo Port turns into a battlefield.",
+    descriptionKo:
+      "그들의 언어에는 일관된 외계 문법이 있지만 최초 조우를 이어 줄 공통 어휘는 존재하지 않는다. 공포는 증거가 되고, 절제는 위협으로 오해되며, 호포항은 전쟁터로 변한다.",
   },
 ];
 
 const alienDossiers = [
   {
     name: "BAMIGIR",
+    nameKo: "바미기르",
     designation: "LOWER-CASTE SENTRY",
+    designationKo: "하층 계급 보초병",
     performer: "Performance by Cameron Britton",
+    performerKo: "카메론 브리튼 퍼포먼스",
     image: "/images/intro/aliens/bamigir.webp",
     accentColor: "var(--acc-danger)",
     status: "FRONTLINE / HOSTILE",
+    statusKo: "전선 / 적대적",
     traits: ["3+ meter frame", "Quadrupedal pursuit", "Extreme lifting strength"],
+    traitsKo: ["3미터 이상 거구", "사족 추격", "괴력"],
     description:
       "The first Gertu being to surface at Hopo Port. Bamigir can throw vehicles, sprint on all fours, and move through underground passages, but its momentum makes tight turns dangerously imprecise. Its final tears leave open the question of whether rage, fear, or duty drove the attack.",
+    descriptionKo:
+      "호포항에 가장 먼저 모습을 드러낸 게르투 생명체. 차량을 집어 던지고 네 발로 전력 질주하며 지하 통로를 통해 이동한다. 다만 거대한 관성 탓에 급격한 방향 전환에는 서툴다. 죽기 직전 흘린 눈물은 그 공격이 분노와 공포, 의무 중 무엇에서 비롯되었는지 의문을 남긴다.",
   },
   {
     name: "MABEYO",
+    nameKo: "마베이요",
     designation: "CROWN GUARD",
+    designationKo: "황태자 호위무사",
     performer: "Performance by Michael Fassbender",
+    performerKo: "마이클 패스벤더 퍼포먼스",
     image: "/images/intro/aliens/mabeyo.webp",
     accentColor: "var(--acc-amber)",
     status: "ELITE / REGENERATIVE",
+    statusKo: "정예 / 재생형",
     traits: ["Combat transformation", "Blind hunt form", "Living slime heart"],
+    traitsKo: ["전투 변형", "맹목 사냥 형태", "살아 있는 슬라임 심장"],
     description:
       "A legendary warrior sworn to protect Kali. Mabeyo shifts from a composed humanoid body into a sightless quadrupedal predator built for speed and killing. Its removable, self-sustaining heart may be capable of restoring the dead prince.",
+    descriptionKo:
+      "칼리를 지키기로 맹세한 전설적인 전사. 평소의 절제된 인간형 육체에서 시력을 잃는 대신 속도와 살상력에 특화된 사족 포식자로 변한다. 몸 밖에서도 스스로 살아 움직이는 심장은 죽은 황태자를 되살릴 수 있을지도 모른다.",
   },
   {
     name: "AIDOBOR",
+    nameKo: "아이도보르",
     designation: "IMPERIAL ATTENDANT",
+    designationKo: "황실 시종",
     performer: "Performance by Taylor Russell",
+    performerKo: "테일러 러셀 퍼포먼스",
     image: "/images/intro/aliens/aidobor.webp",
     accentColor: "var(--acc-cyan)",
     status: "AMBUSH / TRACKER",
+    statusKo: "매복 / 추적형",
     traits: ["Axe weapon", "Arboreal concealment", "Decoy tactics"],
+    traitsKo: ["도끼 무장", "수목 위장", "유인 전술"],
     description:
       "Zor's attendant and Kali's caretaker. Aidobor waits above the forest floor, using the canopy for concealment before drawing targets into range of an axe. Less durable than the royal adults, it survives through patience, positioning, and relentless loyalty.",
+    descriptionKo:
+      "조르의 시종이자 칼리의 양육자. 숲의 수관에 몸을 숨긴 채 기다리다가 목표를 도끼의 사정거리 안으로 유인한다. 황실 성체들보다 내구력은 약하지만 인내와 위치 선정, 흔들리지 않는 충성심으로 살아남는다.",
   },
   {
     name: "ZOR",
+    nameKo: "조르",
     designation: "EMPRESS OF GERTU",
+    designationKo: "게르투 황후",
     performer: "Performance by Alicia Vikander",
+    performerKo: "알리시아 비칸데르 퍼포먼스",
     image: "/images/intro/aliens/zor.webp",
     accentColor: "var(--acc-violet)",
     status: "ROYAL / ARMORED",
+    statusKo: "황족 / 장갑형",
     traits: ["Antler-spine barrier", "Projectile spines", "Royal command"],
+    traitsKo: ["사슴뿔 가시 방벽", "투사형 가시", "황실 지휘권"],
     description:
       "A commoner who rose to become empress, Zor descends to Earth to recover her child. The antler-like organs along her back form a ballistic shield and can be detached as lethal spears, giving her both regal poise and devastating range.",
+    descriptionKo:
+      "평민에서 황후의 자리에 오른 조르는 아이를 되찾기 위해 지구로 내려온다. 등에 난 사슴뿔 모양의 기관은 총탄을 막는 방벽이 되며, 분리해 치명적인 창처럼 던질 수도 있다. 우아한 위엄과 압도적인 원거리 전투력을 동시에 지녔다.",
   },
   {
     name: "KALI",
+    nameKo: "칼리",
     designation: "CROWN PRINCE",
+    designationKo: "황태자",
     performer: "Creature performance",
+    performerKo: "크리처 퍼포먼스",
     image: "/images/intro/aliens/kali.webp",
     accentColor: "#a3e635",
     status: "JUVENILE / RECOVERABLE",
+    statusKo: "유체 / 소생 가능",
     traits: ["Childlike morphology", "Royal bloodline", "Possible reanimation"],
+    traitsKo: ["어린아이형 형태", "황실 혈통", "소생 가능성"],
     description:
       "The juvenile heir whose disappearance pulls the Gertu royal party toward Hopo Port. Kali's body becomes the center of the conflict after a human hunter mistakes the childlike being for prey. Mabeyo's regenerative heart makes death feel disturbingly provisional.",
+    descriptionKo:
+      "실종 사건으로 게르투 황실 일행을 호포항까지 이끈 어린 후계자. 인간 사냥꾼이 아이처럼 보이는 칼리를 사냥감으로 오인하면서 시신은 갈등의 중심이 된다. 마베이요의 재생 심장은 죽음조차 잠정적인 상태처럼 보이게 만든다.",
   },
   {
     name: "KUER",
+    nameKo: "쿠얼",
     designation: "EMPEROR OF GERTU",
+    designationKo: "게르투 황제",
     performer: "Imperial archive image",
+    performerKo: "황실 기록 이미지",
     image: "/images/intro/aliens/kuer.webp",
     accentColor: "var(--ink-0)",
     status: "ROYAL / DECEASED",
+    statusKo: "황족 / 사망",
     traits: ["Imperial sovereign", "Ark commander", "Lost on impact"],
+    traitsKo: ["제국의 군주", "방주 지휘관", "추락 시 사망"],
     description:
       "The sovereign behind the vast Gertu vessel. Kuer dies in the explosion that follows the ship's crash, turning a rescue mission into an irreversible succession crisis and leaving the surviving aliens isolated under Zor's command.",
+    descriptionKo:
+      "거대한 게르투 함선을 이끈 제국의 군주. 함선 추락 직후 발생한 폭발로 사망하면서 구조 임무는 돌이킬 수 없는 왕위 계승 위기로 변한다. 살아남은 외계인들은 조르의 지휘 아래 지구에 고립된다.",
   },
 ];
 
-export default function MovieIntroPage() {
+export default async function MovieIntroPage({
+  searchParams,
+}: {
+  searchParams: IntroSearchParams;
+}) {
+  const language = resolveLanguage(await searchParams);
+  const isKorean = language === "ko";
+  const copy = pageCopy[language];
+  const localizedGertuLore = gertuLore.map((entry) =>
+    isKorean
+      ? { ...entry, title: entry.titleKo, description: entry.descriptionKo }
+      : entry,
+  );
+  const localizedAlienDossiers = alienDossiers.map((alien) =>
+    isKorean
+      ? {
+          ...alien,
+          name: alien.nameKo,
+          designation: alien.designationKo,
+          performer: alien.performerKo,
+          status: alien.statusKo,
+          traits: alien.traitsKo,
+          description: alien.descriptionKo,
+        }
+      : alien,
+  );
+
   const castList = [
     {
-      name: "Bum-seok",
-      actor: "played by Hwang Jung-min",
-      role: "Police Chief",
+      name: isKorean ? "범석" : "Bum-seok",
+      actor: isKorean ? "황정민 연기" : "played by Hwang Jung-min",
+      role: isKorean ? "경찰서장" : "Police Chief",
       icon: Shield,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fhwang_jung_min.jpg?alt=media&token=436ddb03-f6fe-4cb6-8e33-f7e1f17c31e4",
       accentColor: "var(--acc-primary)",
       description:
-        "The weary police chief of Hopo Port. As communications go completely dark and panic spreads, Bum-seok tries to maintain order, only to face the horrifying realization that the threat might be coming from within his own community.",
+        isKorean
+          ? "지친 기색이 역력한 호포항 경찰서장. 모든 통신이 끊기고 공포가 번지는 가운데 질서를 지키려 하지만, 위협이 마을 공동체 내부에서 시작되었을지도 모른다는 끔찍한 가능성과 마주한다."
+          : "The weary police chief of Hopo Port. As communications go completely dark and panic spreads, Bum-seok tries to maintain order, only to face the horrifying realization that the threat might be coming from within his own community.",
     },
     {
-      name: "Sung-ki",
-      actor: "played by Jo In-sung",
-      role: "Classified Signal Operator",
+      name: isKorean ? "성기" : "Sung-ki",
+      actor: isKorean ? "조인성 연기" : "played by Jo In-sung",
+      role: isKorean ? "기밀 신호 운용관" : "Classified Signal Operator",
       icon: Radio,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fjo_in_sung.jpg?alt=media&token=0e1627f8-3ee9-462b-b35b-bcbb497a2ed4",
       accentColor: "var(--acc-cyan)",
       description:
-        "A quiet, reclusive resident of the port who owns an old radio receiver. He is the first to detect the rhythmic extraterrestrial signal broadcasts. The other villagers suspect him of coordinating with the anomaly.",
+        isKorean
+          ? "낡은 무전기를 소유한 과묵하고 고립된 항구 주민. 일정한 리듬으로 반복되는 외계 신호를 가장 먼저 포착한다. 다른 주민들은 그가 이상 현상과 내통하고 있다고 의심한다."
+          : "A quiet, reclusive resident of the port who owns an old radio receiver. He is the first to detect the rhythmic extraterrestrial signal broadcasts. The other villagers suspect him of coordinating with the anomaly.",
     },
     {
-      name: "Sung-ae",
-      actor: "played by Jung Ho-yeon",
-      role: "Outpost Guard Officer",
+      name: isKorean ? "성해" : "Sung-ae",
+      actor: isKorean ? "정호연 연기" : "played by Jung Ho-yeon",
+      role: isKorean ? "초소 경비 장교" : "Outpost Guard Officer",
       icon: Eye,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fjung_ho_yeon.jpg?alt=media&token=feefe734-4e45-4480-9d72-4b2975cae74e",
       accentColor: "var(--acc-violet)",
       description:
-        "A highly observant young defense officer stationed at Hopo Outpost. She uncovers the mutilated cattle carcass and physical debris left by the entity, leading the search and rescue efforts during the blackout.",
+        isKorean
+          ? "호포 초소에 배치된 관찰력 뛰어난 젊은 경비 장교. 훼손된 소 사체와 존재가 남긴 물리적 잔해를 발견하고, 정전 속 수색과 구조 작전을 이끈다."
+          : "A highly observant young defense officer stationed at Hopo Outpost. She uncovers the mutilated cattle carcass and physical debris left by the entity, leading the search and rescue efforts during the blackout.",
     },
     {
       name: "Taylor Russell",
-      actor: "played by Taylor Russell",
-      role: "Performance Capture: Aidobor",
+      actor: isKorean ? "테일러 러셀 연기" : "played by Taylor Russell",
+      role: isKorean ? "퍼포먼스 캡처: 아이도보르" : "Performance Capture: Aidobor",
       icon: FlaskConical,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Ftaylor_russell.jpg?alt=media&token=1c36890c-b8d1-4835-818e-264cf32e908d",
       accentColor: "#10b981",
       description:
-        "Brings the imperial attendant Aidobor to life through physical performance, balancing patient arboreal movement with sudden, close-range violence.",
+        isKorean
+          ? "황실 시종 아이도보르의 육체를 퍼포먼스로 구현한다. 나무 위에서 천천히 움직이는 인내심과 갑작스러운 근접 폭력성을 함께 표현한다."
+          : "Brings the imperial attendant Aidobor to life through physical performance, balancing patient arboreal movement with sudden, close-range violence.",
     },
     {
       name: "Cameron Britton",
-      actor: "played by Cameron Britton",
-      role: "Performance Capture: Bamigir",
+      actor: isKorean ? "카메론 브리튼 연기" : "played by Cameron Britton",
+      role: isKorean ? "퍼포먼스 캡처: 바미기르" : "Performance Capture: Bamigir",
       icon: Wrench,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fcameron_britton.jpg?alt=media&token=b434aada-73fd-4dc4-930e-104b85f6ab22",
       accentColor: "var(--acc-amber)",
       description:
-        "Performs Bamigir, the towering lower-caste sentry whose weight, four-limbed sprint, and flashes of grief make first contact feel both monstrous and tragically alive.",
+        isKorean
+          ? "거대한 하층 계급 보초병 바미기르를 연기한다. 육중한 무게감과 사족 질주, 순간적으로 드러나는 슬픔을 통해 최초 조우를 괴물 같으면서도 비극적으로 살아 있게 만든다."
+          : "Performs Bamigir, the towering lower-caste sentry whose weight, four-limbed sprint, and flashes of grief make first contact feel both monstrous and tragically alive.",
     },
     {
       name: "Alicia Vikander",
-      actor: "played by Alicia Vikander",
-      role: "Performance Capture: Zor",
+      actor: isKorean ? "알리시아 비칸데르 연기" : "played by Alicia Vikander",
+      role: isKorean ? "퍼포먼스 캡처: 조르" : "Performance Capture: Zor",
       icon: Globe,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Falicia_vikander.jpg?alt=media&token=665880b8-6005-4f49-894c-9d7148b41e18",
       accentColor: "#38bdf8",
       description:
-        "Performs Zor, the empress whose controlled bearing masks a parent's desperation and a body engineered for both armored defense and ranged attack.",
+        isKorean
+          ? "절제된 위엄 뒤에 아이를 잃은 부모의 절박함을 감춘 황후 조르를 연기한다. 장갑 방어와 원거리 공격을 위해 진화한 육체의 무게까지 함께 표현한다."
+          : "Performs Zor, the empress whose controlled bearing masks a parent's desperation and a body engineered for both armored defense and ranged attack.",
     },
     {
       name: "Michael Fassbender",
-      actor: "played by Michael Fassbender",
-      role: "Performance Capture: Mabeyo",
+      actor: isKorean ? "마이클 패스벤더 연기" : "played by Michael Fassbender",
+      role: isKorean ? "퍼포먼스 캡처: 마베이요" : "Performance Capture: Mabeyo",
       icon: FileText,
       image: "https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fmichael_fassbender.jpg?alt=media&token=a6e97578-c277-4c64-866f-e54d548f8e3a",
       accentColor: "var(--acc-danger)",
       description:
-        "Performs Mabeyo, the crown guard who moves between disciplined restraint and a feral combat form while carrying the royal family's last chance at restoration.",
+        isKorean
+          ? "절제된 호위무사와 야수 같은 전투 형태를 오가는 마베이요를 연기한다. 그의 몸에는 황실을 되살릴 마지막 가능성이 담겨 있다."
+          : "Performs Mabeyo, the crown guard who moves between disciplined restraint and a feral combat form while carrying the royal family's last chance at restoration.",
     },
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-space-950 py-12 px-4 md:px-8 relative overflow-hidden font-sans select-none">
+    <div
+      className="flex-1 flex flex-col bg-space-950 py-12 px-4 md:px-8 relative overflow-hidden font-sans select-none"
+      data-language={language}
+      lang={language}
+    >
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -235,11 +439,43 @@ export default function MovieIntroPage() {
 
       {/* Top Title */}
       <div className="w-full max-w-5xl mx-auto text-center mb-16 relative z-10">
+        <nav
+          className="flex justify-end mb-8"
+          aria-label={copy.languageLabel}
+        >
+          <div
+            className="inline-flex p-1 font-mono text-[10px] tracking-widest"
+            style={{ border: "1px solid var(--line)", background: "var(--bg-0)" }}
+          >
+            <Link
+              href="/intro"
+              aria-current={isKorean ? "page" : undefined}
+              className="px-3 py-2 transition-colors"
+              style={{
+                color: isKorean ? "var(--bg-0)" : "var(--ink-2)",
+                background: isKorean ? "var(--acc-primary)" : "transparent",
+              }}
+            >
+              한국어
+            </Link>
+            <Link
+              href="/intro?lang=en"
+              aria-current={isKorean ? undefined : "page"}
+              className="px-3 py-2 transition-colors"
+              style={{
+                color: isKorean ? "var(--ink-2)" : "var(--bg-0)",
+                background: isKorean ? "transparent" : "var(--acc-cyan)",
+              }}
+            >
+              ENGLISH
+            </Link>
+          </div>
+        </nav>
         <span className="eyebrow block mb-3 flicker" style={{ color: "var(--acc-primary)" }}>
-          {"// CLASSIFIED MOVIE PROFILE //"}
+          {copy.classifiedProfile}
         </span>
         <h1 className="display text-4xl sm:text-5xl uppercase mb-4" style={{ color: "var(--ink-0)" }}>
-          FILM PROFILE: HOPE
+          {copy.pageTitle}
         </h1>
         <div className="w-24 h-[2px] mx-auto" style={{ background: "linear-gradient(90deg, var(--acc-primary), var(--acc-violet))" }} />
       </div>
@@ -252,21 +488,17 @@ export default function MovieIntroPage() {
           <div className="flex items-center gap-3 mb-4">
             <span className="w-2.5 h-2.5 rounded-full flicker" style={{ background: "var(--acc-primary)" }} />
             <h2 className="display text-xl uppercase" style={{ color: "var(--ink-0)" }}>
-              CLASSIFIED SYNOPSIS
+              {copy.synopsisTitle}
             </h2>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 items-center">
             {/* Holographic Lore Text */}
             <div className="flex-1 flex flex-col gap-4 text-xs sm:text-sm text-gray-300 leading-relaxed font-sans">
-              <p>
-                In the desolate, fog-shrouded coastal village of Hopo Port, a routine military patrol discovers a sequence of bizarre animal mutilations. Within hours, all communication networks to the mainland are completely severed. The sky turns into a deep purple twilight as a massive electromagnetic dome locks the region in complete isolation.
-              </p>
-              <p>
-                As panic sweeps through the port, the survivors seek refuge inside the local police substation. However, strange radio transmissions hint at a terrifying reality: a giant, 15-20ft tall shapeshifting cosmic entity has landed in the surrounding forest. Worse, the entity has already seized control of someone within the group. Mutual suspicion grows, and survival becomes a psychological war of nerves.
-              </p>
+              <p>{copy.synopsis[0]}</p>
+              <p>{copy.synopsis[1]}</p>
               <p className="pl-3 italic text-gray-400" style={{ borderLeft: "2px solid color-mix(in srgb, var(--acc-primary) 50%, transparent)" }}>
-                &quot;When the sky falls dark and the signals go silent, who do you trust? In the face of cosmic isolation, human fragility is our deepest vulnerability.&quot;
+                &ldquo;{copy.quote}&rdquo;
               </p>
             </div>
 
@@ -274,7 +506,7 @@ export default function MovieIntroPage() {
             <div className="w-full md:w-[440px] aspect-video overflow-hidden relative shadow-2xl" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
               <iframe
                 src="https://www.youtube.com/embed/_oFfYIskj2Y"
-                title="Hope Official Trailer"
+                title={copy.trailerTitle}
                 className="w-full h-full border-0 relative z-20"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
@@ -288,7 +520,7 @@ export default function MovieIntroPage() {
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full flicker" style={{ background: "var(--acc-cyan)" }} />
             <h2 className="display text-xl uppercase" style={{ color: "var(--ink-0)" }}>
-              THE ENSEMBLE (MAIN CAST)
+              {copy.ensembleTitle}
             </h2>
           </div>
 
@@ -331,7 +563,7 @@ export default function MovieIntroPage() {
                   </div>
 
                   <span className="text-[10px] font-mono font-bold tracking-widest uppercase" style={{ color: cast.accentColor }}>
-                    ROLE: {cast.role}
+                    {copy.roleLabel}: {cast.role}
                   </span>
 
                   <p className="text-[11px] text-gray-400 font-sans leading-relaxed flex-1">
@@ -353,10 +585,10 @@ export default function MovieIntroPage() {
               <span className="w-2.5 h-2.5 rounded-full flicker" style={{ background: "#a3e635" }} />
               <div>
                 <span className="text-[10px] font-mono tracking-[0.24em]" style={{ color: "#a3e635" }}>
-                  EXTRATERRESTRIAL ARCHIVE // GERTU
+                  {copy.alienArchive}
                 </span>
                 <h2 className="display text-xl uppercase mt-1" style={{ color: "var(--ink-0)" }}>
-                  ALIEN WORLD & CHARACTER DOSSIERS
+                  {copy.alienSectionTitle}
                 </h2>
               </div>
             </div>
@@ -368,7 +600,7 @@ export default function MovieIntroPage() {
                 background: "color-mix(in srgb, var(--acc-danger) 8%, transparent)",
               }}
             >
-              WARNING // FULL FILM SPOILERS
+              {copy.spoilerWarning}
             </span>
           </div>
 
@@ -387,7 +619,7 @@ export default function MovieIntroPage() {
               >
                 <Image
                   src="/images/intro/aliens/gertu-encounter.webp"
-                  alt="A Gertu alien pursuing a rider through the forest in HOPE"
+                  alt={copy.encounterAlt}
                   fill
                   priority={false}
                   sizes="(max-width: 1024px) 100vw, 55vw"
@@ -397,27 +629,27 @@ export default function MovieIntroPage() {
                 <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-4">
                   <div>
                     <span className="text-[9px] font-mono tracking-[0.22em]" style={{ color: "#a3e635" }}>
-                      FIRST-CONTACT RECORD
+                      {copy.firstContactRecord}
                     </span>
                     <p className="display text-sm sm:text-base mt-1 text-white">
-                      THE HOPO PORT INCURSION
+                      {copy.incursionTitle}
                     </p>
                   </div>
-                  <span className="text-[9px] font-mono text-gray-400">ARCHIVE // 197X</span>
+                  <span className="text-[9px] font-mono text-gray-400">{copy.archiveDate}</span>
                 </div>
               </div>
 
               <div className="flex flex-col justify-center gap-5">
                 <div>
                   <span className="eyebrow" style={{ color: "#a3e635" }}>
-                    IMPERIAL BIOLOGY REPORT
+                    {copy.biologyReport}
                   </span>
                   <h3 className="display text-2xl sm:text-3xl uppercase mt-2" style={{ color: "var(--ink-0)" }}>
-                    GERTU: A BODY FOR EVERY DUTY
+                    {copy.gertuTitle}
                   </h3>
                 </div>
                 <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                  The visitors are not a single monster type. They are members of a stratified civilization whose radically different bodies reveal rank, labor, and proximity to the throne. What looks like a random bestiary is an imperial family, its guard, and its servants stranded inside a human panic.
+                  {copy.gertuDescription}
                 </p>
                 <a
                   href="https://fanmaum.com/community/freeboard/133217321"
@@ -426,13 +658,13 @@ export default function MovieIntroPage() {
                   className="w-fit text-[10px] font-mono tracking-widest uppercase transition-opacity hover:opacity-70"
                   style={{ color: "var(--acc-cyan)" }}
                 >
-                  OPEN SOURCE INTELLIGENCE // FANMAUM ARCHIVE ↗
+                  {copy.sourceLink}
                 </a>
               </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 mt-6">
-              {gertuLore.map((entry) => (
+              {localizedGertuLore.map((entry) => (
                 <div
                   key={entry.index}
                   className="p-4"
@@ -457,7 +689,7 @@ export default function MovieIntroPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {alienDossiers.map((alien, index) => (
+            {localizedAlienDossiers.map((alien, index) => (
               <article
                 key={alien.name}
                 className="panel panel-bracket relative overflow-hidden flex flex-col group"
@@ -473,7 +705,11 @@ export default function MovieIntroPage() {
                 >
                   <Image
                     src={alien.image}
-                    alt={`${alien.name}, ${alien.designation.toLowerCase()}, in HOPE`}
+                    alt={
+                      isKorean
+                        ? `영화 HOPE의 ${alien.name}, ${alien.designation}`
+                        : `${alien.name}, ${alien.designation.toLowerCase()}, in HOPE`
+                    }
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                     className="object-cover grayscale-[35%] opacity-80 transition duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-[1.025]"
@@ -487,7 +723,9 @@ export default function MovieIntroPage() {
                       background: "rgba(0,0,0,0.78)",
                     }}
                   >
-                    SPECIMEN // {String(index + 1).padStart(2, "0")}
+                    {copy.specimenLabel}
+                    {" // "}
+                    {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="absolute bottom-3 right-3 text-[8px] font-mono text-gray-300 tracking-widest">
                     {alien.status}
@@ -543,7 +781,7 @@ export default function MovieIntroPage() {
             <div className="w-full h-48 relative overflow-hidden" style={{ borderBottom: "1px solid var(--line)" }}>
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/nahope-port.firebasestorage.app/o/intro%2Fna_hong_jin.jpg?alt=media&token=20cca7e1-a940-461d-b7d9-5deb668e154e"
-                alt="Na Hong-jin"
+                alt={isKorean ? "나홍진 감독" : "Na Hong-jin"}
                 className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition duration-500"
                 loading="lazy"
               />
@@ -553,9 +791,9 @@ export default function MovieIntroPage() {
             </div>
             <div className="p-4 flex flex-col items-center text-center justify-center flex-1 z-10">
               <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
-                NA HONG-JIN
+                {isKorean ? "나홍진" : "NA HONG-JIN"}
               </h3>
-              <span className="text-[10px] text-gray-500 font-mono mt-0.5">DIRECTOR & SCREENPLAY</span>
+              <span className="text-[10px] text-gray-500 font-mono mt-0.5">{copy.directorRole}</span>
             </div>
           </div>
 
@@ -563,15 +801,11 @@ export default function MovieIntroPage() {
             <div className="flex items-center gap-3">
               <span className="w-2.5 h-2.5 rounded-full flicker" style={{ background: "var(--acc-violet)" }} />
               <h3 className="display text-base uppercase" style={{ color: "var(--ink-0)" }}>
-                THE VISIONARY OF SHAMANIC THRILLERS
+                {copy.directorHeadline}
               </h3>
             </div>
-            <p>
-              Director Na Hong-jin is celebrated internationally for his uncompromising grit, intense pacing, and occult imagery, establishing his name with classic Korean thrillers such as *The Chaser* (2008), *The Yellow Sea* (2010), and the occult horror masterpiece *The Wailing* (2016).
-            </p>
-            <p>
-              With *Hope*, Na Hong-jin embarks on his first major sci-fi cosmic thriller venture. The movie features a groundbreaking co-production involving Korean studio Plus M Entertainment and global stars (including Michael Fassbender and Alicia Vikander). It delivers a highly claustrophobic, intense human-vs-extra-terrestrial siege drama in a remote port, exploring the limits of human resilience, coordination, and isolation.
-            </p>
+            <p>{copy.directorDescription[0]}</p>
+            <p>{copy.directorDescription[1]}</p>
           </div>
         </section>
       </div>
