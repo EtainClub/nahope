@@ -27,7 +27,7 @@
 
 - **Trigger Belt**: Episode 1 rejects the tiger theory; Episode 2 reconstructs human first-shot causality; Episode 3 converts triage → civilian manifest → protected transfer → visible disarmament → evacuation or wordless return; Episode 4 converts chain of custody → verified timeline → three-layer classification → bounded proposal → open archive or governance transmission.
 - **Canon boundary**: Episodes 1–2 use released-film anchors with game-adapted puzzles; Episodes 3–4 are explicitly game-original continuations.
-- **Token-Gating**: Episode 2 requires an Episode 1 clear and 5,000 $NAHOPE; Episode 3 requires an Episode 2 clear and 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, three rare artifacts, and 100,000 $NAHOPE. Wallet balances are checked by a no-cache Solana RPC API.
+- **Access policy**: Episode 2 is fully open without a prior clear, wallet, or token balance. Episode 3 requires an Episode 2 clear and 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, three rare artifacts, and 100,000 $NAHOPE. Gated wallet balances are checked by a no-cache Solana RPC API.
 - **CGC / UGC governance**: Players generate memes and scenario proposals; the community memecoin vote selects the official *HOPE Part 2* storyline.
 
 ## Notes for AI assistants

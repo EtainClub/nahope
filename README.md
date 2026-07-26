@@ -139,7 +139,7 @@ A logic structure designed so that thoughtless clicking leads to failure. Player
 
 ### Token-Gating
 
-Episode 2 requires an Episode 1 clear plus 5,000 $NAHOPE; Episode 3 requires an Episode 2 clear plus 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, at least three rare artifacts, and 100,000 $NAHOPE. Connected-wallet balances are checked by a no-cache Next.js server route using Solana RPC and the configured `NAHOPE_MINT`; progression and artifact prerequisites come from the saved player profile.
+Episode 2 is fully open with no prior clear, wallet, or token requirement. Episode 3 requires an Episode 2 clear plus 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, at least three rare artifacts, and 100,000 $NAHOPE. Connected-wallet balances for Episodes 3–4 are checked by a no-cache Next.js server route using Solana RPC and the configured `NAHOPE_MINT`; progression and artifact prerequisites come from the saved player profile.
 
 ### UGC Reward System
 

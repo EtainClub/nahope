@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 
-const EPISODE_TWO_GATE = 5_000;
 const EPISODE_THREE_GATE = 20_000;
 const EPISODE_FOUR_GATE = 100_000;
 const REQUIRED_BALANCE = {
-  2: EPISODE_TWO_GATE,
   3: EPISODE_THREE_GATE,
   4: EPISODE_FOUR_GATE,
 } as const;
@@ -21,7 +19,7 @@ export async function GET(request: NextRequest) {
   const wallet = request.nextUrl.searchParams.get("wallet");
   const episode = request.nextUrl.searchParams.get("episode");
 
-  if (episode !== "2" && episode !== "3" && episode !== "4") {
+  if (episode !== "3" && episode !== "4") {
     return NextResponse.json({ error: "Unsupported episode" }, { status: 400 });
   }
   const episodeNumber = Number(episode) as keyof typeof REQUIRED_BALANCE;

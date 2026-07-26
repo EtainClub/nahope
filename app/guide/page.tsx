@@ -159,7 +159,7 @@ export default function GuidePage() {
           <p>
             After Bamigir falls, Sung-ki organizes a mountain sweep while Sung-ae treats the wounded. Bum-seok must determine why several different beings are moving through the forest before the armed search line meets them.
           </p>
-          <FactRow label="Access gate">Clear Episode 1, connect a wallet, and verify at least 5,000 $NAHOPE.</FactRow>
+          <FactRow label="Access">Open play. No Episode 1 clear, wallet connection, or $NAHOPE balance is required.</FactRow>
           <FactRow label="Yang-bae">The carpenter fired at the childlike Kali without warning and concealed the body in his cold room.</FactRow>
           <FactRow label="Royal party">Ma&apos;veyyo, Zor, and Aydobor belong to different ranks and forms; their movement through Hopo is connected to Kali.</FactRow>
           <FactRow label="Core rule">Ammunition is evidence of capacity, not permission. Giving it to the hunters or firing during first contact causes immediate failure.</FactRow>

@@ -9,8 +9,8 @@
 
 | Scope | Decision |
 |-------|----------|
-| Episode 1 | Free play — no wallet. Mock profile (`Hopo...7XzP`, 25,000 $NAHOPE) |
-| Episode 2+ | Real Solana wallet + $NAHOPE balance gate |
+| Episodes 1–2 | Free play — no prior clear, wallet, or token balance required; wallet connection remains optional for profile persistence |
+| Episodes 3–4 | Real Solana wallet + $NAHOPE balance gate |
 | Community Write | Wallet required before posting |
 | Auth Layer | Firebase Anonymous Auth (session-based, wallet address as true identity) |
 | Identity Key | Solana wallet address (base58) = Firestore document ID |
@@ -19,8 +19,8 @@
 
 ## Design Decisions
 
-### Why Episode 1 is Free
-Lower onboarding barrier. Players experience the full game loop before any wallet friction. Web3 games grow by hooking players with content first, gating later episodes.
+### Why Episodes 1–2 Are Free
+Lower onboarding friction lets players experience both released-film adaptation episodes before wallet or token requirements begin with Episode 3.
 
 ### Why Firebase Anonymous Auth (Not Custom Token)
 Custom token auth requires a backend Firebase Function that verifies the wallet signature and mints the token. For MVP, Anonymous Auth is sufficient to satisfy Firestore's "must be authenticated" rule. The wallet pubkey is the true identity — Firebase UID is only an auth ticket.
@@ -106,7 +106,7 @@ interface WalletConnectModalProps {
 | reason | Korean message |
 |--------|---------------|
 | `community` | 커뮤니티 글 작성은 Solana 지갑 연결이 필요합니다 |
-| `episode2` | 에피소드 2: 지갑 연결 + 5,000 $NAHOPE 필요 |
+| `episode2` | Optional wallet connection for saving progress; Episode 2 itself remains open |
 | `episode3` | 에피소드 3: 20,000 $NAHOPE 필요 |
 | `episode4` | 에피소드 4: 100,000 $NAHOPE 필요 (엘리트 방어자) |
 
@@ -180,14 +180,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 const { connected, publicKey } = useWallet();
 
 // On episode advance:
-const EPISODE_GATES = { 2: 5000, 3: 20000, 4: 100000 } as const;
-if (nextEpisode > 1) {
+const EPISODE_GATES = { 3: 20000, 4: 100000 } as const;
+if (nextEpisode > 2) {
   if (!connected || !publicKey) {
     setWalletModalReason(`episode${nextEpisode}`);
     setShowWalletModal(true);
     return;
   }
-  const required = EPISODE_GATES[nextEpisode as 2 | 3 | 4];
+  const required = EPISODE_GATES[nextEpisode as 3 | 4];
   if ((profile?.tokenBalance ?? 0) < required) {
     addLog(`접속 조건 미달: ${required.toLocaleString()} $NAHOPE 필요`);
     return;

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useWallet } from "@solana/wallet-adapter-react";
+import type { WalletName } from "@solana/wallet-adapter-base";
 import { X, Wallet, AlertCircle, Loader2 } from "lucide-react";
 import { connectWalletAndAuth, database } from "../lib/firebase";
 import { useLanguage } from "../lib/i18n";
@@ -16,10 +18,10 @@ const REASON_MESSAGES: Record<string, { title: string; desc: string; titleKo: st
     descKo: "전송 기록을 게시하려면 Solana 지갑 연결이 필요합니다. 게시물은 실제 지갑 주소와 연결됩니다.",
   },
   episode2: {
-    title: "Episode 2 Access",
-    desc: "Episode 2 requires a connected Solana wallet and a minimum balance of 5,000 $NAHOPE.",
-    titleKo: "에피소드 2 접근",
-    descKo: "에피소드 2에는 Solana 지갑 연결과 최소 5,000 $NAHOPE 잔액이 필요합니다.",
+    title: "Optional Wallet Connection",
+    desc: "Episode 2 is open without a wallet. Connect only to attach progress and inventory to your Solana profile.",
+    titleKo: "Optional Wallet Connection",
+    descKo: "Episode 2 is open without a wallet. Connect only to attach progress and inventory to your Solana profile.",
   },
   episode3: {
     title: "Episode 3 Access",
@@ -60,10 +62,10 @@ export default function WalletConnectModal({
   const handleSelectWallet = async (walletName: string) => {
     setError(null);
     try {
-      select(walletName as any);
+      select(walletName as WalletName);
       await connect();
-    } catch (e: any) {
-      setError(e?.message ?? tr("지갑 연결에 실패했습니다.", "Failed to connect wallet."));
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : tr("지갑 연결에 실패했습니다.", "Failed to connect wallet."));
     }
   };
 
@@ -132,8 +134,8 @@ export default function WalletConnectModal({
       window.dispatchEvent(new Event("profileUpdated"));
       onSuccess(pubkeyStr);
       onClose();
-    } catch (e: any) {
-      setError(e?.message ?? tr("인증에 실패했습니다.", "Authentication failed."));
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : tr("인증에 실패했습니다.", "Authentication failed."));
     } finally {
       setIsAuthenticating(false);
     }
@@ -209,9 +211,12 @@ export default function WalletConnectModal({
                   style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)" }}
                 >
                   {wallet.adapter.icon && (
-                    <img
+                    <Image
                       src={wallet.adapter.icon}
                       alt={wallet.adapter.name}
+                      width={20}
+                      height={20}
+                      unoptimized
                       className="w-5 h-5 rounded"
                     />
                   )}
@@ -238,9 +243,12 @@ export default function WalletConnectModal({
                   style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)" }}
                   >
                     {wallet.adapter.icon && (
-                      <img
+                      <Image
                         src={wallet.adapter.icon}
                         alt={wallet.adapter.name}
+                        width={20}
+                        height={20}
+                        unoptimized
                         className="w-5 h-5 rounded"
                       />
                     )}

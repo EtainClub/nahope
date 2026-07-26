@@ -27,7 +27,6 @@ import {
   localizeGameRole,
 } from "../../lib/game/i18n";
 
-const EP2_GATE = 5_000;
 const EP3_GATE = 20_000;
 const EP4_GATE = 100_000;
 const EPISODE_DEFINITIONS: Record<GameDefinition["number"], GameDefinition> = {
@@ -67,20 +66,19 @@ type EpisodeAccess = {
   balance: number | null;
 };
 
-type GatedEpisodeNumber = 2 | 3 | 4;
+type GatedEpisodeNumber = 3 | 4;
 
 const GATE_CONFIG: Record<GatedEpisodeNumber, {
-  prerequisiteEpisode: 1 | 2 | 3;
+  prerequisiteEpisode: 2 | 3;
   requiredBalance: number;
   description: string;
 }> = {
-  2: { prerequisiteEpisode: 1, requiredBalance: EP2_GATE, description: "The mountain operation is classified. Complete the first case and verify the required wallet balance to enter." },
   3: { prerequisiteEpisode: 2, requiredBalance: EP3_GATE, description: "The civilian corridor is classified. Complete the mountain case and verify the required wallet balance to enter." },
   4: { prerequisiteEpisode: 3, requiredBalance: EP4_GATE, description: "The final archive requires an Episode 3 clear, three retained Hopo artifacts, and server-verified Elite Defender holdings." },
 };
 
 function isGatedEpisode(number: GameDefinition["number"]): number is GatedEpisodeNumber {
-  return number !== 1;
+  return number === 3 || number === 4;
 }
 
 function walletReason(number: GameDefinition["number"]): "episode2" | "episode3" | "episode4" {
@@ -491,7 +489,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 color: "var(--acc-violet)",
                 fontSize: 11, letterSpacing: "0.16em",
               }}>
-                {definition.number === 1 && `EP.2 GATE · ${EP2_GATE.toLocaleString()} $NAHOPE · SERVER VERIFICATION REQUIRED`}
+                {definition.number === 1 && "EP.2 OPEN · NO WALLET OR PRIOR CLEAR REQUIRED"}
                 {definition.number === 2 && `EP.3 GATE · ${EP3_GATE.toLocaleString()} $NAHOPE · SERVER VERIFICATION REQUIRED`}
                 {definition.number === 3 && `EP.4 GATE · ${EP4_GATE.toLocaleString()} $NAHOPE · 3 RARE ARTIFACTS · SERVER VERIFICATION REQUIRED`}
               </div>

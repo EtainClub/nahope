@@ -63,7 +63,7 @@ export default function EpisodeRoadmap() {
                 EPISODE 02
               </span>
               <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-violet)" }}>
-                5,000 $NAHOPE GATED
+                OPEN ACCESS
               </span>
             </div>
             <h3 className="display text-base uppercase mt-2" style={{ color: "var(--ink-0)" }}>
@@ -74,7 +74,7 @@ export default function EpisodeRoadmap() {
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line)", color: "var(--acc-violet)" }}>
-            STATUS: PLAYABLE · EP.1 CLEAR REQUIRED →
+            STATUS: PLAYABLE · NO WALLET REQUIRED →
           </div>
         </Link>
 
