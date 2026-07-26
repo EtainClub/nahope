@@ -15,11 +15,13 @@ import {
   Loader2,
   Link as LinkIcon,
 } from "lucide-react";
+import { useLanguage } from "../../lib/i18n";
 
 const NAHOPE_MINT = process.env.NEXT_PUBLIC_NAHOPE_MINT || "";
 
 export default function ProfilePage() {
   const { connected, publicKey, disconnect } = useWallet();
+  const { tr } = useLanguage();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userPosts, setUserPosts] = useState<CommunityPost[]>([]);
@@ -109,14 +111,12 @@ export default function ProfilePage() {
 
   const balanceLabel =
     connected && NAHOPE_MINT
-      ? "ON-CHAIN $NAHOPE"
+      ? tr("온체인 $NAHOPE", "ON-CHAIN $NAHOPE")
       : connected
-        ? "$NAHOPE (STORED)"
-        : "$NAHOPE (SIMULATION)";
+        ? tr("$NAHOPE (저장값)", "$NAHOPE (STORED)")
+        : tr("$NAHOPE (시뮬레이션)", "$NAHOPE (SIMULATION)");
 
   const isSimulation = !connected;
-
-  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="flex-1 flex flex-col bg-space-950 py-12 px-4 md:px-8 relative overflow-hidden font-sans select-none">
@@ -126,10 +126,10 @@ export default function ProfilePage() {
       {/* Header */}
       <div className="w-full max-w-4xl mx-auto text-center mb-12 relative z-10">
         <span className="eyebrow block mb-3" style={{ color: "var(--acc-violet)" }}>
-          // USER PROFILE IDENT DECK //
+          {tr("// 사용자 신원 프로필 //", "// USER PROFILE IDENT DECK //")}
         </span>
         <h1 className="display text-3xl sm:text-4xl uppercase" style={{ color: "var(--ink-0)" }}>
-          CLASSIFIED DOSSIER
+          {tr("기밀 신상 기록", "CLASSIFIED DOSSIER")}
         </h1>
         <div className="w-24 h-[2px] mx-auto mt-2" style={{ background: "linear-gradient(90deg, var(--acc-violet), var(--acc-cyan))" }} />
       </div>
@@ -146,11 +146,11 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
               <Wallet className="w-4 h-4" style={{ color: "var(--acc-cyan)" }} />
               <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
-                Solana Wallet
+                {tr("Solana 지갑", "Solana Wallet")}
               </span>
               {isSimulation && (
                 <span className="ml-auto text-[9px] font-mono text-gray-600 border border-space-800 rounded px-1.5 py-0.5 uppercase tracking-wider">
-                  Simulation
+                  {tr("시뮬레이션", "Simulation")}
                 </span>
               )}
             </div>
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
                   <span className="font-bold uppercase tracking-widest" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
-                    Connected
+                    {tr("연결됨", "Connected")}
                   </span>
                 </div>
 
@@ -175,7 +175,7 @@ export default function ProfilePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-alien-cyan hover:text-white transition-colors shrink-0"
-                    title="View on Solscan"
+                    title={tr("Solscan에서 보기", "View on Solscan")}
                   >
                     <LinkIcon className="w-3 h-3" />
                   </a>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                     {isFetchingBalance ? (
                       <div className="flex items-center gap-1.5 text-gray-400">
                         <Loader2 className="w-3 h-3 animate-spin" />
-                        <span className="text-[11px]">Fetching...</span>
+                        <span className="text-[11px]">{tr("조회 중…", "Fetching...")}</span>
                       </div>
                     ) : (
                       <span className="font-bold text-base" style={{ color: "var(--acc-cyan)" }}>
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                     <button
                       onClick={fetchChainBalance}
                       disabled={isFetchingBalance}
-                      title="Refresh balance"
+                      title={tr("잔액 새로고침", "Refresh balance")}
                       className="text-gray-500 hover:text-alien-cyan transition-colors disabled:opacity-40"
                     >
                       <RefreshCw
@@ -218,9 +218,9 @@ export default function ProfilePage() {
                 {/* Episode access gates */}
                 <div className="flex flex-col gap-1.5 p-3" style={{ fontSize: 10, border: "1px solid var(--line)", background: "var(--bg-0)" }}>
                   {[
-                    { label: "EP.2 ACCESS", req: 5000 },
-                    { label: "EP.3 ACCESS", req: 20000 },
-                    { label: "EP.4 ACCESS", req: 100000 },
+                    { label: tr("에피소드 2 접근", "EP.2 ACCESS"), req: 5000 },
+                    { label: tr("에피소드 3 접근", "EP.3 ACCESS"), req: 20000 },
+                    { label: tr("에피소드 4 접근", "EP.4 ACCESS"), req: 100000 },
                   ].map(({ label, req }) => {
                     const granted = displayBalance >= req;
                     return (
@@ -231,8 +231,8 @@ export default function ProfilePage() {
                           style={{ color: granted ? "var(--acc-primary)" : "var(--ink-4)" }}
                         >
                           {granted
-                            ? "// GRANTED //"
-                            : `${req.toLocaleString()} needed`}
+                            ? tr("// 허가됨 //", "// GRANTED //")
+                            : tr(`${req.toLocaleString()} 필요`, `${req.toLocaleString()} needed`)}
                         </span>
                       </div>
                     );
@@ -245,19 +245,17 @@ export default function ProfilePage() {
                   className="flex items-center justify-center gap-1.5 text-[10px] text-gray-500 hover:text-alert-red transition-colors font-mono uppercase tracking-wider py-1 cursor-pointer"
                 >
                   <LogOut className="w-3 h-3" />
-                  Disconnect Wallet
+                  {tr("지갑 연결 해제", "Disconnect Wallet")}
                 </button>
               </div>
             ) : (
               /* Not Connected State */
               <div className="flex flex-col gap-4 font-mono text-xs">
                 <p className="text-gray-500 text-[11px] leading-relaxed">
-                  Connect your Solana wallet to verify your $NAHOPE balance,
-                  unlock Episodes 2–4, and post to the community feed.
+                  {tr("Solana 지갑을 연결해 $NAHOPE 잔액을 확인하고 에피소드 2~4를 해제하며 커뮤니티 피드에 게시하세요.", "Connect your Solana wallet to verify your $NAHOPE balance, unlock Episodes 2–4, and post to the community feed.")}
                 </p>
                 <p className="text-gray-600 text-[10px]">
-                  Episode 1 is free — currently playing in simulation mode with
-                  a mock balance of{" "}
+                  {tr("에피소드 1은 무료입니다. 현재 다음 모의 잔액으로 시뮬레이션 모드에서 플레이 중입니다: ", "Episode 1 is free — currently playing in simulation mode with a mock balance of ")}
                   <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>
                     {profile?.tokenBalance.toLocaleString()} $NAHOPE
                   </span>
@@ -269,7 +267,7 @@ export default function ProfilePage() {
                   style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
                 >
                   <Wallet className="w-3.5 h-3.5" />
-                  Connect Wallet
+                  {tr("지갑 연결", "Connect Wallet")}
                 </button>
               </div>
             )}
@@ -281,13 +279,13 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
               <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
-                Clearance Summary
+                {tr("접근 권한 요약", "Clearance Summary")}
               </span>
             </div>
 
             <div className="flex flex-col gap-2.5 font-mono text-[10px] leading-relaxed">
               <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
-                <span className="text-gray-500">ACTIVE ACCOUNT:</span>
+                <span className="text-gray-500">{tr("활성 계정", "ACTIVE ACCOUNT")}:</span>
                 <span className="font-bold" style={{ color: "var(--ink-0)" }}>
                   {displayAddress.length > 14
                     ? `${displayAddress.slice(0, 6)}...${displayAddress.slice(-6)}`
@@ -295,13 +293,13 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
-                <span className="text-gray-500">LIQUID $NAHOPE:</span>
+                <span className="text-gray-500">{tr("유동 $NAHOPE", "LIQUID $NAHOPE")}:</span>
                 <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>
-                  {displayBalance.toLocaleString()} TOKENS
+                  {displayBalance.toLocaleString()} {tr("토큰", "TOKENS")}
                 </span>
               </div>
               <div className="flex justify-between pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
-                <span className="text-gray-500">ENDINGS SECURED:</span>
+                <span className="text-gray-500">{tr("확보한 엔딩", "ENDINGS SECURED")}:</span>
                 <span className="font-bold" style={{ color: "var(--acc-primary)" }}>
                   {profile?.completedEndings?.filter(e => e !== "ep1_clear").length || 0} / 4
                 </span>
@@ -319,17 +317,17 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 mb-4 pb-2" style={{ borderBottom: "1px solid var(--line)" }}>
               <Award className="w-4 h-4" style={{ color: "var(--acc-cyan)" }} />
               <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
-                Clear & Ending Badges
+                {tr("클리어 및 엔딩 배지", "Clear & Ending Badges")}
               </span>
             </div>
 
             <div className="grid grid-cols-5 gap-2 font-mono text-[9px] text-center">
               {[
-                { id: "ep1_A", name: "Ending A", sub: "Tragedy", art: "/images/endings/ep1_a.svg" },
-                { id: "ep1_B", name: "Ending B", sub: "Arrest", art: "/images/endings/ep1_b.svg" },
-                { id: "ep1_C", name: "Ending C", sub: "Witness", art: "/images/endings/ep1_c.svg" },
-                { id: "ep1_D", name: "Ending D", sub: "Apostate", art: "/images/endings/ep1_d.svg" },
-                { id: "ep1_clear", name: "Clear Ep.1", sub: "DMZ Clear", art: "/images/endings/ep1_clear.svg" },
+                { id: "ep1_A", name: tr("엔딩 A", "Ending A"), sub: tr("비극", "Tragedy"), art: "/images/endings/ep1_a.svg" },
+                { id: "ep1_B", name: tr("엔딩 B", "Ending B"), sub: tr("체포", "Arrest"), art: "/images/endings/ep1_b.svg" },
+                { id: "ep1_C", name: tr("엔딩 C", "Ending C"), sub: tr("목격자", "Witness"), art: "/images/endings/ep1_c.svg" },
+                { id: "ep1_D", name: tr("엔딩 D", "Ending D"), sub: tr("배교자", "Apostate"), art: "/images/endings/ep1_d.svg" },
+                { id: "ep1_clear", name: tr("에피소드 1 클리어", "Clear Ep.1"), sub: tr("DMZ 클리어", "DMZ Clear"), art: "/images/endings/ep1_clear.svg" },
               ].map((badge) => {
                 const isSecured = profile?.completedEndings?.includes(badge.id);
 
@@ -385,13 +383,13 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: "1px solid var(--line)" }}>
               <ClipboardList className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
               <span className="display text-sm uppercase" style={{ color: "var(--ink-0)" }}>
-                My Logged Transmissions ({userPosts.length})
+                {tr("내 전송 기록", "My Logged Transmissions")} ({userPosts.length})
               </span>
             </div>
 
             {userPosts.length === 0 ? (
               <div className="py-6 text-center text-[10px] text-gray-500 font-mono italic">
-                You haven&apos;t transmitted any reports to the public feed yet.
+                {tr("아직 공개 피드에 전송한 보고서가 없습니다.", "You haven't transmitted any reports to the public feed yet.")}
               </div>
             ) : (
               <div className="flex flex-col gap-3 max-h-[180px] overflow-y-auto pr-1">
@@ -406,9 +404,9 @@ export default function ProfilePage() {
                         className="font-bold"
                         style={{ color: post.category === "scenario" ? "var(--acc-violet)" : "var(--acc-cyan)" }}
                       >
-                        {post.category.toUpperCase()}
+                        {post.category === "scenario" ? tr("시나리오", "SCENARIO") : tr("인증", "BRAG")}
                       </span>
-                      <span>Votes: {post.votes.toLocaleString()}</span>
+                      <span>{tr("투표", "Votes")}: {post.votes.toLocaleString()}</span>
                     </div>
                     <p className="text-[10px] text-gray-300 font-sans leading-relaxed line-clamp-2">
                       {post.text}

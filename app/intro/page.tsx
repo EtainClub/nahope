@@ -1,70 +1,21 @@
-import type { Metadata } from "next";
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
-import { Shield, Radio, Eye, Clapperboard, FlaskConical, Wrench, Globe, FileText } from "lucide-react";
-
-type Language = "ko" | "en";
-type IntroSearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-const metadataByLanguage: Record<Language, Metadata> = {
-  ko: {
-    title: "영화 정보 | 나홍진 감독의 HOPE",
-    description:
-      "나홍진 감독의 SF 코즈믹 호러 영화 HOPE의 출연진, 시놉시스, 외계인 캐릭터 도감과 세계관, 감독 정보를 확인하세요.",
-    openGraph: {
-      title: "HOPE | 나홍진 감독의 SF 코즈믹 호러",
-      description:
-        "호포항에서 외계 생명체와 조우한 생존자들의 이야기를 그린 나홍진 감독의 코즈믹 호러 영화.",
-      images: [
-        {
-          url: "/images/og-banner.png",
-          width: 1200,
-          height: 630,
-          alt: "나홍진 감독의 SF 코즈믹 호러 영화 HOPE",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "HOPE | 나홍진 감독의 코즈믹 호러",
-      description:
-        "황정민, 조인성, 정호연, 마이클 패스벤더, 알리시아 비칸데르가 출연하는 나홍진 감독의 영화 HOPE.",
-      images: ["/images/og-banner.png"],
-    },
-  },
-  en: {
-    title: "Film Profile | HOPE by Na Hong-jin",
-    description:
-      "Cast, synopsis, alien character dossiers, and director profile for Na Hong-jin's sci-fi cosmic horror film HOPE.",
-    openGraph: {
-      title: "HOPE | Na Hong-jin's Sci-Fi Cosmic Horror Film",
-      description:
-        "Na Hong-jin's cosmic horror film about survivors confronting an extraterrestrial incursion at Hopo Port.",
-      images: [
-        {
-          url: "/images/og-banner.png",
-          width: 1200,
-          height: 630,
-          alt: "HOPE, a sci-fi cosmic horror film by Na Hong-jin",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "HOPE | Na Hong-jin's Cosmic Horror Film",
-      description:
-        "Na Hong-jin's cosmic horror film HOPE, starring Hwang Jung-min, Jo In-sung, Jung Ho-yeon, Michael Fassbender, and Alicia Vikander.",
-      images: ["/images/og-banner.png"],
-    },
-  },
-};
-
-function resolveLanguage(searchParams: Record<string, string | string[] | undefined>): Language {
-  const requestedLanguage = Array.isArray(searchParams.lang) ? searchParams.lang[0] : searchParams.lang;
-  return requestedLanguage === "en" ? "en" : "ko";
-}
-
-export const metadata: Metadata = metadataByLanguage.ko;
+import {
+  Shield,
+  Radio,
+  Eye,
+  Clapperboard,
+  FlaskConical,
+  Wrench,
+  Globe,
+  FileText,
+  Hammer,
+  MessageCircle,
+  UsersRound,
+  Stethoscope,
+} from "lucide-react";
+import { useLanguage } from "../../lib/i18n";
 
 // JSON-LD for the movie
 const movieJsonLd = {
@@ -86,6 +37,10 @@ const movieJsonLd = {
     { "@type": "Person", name: "Cameron Britton" },
     { "@type": "Person", name: "Alicia Vikander" },
     { "@type": "Person", name: "Michael Fassbender" },
+    { "@type": "Person", name: "Eum Moon-suk" },
+    { "@type": "Person", name: "Lim Hyun-sik" },
+    { "@type": "Person", name: "Lee Sang-hee" },
+    { "@type": "Person", name: "Hwang Seok-jeong" },
   ],
   genre: ["Sci-Fi", "Cosmic Horror", "Thriller"],
   productionCompany: [
@@ -109,7 +64,7 @@ const pageCopy = {
     quote:
       "하늘이 어두워지고 모든 신호가 끊겼을 때, 당신은 누구를 믿을 것인가? 우주적 고립 앞에서 인간의 나약함은 가장 깊은 약점이 된다.",
     trailerTitle: "HOPE 공식 예고편",
-    ensembleTitle: "주요 출연진",
+    ensembleTitle: "등장인물 및 주요 출연진",
     roleLabel: "역할",
     alienArchive: "외계 생명체 기록 // 게르투",
     alienSectionTitle: "외계 세계관 및 캐릭터 도감",
@@ -143,7 +98,7 @@ const pageCopy = {
     quote:
       "When the sky falls dark and the signals go silent, who do you trust? In the face of cosmic isolation, human fragility is our deepest vulnerability.",
     trailerTitle: "HOPE Official Trailer",
-    ensembleTitle: "THE ENSEMBLE (MAIN CAST)",
+    ensembleTitle: "THE ENSEMBLE (CAST & CHARACTERS)",
     roleLabel: "ROLE",
     alienArchive: "EXTRATERRESTRIAL ARCHIVE // GERTU",
     alienSectionTitle: "ALIEN WORLD & CHARACTER DOSSIERS",
@@ -308,12 +263,8 @@ const alienDossiers = [
   },
 ];
 
-export default async function MovieIntroPage({
-  searchParams,
-}: {
-  searchParams: IntroSearchParams;
-}) {
-  const language = resolveLanguage(await searchParams);
+export default function MovieIntroPage() {
+  const { language } = useLanguage();
   const isKorean = language === "ko";
   const copy = pageCopy[language];
   const localizedGertuLore = gertuLore.map((entry) =>
@@ -361,7 +312,7 @@ export default async function MovieIntroPage({
           : "A quiet, reclusive resident of the port who owns an old radio receiver. He is the first to detect the rhythmic extraterrestrial signal broadcasts. The other villagers suspect him of coordinating with the anomaly.",
     },
     {
-      name: isKorean ? "성해" : "Sung-ae",
+      name: isKorean ? "성애" : "Sung-ae",
       actor: isKorean ? "정호연 연기" : "played by Jung Ho-yeon",
       role: isKorean ? "초소 경비 장교" : "Outpost Guard Officer",
       icon: Eye,
@@ -371,6 +322,66 @@ export default async function MovieIntroPage({
         isKorean
           ? "호포 초소에 배치된 관찰력 뛰어난 젊은 경비 장교. 훼손된 소 사체와 존재가 남긴 물리적 잔해를 발견하고, 정전 속 수색과 구조 작전을 이끈다."
           : "A highly observant young defense officer stationed at Hopo Outpost. She uncovers the mutilated cattle carcass and physical debris left by the entity, leading the search and rescue efforts during the blackout.",
+    },
+    {
+      name: isKorean ? "양배" : "Yang-bae",
+      actor: isKorean ? "음문석 연기" : "played by Eum Moon-suk",
+      role: isKorean ? "호포항 목수" : "Hopo Port Carpenter",
+      icon: Hammer,
+      image: "/images/intro/cast/yang-bae.jpg",
+      photoCredit: isKorean
+        ? "사진 제공: 플러스엠·포지드필름스"
+        : "Photo: Plus M · Forged Films",
+      accentColor: "var(--acc-amber)",
+      description:
+        isKorean
+          ? "충청도 사투리와 좀처럼 속을 읽을 수 없는 표정으로 등장하는 호포항의 목수. 악의 없이 저지른 듯한 사소한 행동이 마을 전체를 뒤흔드는 거대한 사건의 발단이 되며, 예측하기 어려운 선택으로 이야기의 흐름을 바꾼다."
+          : "Hopo Port's carpenter, marked by a Chungcheong dialect and an unreadable expression. A seemingly small act, committed without obvious malice, becomes the catalyst for the catastrophe engulfing the village, and his unpredictable choices redirect the story.",
+    },
+    {
+      name: isKorean ? "해술" : "Hae-sul",
+      actor: isKorean ? "임현식 연기" : "played by Lim Hyun-sik",
+      role: isKorean ? "괴물 목격 주민" : "Monster Witness",
+      icon: MessageCircle,
+      image: "/images/intro/cast/hae-sul.jpg",
+      photoCredit: isKorean
+        ? "사진 제공: 플러스엠·포지드필름스"
+        : "Photo: Plus M · Forged Films",
+      accentColor: "var(--acc-primary)",
+      description:
+        isKorean
+          ? "숲에서 정체불명의 괴물을 목격한 호포항 주민. 성애에게 자신의 목격담을 온몸으로 재현하며 웃음과 불안을 동시에 만들어 내고, 믿기 힘든 이야기가 사실일 가능성을 마을 사람들 앞에 처음 펼쳐 보인다."
+          : "A Hopo Port resident who witnesses the unidentified creature in the forest. His vivid reenactment for Sung-ae moves between comedy and dread, placing the possibility that his unbelievable account is true directly before the villagers.",
+    },
+    {
+      name: isKorean ? "낙연" : "Nak-yeon",
+      actor: isKorean ? "이상희 연기" : "played by Lee Sang-hee",
+      role: isKorean ? "호포항 주민" : "Hopo Port Resident",
+      icon: UsersRound,
+      image: "/images/intro/cast/nak-yeon.jpg",
+      photoCredit: isKorean
+        ? "사진 제공: 플러스엠·포지드필름스"
+        : "Photo: Plus M · Forged Films",
+      accentColor: "var(--acc-cyan)",
+      description:
+        isKorean
+          ? "외계 존재의 출현으로 무너진 마을에서 범석과 함께 사건을 헤쳐 나가는 주민. 생활력과 능청스러운 태도로 극도의 혼란 속에서도 현실적인 감각을 잃지 않으며, 범석과의 거침없는 호흡으로 긴장에 균열을 낸다."
+          : "A villager who struggles alongside Bum-seok after the extraterrestrial arrival throws Hopo Port into chaos. Nak-yeon's grounded instincts and sly composure preserve a sense of ordinary life, while the blunt rapport with Bum-seok punctures the mounting tension.",
+    },
+    {
+      name: isKorean ? "보건소장" : "Health Center Chief",
+      actor: isKorean ? "황석정 연기" : "played by Hwang Seok-jeong",
+      role: isKorean ? "호포항 보건소 책임자" : "Hopo Port Medical Officer",
+      icon: Stethoscope,
+      image: "/images/intro/cast/health-center-chief.jpg",
+      photoCredit: isKorean
+        ? "사진 제공: 플러스엠·포지드필름스"
+        : "Photo: Plus M · Forged Films",
+      accentColor: "var(--acc-danger)",
+      description:
+        isKorean
+          ? "호포항 보건소를 책임지는 의료인. 인간의 상식으로 설명할 수 없는 생명체를 직접 부검하며 공포를 물질적인 증거로 바꾸고, 마을의 소문과 추측을 되돌릴 수 없는 과학적 현실로 만드는 전환점에 선다."
+          : "The medical officer responsible for Hopo Port's health center. By performing an autopsy on a life-form beyond ordinary human explanation, she turns fear into physical evidence and transforms village rumor into an irreversible scientific reality.",
     },
     {
       name: "Taylor Russell",
@@ -439,38 +450,6 @@ export default async function MovieIntroPage({
 
       {/* Top Title */}
       <div className="w-full max-w-5xl mx-auto text-center mb-16 relative z-10">
-        <nav
-          className="flex justify-end mb-8"
-          aria-label={copy.languageLabel}
-        >
-          <div
-            className="inline-flex p-1 font-mono text-[10px] tracking-widest"
-            style={{ border: "1px solid var(--line)", background: "var(--bg-0)" }}
-          >
-            <Link
-              href="/intro"
-              aria-current={isKorean ? "page" : undefined}
-              className="px-3 py-2 transition-colors"
-              style={{
-                color: isKorean ? "var(--bg-0)" : "var(--ink-2)",
-                background: isKorean ? "var(--acc-primary)" : "transparent",
-              }}
-            >
-              한국어
-            </Link>
-            <Link
-              href="/intro?lang=en"
-              aria-current={isKorean ? undefined : "page"}
-              className="px-3 py-2 transition-colors"
-              style={{
-                color: isKorean ? "var(--ink-2)" : "var(--bg-0)",
-                background: isKorean ? "transparent" : "var(--acc-cyan)",
-              }}
-            >
-              ENGLISH
-            </Link>
-          </div>
-        </nav>
         <span className="eyebrow block mb-3 flicker" style={{ color: "var(--acc-primary)" }}>
           {copy.classifiedProfile}
         </span>
@@ -546,6 +525,11 @@ export default async function MovieIntroPage({
                       className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition duration-500"
                       loading="lazy"
                     />
+                    {"photoCredit" in cast && cast.photoCredit ? (
+                      <span className="absolute bottom-0 left-0 right-0 px-2 py-1 text-[8px] font-mono text-gray-300 bg-black/75">
+                        {cast.photoCredit}
+                      </span>
+                    ) : null}
                   </div>
 
                   <div className="flex justify-between items-start pb-3" style={{ borderBottom: "1px solid var(--line)" }}>

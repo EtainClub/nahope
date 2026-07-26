@@ -7,9 +7,11 @@ import IsakuGameTeaser from "../components/IsakuGameTeaser";
 import EpisodeRoadmap from "../components/EpisodeRoadmap";
 import ScenarioFeed, { INITIAL_SCENARIOS, Scenario } from "../components/ScenarioFeed";
 import { ArrowRight, Film, Gamepad2, Users } from "lucide-react";
+import { useLanguage } from "../lib/i18n";
 
 export default function Home() {
   const [scenarios, setScenarios] = useState<Scenario[]>(INITIAL_SCENARIOS);
+  const { tr } = useLanguage();
 
   const handleScenarioSubmit = (newScen: { items: string[]; text: string; id: number }) => {
     const newEntry: Scenario = {
@@ -18,7 +20,7 @@ export default function Home() {
       items: newScen.items,
       text: newScen.text,
       votes: 1,
-      timestamp: "Just now",
+      timestamp: tr("방금 전", "Just now"),
       voted: true,
     };
     setScenarios((prev) => [newEntry, ...prev]);
@@ -48,7 +50,7 @@ export default function Home() {
 
       {/* Top Warning Ribbon */}
       <div className="relative z-20 w-full py-2 text-center font-mono font-bold uppercase flicker" style={{ background: "var(--acc-primary)", color: "var(--bg-0)", fontSize: 10, letterSpacing: "0.2em" }}>
-        ALERT: HOPO PORT CONTROL ZONE - OMEGA PROTOCOL ACTIVE
+        {tr("경보: 호포항 통제 구역 - 오메가 프로토콜 가동", "ALERT: HOPO PORT CONTROL ZONE - OMEGA PROTOCOL ACTIVE")}
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col py-8">
@@ -57,10 +59,10 @@ export default function Home() {
         <section className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-6 border-b border-space-900/40 pb-8">
           <div>
             <h2 className="display text-2xl uppercase" style={{ color: "var(--ink-0)" }}>
-              WELCOME TO HOPO PORT OUTPOST
+              {tr("호포항 초소에 오신 것을 환영합니다", "WELCOME TO HOPO PORT OUTPOST")}
             </h2>
             <p className="font-sans mt-1" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-              Select a classified terminal frequency below to begin your decryption sequence.
+              {tr("아래 기밀 단말 주파수를 선택해 복호화 절차를 시작하세요.", "Select a classified terminal frequency below to begin your decryption sequence.")}
             </p>
           </div>
 
@@ -71,7 +73,7 @@ export default function Home() {
               style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
             >
               <Film className="w-3.5 h-3.5" />
-              MOVIE INFO
+              {tr("영화 정보", "MOVIE INFO")}
             </Link>
             <Link
               href="/game"
@@ -79,7 +81,7 @@ export default function Home() {
               style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
             >
               <Gamepad2 className="w-3.5 h-3.5" />
-              PLAY ROOM ESCAPE
+              {tr("방 탈출 플레이", "PLAY ROOM ESCAPE")}
             </Link>
             <Link
               href="/community"
@@ -87,7 +89,7 @@ export default function Home() {
               style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
             >
               <Users className="w-3.5 h-3.5" />
-              COMMUNITY FEED
+              {tr("커뮤니티 피드", "COMMUNITY FEED")}
             </Link>
           </div>
         </section>
@@ -108,12 +110,16 @@ export default function Home() {
                   🎮
                 </span>
                 <div className="text-left">
-                  <div className="display uppercase tracking-wider" style={{ color: "var(--ink-0)" }}>EPISODE 1 MULTI-ROOM EDITION IS READY</div>
-                  <div className="font-sans mt-0.5" style={{ fontSize: 10, color: "var(--ink-3)" }}>Explore the full police substation office, farm roads, and storage room. Search for tools and unlock deep lore.</div>
+                  <div className="display uppercase tracking-wider" style={{ color: "var(--ink-0)" }}>
+                    {tr("에피소드 1 다중 공간판 준비 완료", "EPISODE 1 MULTI-ROOM EDITION IS READY")}
+                  </div>
+                  <div className="font-sans mt-0.5" style={{ fontSize: 10, color: "var(--ink-3)" }}>
+                    {tr("경찰서 사무실과 농로, 창고를 탐색하세요. 도구를 찾아 더 깊은 세계관을 해제할 수 있습니다.", "Explore the full police substation office, farm roads, and storage room. Search for tools and unlock deep lore.")}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 font-bold uppercase tracking-widest" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
-                PLAY FULL INTERACTIVE GAME
+                {tr("전체 인터랙티브 게임 플레이", "PLAY FULL INTERACTIVE GAME")}
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </Link>
@@ -138,7 +144,7 @@ export default function Home() {
               href="/community"
               className="inline-flex items-center gap-2 bg-space-900 border border-space-850 hover:bg-space-850 text-white font-mono px-5 py-3 rounded-xl text-xs transition-colors cursor-pointer"
             >
-              💬 View all community brag posts and scenarios on the Transmissions board
+              {tr("💬 전송 게시판에서 모든 커뮤니티 인증 글과 시나리오 보기", "💬 View all community brag posts and scenarios on the Transmissions board")}
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -148,16 +154,19 @@ export default function Home() {
         <section className="w-full max-w-7xl mx-auto px-4 md:px-0 py-12 border-t border-space-800/40 text-center">
           <div className="max-w-2xl mx-auto flex flex-col gap-6">
             <h4 className="display text-xl uppercase" style={{ color: "var(--ink-0)" }}>
-              Deliver the Scenario Book to Director Na Hong-jin
+              {tr("나홍진 감독에게 시나리오 북 전달", "Deliver the Scenario Book to Director Na Hong-jin")}
             </h4>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              The highest-voted storyline on our dashboard will be compiled, designed, and professionally printed
-              as a high-fidelity &quot;Cosmic Classified Dossier&quot; book.
+              {tr(
+                "대시보드에서 가장 많은 표를 받은 이야기는 편집과 디자인을 거쳐 고품질 《우주 기밀 기록》 도서로 전문 인쇄됩니다.",
+                "The highest-voted storyline on our dashboard will be compiled, designed, and professionally printed as a high-fidelity \"Cosmic Classified Dossier\" book.",
+              )}
             </p>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Just ahead of the film&apos;s release, the Hopo Port Survivor Community will deliver this physical scenario book,
-              along with a donation receipt funded by project proceeds, directly to Na Hong-jin&apos;s production office (Forged Films).
-              Let your voice shape the future of the trilogy.
+              {tr(
+                "영화 개봉 직전, 호포항 생존자 커뮤니티는 이 시나리오 북과 프로젝트 수익으로 마련한 기부 영수증을 나홍진 감독의 제작사 포지드 필름스에 직접 전달합니다. 여러분의 목소리로 3부작의 미래를 만들어 주세요.",
+                "Just ahead of the film's release, the Hopo Port Survivor Community will deliver this physical scenario book, along with a donation receipt funded by project proceeds, directly to Na Hong-jin's production office (Forged Films). Let your voice shape the future of the trilogy.",
+              )}
             </p>
           </div>
         </section>
@@ -176,18 +185,19 @@ export default function Home() {
               <span>EST. 2026</span>
             </div>
             <span className="text-[9px] text-gray-600 font-mono tracking-widest uppercase">
-              CO-PRODUCTION: FORGED FILMS &amp; PLUS M ENTERTAINMENT
+              {tr("공동 제작: 포지드 필름스 & 플러스엠 엔터테인먼트", "CO-PRODUCTION: FORGED FILMS & PLUS M ENTERTAINMENT")}
             </span>
           </div>
 
           <p className="max-w-md text-[10px] text-gray-600 leading-relaxed md:text-left">
-            Disclaimer: Hopo Port: Omega Protocol is a community-driven campaign inspired by the movie &apos;HOPE&apos;.
-            It holds no official partnership with director Na Hong-jin or Forged Films.
-            All crypto assets involved are purely speculative in nature. Do Your Own Research.
+            {tr(
+              "면책 고지: 호포항: 오메가 프로토콜은 영화 《HOPE》에서 영감을 받은 커뮤니티 주도 캠페인입니다. 나홍진 감독 또는 포지드 필름스와 공식 제휴 관계가 없습니다. 관련 암호화 자산은 전적으로 투기적 성격을 가지므로 반드시 직접 조사하세요.",
+              "Disclaimer: Hopo Port: Omega Protocol is a community-driven campaign inspired by the movie 'HOPE'. It holds no official partnership with director Na Hong-jin or Forged Films. All crypto assets involved are purely speculative in nature. Do Your Own Research.",
+            )}
           </p>
 
           <div>
-            &copy; 2026 Hopo Port. All rights reserved.
+            &copy; 2026 Hopo Port. {tr("모든 권리 보유.", "All rights reserved.")}
           </div>
 
         </div>
@@ -195,4 +205,3 @@ export default function Home() {
     </div>
   );
 }
-

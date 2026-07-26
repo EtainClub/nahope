@@ -2,14 +2,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useLanguage } from "../lib/i18n";
 
 // Web Audio API for retro-horror sound synthesizers
 const playSound = (type: "beep" | "dissonant" | "unlock" | "ambient") => {
   if (typeof window === "undefined") return;
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
 
     if (type === "beep") {
       const osc = ctx.createOscillator();
@@ -72,41 +75,77 @@ interface Hotspot {
   lore: string;
   glitchLabel: string;
   investigationText: string;
+  nameKo: string;
+  loreKo: string;
+  glitchLabelKo: string;
+  investigationTextKo: string;
 }
 
 const HOTSPOTS: Hotspot[] = [
   {
     id: "carbine",
     name: "Lost Carbine Rifle",
+    nameKo: "분실된 카빈 소총",
     top: "70%",
     left: "15%",
     width: "15%",
     height: "15%",
     glitchLabel: "!! WEAPON DETECTED !!",
+    glitchLabelKo: "!! 무기 감지 !!",
     investigationText: "Bum-seok: 'An illegal military M1 Carbine. The youth were using it to hunt the beast, but dropped it in the mud. The barrel is still warm... and there is a faint smell of burnt ozone.'",
+    investigationTextKo: "범석: '불법 군용 M1 카빈이군. 청년들이 짐승을 사냥하려다 진흙에 떨어뜨린 모양이야. 총열이 아직 따뜻해… 타버린 오존 냄새도 희미하게 난다.'",
     lore: "A modified Carbine rifle, illegally kept by village hunters. Found discarded in the wild grass. Smells of unknown cosmic discharge.",
+    loreKo: "마을 사냥꾼들이 불법으로 보관한 개조 카빈 소총. 들풀 사이에 버려진 채 발견되었으며, 정체불명의 우주 방전 냄새가 난다.",
   },
   {
     id: "carcass",
     name: "Mutated Livestock Carcass",
+    nameKo: "변이된 가축 사체",
     top: "78%",
     left: "45%",
     width: "18%",
     height: "14%",
     glitchLabel: "!! ANOMALOUS BIOMASS !!",
+    glitchLabelKo: "!! 이상 생체 물질 !!",
     investigationText: "Bum-seok: 'A cow carcass from the Kim family farm. Ripped open with savage force. The blood is strangely warm and fluoresces under our flashlights.'",
+    investigationTextKo: "범석: '김씨네 농장의 소다. 엄청난 힘으로 찢겨 나갔어. 피가 이상할 정도로 따뜻하고 손전등 아래에서 형광을 띤다.'",
     lore: "A mutilated cow carcass showing severe dimensional warping and cellular disintegration, emitting a faint radioactive violet glow.",
+    loreKo: "심각한 차원 왜곡과 세포 붕괴 흔적이 남은 훼손된 소 사체. 희미한 방사성 보랏빛을 방출한다.",
   },
   {
     id: "tag",
     name: "Torn ID Tag of a Defense Soldier",
+    nameKo: "찢어진 방위병 인식표",
     top: "35%",
     left: "75%",
     width: "8%",
     height: "15%",
     glitchLabel: "!! MILITARY ARTIFACT !!",
+    glitchLabelKo: "!! 군용 유물 !!",
     investigationText: "Sung-ae: 'A local defense reservist's ID tag. Snagged on the barbed wire. The metal is warped and carbonized with bright violet carbon residue.'",
+    investigationTextKo: "성해: '지역 방위 예비군의 인식표예요. 철조망에 걸려 있었어요. 금속이 뒤틀리고 탄화됐는데 밝은 보라색 탄소 잔여물이 묻어 있어요.'",
     lore: "A shredded ID tag belonging to a missing local reservist. The tags are crusted with a bright, glassy purple residue.",
+    loreKo: "실종된 지역 예비군의 찢어진 인식표. 밝고 유리 같은 보라색 잔여물이 표면에 굳어 있다.",
+  },
+];
+
+type LocalizedLog = {
+  ko: string;
+  en: string;
+};
+
+const INITIAL_LOGS: LocalizedLog[] = [
+  {
+    ko: "[시스템 초기화] 연결이 수립되었습니다.",
+    en: "[SYSTEM INITIALIZED] connection established.",
+  },
+  {
+    ko: "[기록 12:00] 범석: '어부가 숲에서 거대한 호랑이를 봤다고 했다. 말도 안 되지. 그런데 이제 농부들이 길 위에서 훼손된 소를 발견했다고 신고하고 있어.'",
+    en: "[LOG 12:00] Bum-seok: 'A fisherman reported seeing a giant tiger in the forest. Ridiculous. But now local farmers are reporting mutilated cattle on the road.'",
+  },
+  {
+    ko: "[도움말] 아래 화면 위로 커서를 움직여 이상 지점을 탐색하세요.",
+    en: "[TUTORIAL] Move your cursor over the screen below to search for anomalous hotspots.",
   },
 ];
 
@@ -115,11 +154,8 @@ interface IsakuGameTeaserProps {
 }
 
 export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserProps) {
-  const [logs, setLogs] = useState<string[]>([
-    "[SYSTEM INITIALIZED] connection established.",
-    "[LOG 12:00] Bum-seok: 'A fisherman reported seeing a giant tiger in the forest. Ridiculous. But now local farmers are reporting mutilated cattle on the road.'",
-    "[TUTORIAL] Move your cursor over the screen below to search for anomalous hotspots.",
-  ]);
+  const { language, tr } = useLanguage();
+  const [logs, setLogs] = useState<LocalizedLog[]>(INITIAL_LOGS);
 
   const [inventory, setInventory] = useState<string[]>([]);
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
@@ -127,7 +163,6 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
   const [scenarioText, setScenarioText] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showScenarioForm, setShowScenarioForm] = useState(false);
-  const logEndRef = useRef<HTMLDivElement>(null);
   const logContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -151,8 +186,14 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
         setInventory((prev) => [...prev, item]);
         setLogs((prev) => [
           ...prev,
-          `[SECURED] ${item} added to UGC slots.`,
-          `[LOG] ${selectedHotspot.investigationText}`,
+          {
+            ko: `[확보] ${selectedHotspot.nameKo} 항목이 UGC 슬롯에 추가되었습니다.`,
+            en: `[SECURED] ${item} added to UGC slots.`,
+          },
+          {
+            ko: `[기록] ${selectedHotspot.investigationTextKo}`,
+            en: `[LOG] ${selectedHotspot.investigationText}`,
+          },
         ]);
         playSound("unlock");
       }
@@ -164,9 +205,14 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
     playSound("beep");
     let tweetText = "";
     if (itemName === "Lost Carbine Rifle") {
-      tweetText = `"Is this gun even reportable?!" I secured the Lost Carbine Rifle in Hopo Outpost: Omega Protocol! Decrypting Na Hong-jin's OMEGA PROTOCOL at nahope.com %23NAHOPE %23Solana %23NaHongJin`;
+      tweetText = language === "ko"
+        ? `"이 총, 신고는 되는 건가?!" 호포 초소: 오메가 프로토콜에서 분실된 카빈 소총을 확보했다! nahope.com에서 나홍진의 오메가 프로토콜을 복호화 중 %23NAHOPE %23Solana %23NaHongJin`
+        : `"Is this gun even reportable?!" I secured the Lost Carbine Rifle in Hopo Outpost: Omega Protocol! Decrypting Na Hong-jin's OMEGA PROTOCOL at nahope.com %23NAHOPE %23Solana %23NaHongJin`;
     } else {
-      tweetText = `I secured the [${itemName}] at Hopo Outpost! Decrypting Na Hong-jin's OMEGA PROTOCOL at nahope.com %23NAHOPE %23Solana %23NaHongJin`;
+      const hotspot = HOTSPOTS.find((spot) => spot.name === itemName);
+      tweetText = language === "ko"
+        ? `호포 초소에서 [${hotspot?.nameKo ?? itemName}]을 확보했다! nahope.com에서 나홍진의 오메가 프로토콜을 복호화 중 %23NAHOPE %23Solana %23NaHongJin`
+        : `I secured the [${itemName}] at Hopo Outpost! Decrypting Na Hong-jin's OMEGA PROTOCOL at nahope.com %23NAHOPE %23Solana %23NaHongJin`;
     }
     const url = `https://twitter.com/intent/tweet?text=${tweetText}`;
     window.open(url, "_blank");
@@ -175,11 +221,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
   const handleReset = () => {
     playSound("dissonant");
     setInventory([]);
-    setLogs([
-      "[SYSTEM INITIALIZED] connection established.",
-      "[LOG 12:00] Bum-seok: 'A fisherman reported seeing a giant tiger in the forest. Ridiculous. But now local farmers are reporting mutilated cattle on the road.'",
-      "[TUTORIAL] Move your cursor over the screen below to search for anomalous hotspots.",
-    ]);
+    setLogs(INITIAL_LOGS);
     setSelectedHotspot(null);
     setScenarioText("");
     setSubmitted(false);
@@ -198,7 +240,10 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
     }
     setLogs((prev) => [
       ...prev,
-      `[TRANSMITTED] Scenario submitted to the public dashboard feed.`,
+      {
+        ko: "[전송 완료] 시나리오가 공개 대시보드 피드에 제출되었습니다.",
+        en: "[TRANSMITTED] Scenario submitted to the public dashboard feed.",
+      },
     ]);
     setSubmitted(true);
     playSound("unlock");
@@ -208,18 +253,20 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
     <div className="w-full max-w-7xl mx-auto px-4 md:px-0 mb-12">
       <div className="text-center mb-6">
         <h2 className="display text-3xl uppercase" style={{ color: "var(--ink-0)", letterSpacing: "0.1em" }}>
-          HOPO OUTPOST SEARCH TERMINAL
+          {tr("호포 초소 수색 단말기", "HOPO OUTPOST SEARCH TERMINAL")}
         </h2>
-        <p className="eyebrow mt-1">// Episode 1 Interactive Point-and-Click Teaser (Isaku Style)</p>
+        <p className="eyebrow mt-1">
+          {tr("// 에피소드 1 인터랙티브 포인트 앤 클릭 티저 (이사쿠 스타일)", "// Episode 1 Interactive Point-and-Click Teaser (Isaku Style)")}
+        </p>
         <div className="w-24 h-[2px] mx-auto mt-2" style={{ background: "var(--acc-primary)" }} />
       </div>
 
       {/* Mobile tab switcher — hidden on lg+ */}
       <div className="lg:hidden flex gap-1 mb-3" style={{ borderBottom: "1px solid var(--line)" }}>
         {([
-          { id: "logs", label: `LOGS (${logs.length})` },
-          { id: "canvas", label: "SEARCH" },
-          { id: "inventory", label: `ITEMS (${inventory.length}/3)` },
+          { id: "logs", label: `${tr("기록", "LOGS")} (${logs.length})` },
+          { id: "canvas", label: tr("수색", "SEARCH") },
+          { id: "inventory", label: `${tr("아이템", "ITEMS")} (${inventory.length}/3)` },
         ] as const).map((t) => {
           const isActive = mobileTab === t.id;
           return (
@@ -250,20 +297,20 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
           
           <div ref={logContainerRef} className="flex flex-col gap-3 h-full overflow-y-auto pr-1">
             <div className="pb-2 eyebrow" style={{ borderBottom: "1px solid var(--line-bright)" }}>
-              // INVESTIGATION DIARIES
+              {tr("// 수사 일지", "// INVESTIGATION DIARIES")}
             </div>
 
             <div className="flex flex-col gap-2 font-mono leading-relaxed" style={{ fontSize: 11, color: "var(--acc-primary)" }}>
               {logs.map((log, idx) => (
                 <div key={idx} className="pb-1.5" style={{ borderBottom: "1px solid var(--line)" }}>
-                  {log}
+                  {language === "ko" ? log.ko : log.en}
                 </div>
               ))}
             </div>
           </div>
 
           <div className="pt-2 text-center eyebrow" style={{ borderTop: "1px solid var(--line-bright)" }}>
-            SYS STATUS: TRANSMITTING LOGS
+            {tr("시스템 상태: 기록 전송 중", "SYS STATUS: TRANSMITTING LOGS")}
           </div>
         </div>
 
@@ -274,7 +321,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
           <div className="absolute inset-0 z-0">
             <Image
               src="/images/hopo_farm_road_bg.png"
-              alt="Hopo Farm Road"
+              alt={tr("호포 농로", "Hopo Farm Road")}
               fill
               className="object-cover opacity-90 group-hover:scale-[1.01] transition-transform duration-700"
               priority
@@ -328,7 +375,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   className="hidden group-hover/spot:inline font-mono absolute -top-7 whitespace-nowrap px-1.5 py-0.5"
                   style={{ fontSize: 9, color: "var(--acc-primary)", border: "1px solid var(--acc-primary)", background: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
                 >
-                  {spot.glitchLabel}
+                  {language === "ko" ? spot.glitchLabelKo : spot.glitchLabel}
                 </span>
               </button>
             ))}
@@ -345,7 +392,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                 className="display font-bold px-6 py-3.5 text-xs uppercase tracking-widest hover:scale-[1.03] transition-all"
                 style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)", animation: "pulse-glow 1.5s ease infinite" }}
               >
-                OMEGA PROTOCOL ACTIVE: WRITE SCENARIO
+                {tr("오메가 프로토콜 가동: 시나리오 작성", "OMEGA PROTOCOL ACTIVE: WRITE SCENARIO")}
               </button>
             </div>
           )}
@@ -358,27 +405,27 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
 
                 <div className="flex justify-between items-center pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
                   <span className="font-bold uppercase tracking-wider" style={{ color: "var(--acc-primary)" }}>
-                    // EXAMINING ARTIFACT
+                    {tr("// 유물 조사 중", "// EXAMINING ARTIFACT")}
                   </span>
                   <button
                     onClick={() => { playSound("beep"); setSelectedHotspot(null); }}
                     className="font-bold transition-colors"
                     style={{ color: "var(--ink-3)" }}
                   >
-                    CLOSE [X]
+                    {tr("닫기 [X]", "CLOSE [X]")}
                   </button>
                 </div>
 
                 <div className="display text-sm" style={{ color: "var(--ink-0)", letterSpacing: "0.05em" }}>
-                  {selectedHotspot.name}
+                  {language === "ko" ? selectedHotspot.nameKo : selectedHotspot.name}
                 </div>
 
                 <p className="font-sans leading-relaxed" style={{ fontSize: 11, color: "var(--ink-2)" }}>
-                  {selectedHotspot.lore}
+                  {language === "ko" ? selectedHotspot.loreKo : selectedHotspot.lore}
                 </p>
 
                 <div className="p-2.5 italic" style={{ background: "var(--bg-0)", border: "1px solid var(--line)", color: "var(--acc-primary)", fontSize: 10, lineHeight: 1.6 }}>
-                  {selectedHotspot.investigationText}
+                  {language === "ko" ? selectedHotspot.investigationTextKo : selectedHotspot.investigationText}
                 </div>
 
                 <button
@@ -387,8 +434,8 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
                 >
                   {inventory.includes(selectedHotspot.name)
-                    ? "ALREADY SECURED"
-                    : "SECURE & LOCK TO INVENTORY"}
+                    ? tr("이미 확보됨", "ALREADY SECURED")
+                    : tr("확보 후 인벤토리에 잠금", "SECURE & LOCK TO INVENTORY")}
                 </button>
               </div>
             </div>
@@ -406,7 +453,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
 
                 <div className="flex justify-between items-center pb-2" style={{ borderBottom: "1px solid var(--line-bright)" }}>
                   <span className="font-bold uppercase tracking-wider" style={{ color: "var(--acc-violet)" }}>
-                    // OMEGA SCENARIO TRANSMITTER
+                    {tr("// 오메가 시나리오 송신기", "// OMEGA SCENARIO TRANSMITTER")}
                   </span>
                   <button
                     type="button"
@@ -414,19 +461,25 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                     className="font-bold"
                     style={{ color: "var(--ink-3)" }}
                   >
-                    CANCEL [X]
+                    {tr("취소 [X]", "CANCEL [X]")}
                   </button>
                 </div>
 
                 <p className="text-gray-400 font-sans text-[11px] leading-relaxed">
-                  Use the secured items (**{inventory.join(", ")}**) to propose how the survivors fight the cosmic threat in Part 2.
+                  {tr(
+                    `확보한 아이템 (${inventory.map((item) => HOTSPOTS.find((spot) => spot.name === item)?.nameKo ?? item).join(", ")})을 이용해 파트 2에서 생존자들이 우주적 위협에 맞서는 방법을 제안하세요.`,
+                    `Use the secured items (${inventory.join(", ")}) to propose how the survivors fight the cosmic threat in Part 2.`,
+                  )}
                 </p>
 
                 <textarea
                   required
                   value={scenarioText}
                   onChange={(e) => setScenarioText(e.target.value)}
-                  placeholder="Write your English proposal for 'HOPE Part 2' scenario (e.g. Sung-ki discovers the military's underground bunker, utilizing salvaged translator frequencies...)"
+                  placeholder={tr(
+                    "《HOPE 파트 2》 시나리오 제안서를 작성하세요. 예: 성기가 군의 지하 벙커를 발견하고 회수한 번역기 주파수를 활용한다…",
+                    "Write your English proposal for 'HOPE Part 2' scenario (e.g. Sung-ki discovers the military's underground bunker, utilizing salvaged translator frequencies...)",
+                  )}
                   rows={6}
                   maxLength={1000}
                   className="w-full p-3 font-sans text-xs resize-none leading-relaxed focus:outline-none"
@@ -440,14 +493,14 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                     className="font-mono hover:underline"
                     style={{ fontSize: 10, color: "var(--acc-danger)" }}
                   >
-                    RESET ALL
+                    {tr("전체 초기화", "RESET ALL")}
                   </button>
                   <button
                     type="submit"
                     className="font-bold px-4 py-2 font-mono tracking-wider hover:scale-[1.02] transition-transform"
                     style={{ fontSize: 10, background: "var(--acc-violet)", color: "var(--bg-0)", boxShadow: "var(--glow-violet)" }}
                   >
-                    TRANSMIT TO FEED
+                    {tr("피드로 전송", "TRANSMIT TO FEED")}
                   </button>
                 </div>
               </form>
@@ -458,11 +511,13 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
           {submitted && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center gap-4" style={{ background: "rgba(0,0,0,0.9)" }}>
               <div className="display text-2xl uppercase tracking-widest" style={{ color: "var(--acc-cyan)", animation: "pulse-glow 1.5s ease infinite" }}>
-                SCENARIO TRANSMITTED
+                {tr("시나리오 전송 완료", "SCENARIO TRANSMITTED")}
               </div>
               <p className="max-w-md font-sans leading-relaxed" style={{ fontSize: 11, color: "var(--ink-2)" }}>
-                Your scenario proposal for &quot;HOPE Part 2&quot; has been successfully encrypted and posted to the public dashboard feed.
-                Let the community review your theory!
+                {tr(
+                  "《HOPE 파트 2》 시나리오 제안서가 성공적으로 암호화되어 공개 대시보드 피드에 게시되었습니다. 커뮤니티가 여러분의 이론을 검토하도록 공유하세요!",
+                  "Your scenario proposal for \"HOPE Part 2\" has been successfully encrypted and posted to the public dashboard feed. Let the community review your theory!",
+                )}
               </p>
               <div className="flex gap-4 mt-2">
                 <button
@@ -470,14 +525,14 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   className="px-6 py-2 font-mono text-xs transition-colors"
                   style={{ border: "1px solid var(--line-bright)", color: "var(--ink-2)" }}
                 >
-                  RESET AREA
+                  {tr("구역 초기화", "RESET AREA")}
                 </button>
                 <a
                   href="#feed"
                   className="px-6 py-2 font-mono font-bold text-xs transition-colors"
                   style={{ background: "var(--bg-1)", border: "1px solid color-mix(in srgb, var(--acc-violet) 40%, transparent)", color: "var(--ink-0)" }}
                 >
-                  VIEW PUBLIC FEED
+                  {tr("공개 피드 보기", "VIEW PUBLIC FEED")}
                 </a>
               </div>
             </div>
@@ -489,9 +544,11 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
           <span className="br-bl" /><span className="br-br" />
           <div className="flex flex-col gap-4">
             <div>
-              <div className="eyebrow mb-1" style={{ color: "var(--acc-violet)" }}>// SECURED ARTIFACTS</div>
+              <div className="eyebrow mb-1" style={{ color: "var(--acc-violet)" }}>
+                {tr("// 확보된 유물", "// SECURED ARTIFACTS")}
+              </div>
               <h3 className="display text-lg uppercase" style={{ color: "var(--ink-0)" }}>
-                UGC INVENTORY
+                {tr("UGC 인벤토리", "UGC INVENTORY")}
               </h3>
             </div>
 
@@ -515,10 +572,14 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono font-bold truncate max-w-[150px]" style={{ fontSize: 11, color: "var(--ink-0)" }}>
-                        {isSecured ? spot.name : "LOCKED SLOT 0" + (idx + 1)}
+                        {isSecured
+                          ? language === "ko"
+                            ? spot.nameKo
+                            : spot.name
+                          : `${tr("잠긴 슬롯", "LOCKED SLOT")} 0${idx + 1}`}
                       </span>
                       <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-primary)" }}>
-                        {isSecured ? "SECURED" : "EMPTY"}
+                        {isSecured ? tr("확보", "SECURED") : tr("비어 있음", "EMPTY")}
                       </span>
                     </div>
 
@@ -531,7 +592,7 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
                         <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                         </svg>
-                        SHARE MEME ON X
+                        {tr("X에 밈 공유", "SHARE MEME ON X")}
                       </button>
                     )}
                   </div>
@@ -541,8 +602,8 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
           </div>
 
           <div className="pt-3 font-mono flex justify-between eyebrow" style={{ borderTop: "1px solid var(--line-bright)" }}>
-            <span>SECURED: {inventory.length} / 3</span>
-            <span>UGC SLOTS READY</span>
+            <span>{tr("확보", "SECURED")}: {inventory.length} / 3</span>
+            <span>{tr("UGC 슬롯 준비", "UGC SLOTS READY")}</span>
           </div>
         </div>
 
@@ -552,17 +613,19 @@ export default function IsakuGameTeaser({ onScenarioSubmit }: IsakuGameTeaserPro
       <div className="w-full px-4 py-2 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono relative overflow-hidden" style={{ background: "var(--bg-1)", border: "1px solid var(--line-bright)", fontSize: 10, color: "var(--ink-2)" }}>
         <div className="flex items-center gap-2 relative z-10">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--acc-primary)", animation: "pulse-glow 1s ease infinite" }} />
-          <span>SYS STATE: <span className="font-bold" style={{ color: "var(--acc-primary)" }}>SOLANA LOGGED IN</span></span>
+          <span>
+            {tr("시스템 상태", "SYS STATE")}: <span className="font-bold" style={{ color: "var(--acc-primary)" }}>{tr("SOLANA 로그인됨", "SOLANA LOGGED IN")}</span>
+          </span>
         </div>
 
         <div className="relative z-10 text-center sm:text-left">
-          CURRENT LOCATION: <span className="font-bold uppercase" style={{ color: "var(--ink-0)" }}>HOPO FARM ROAD - SECTION 01</span>
+          {tr("현재 위치", "CURRENT LOCATION")}: <span className="font-bold uppercase" style={{ color: "var(--ink-0)" }}>{tr("호포 농로 - 구역 01", "HOPO FARM ROAD - SECTION 01")}</span>
         </div>
 
         <div className="flex items-center gap-3 relative z-10">
-          <span>BALANCE: <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>25,000 $NAHOPE</span></span>
+          <span>{tr("잔액", "BALANCE")}: <span className="font-bold" style={{ color: "var(--acc-cyan)" }}>25,000 $NAHOPE</span></span>
           <span style={{ color: "var(--line-bright)" }}>|</span>
-          <span className="font-bold" style={{ color: "var(--acc-primary)" }}>EPISODE 1 STAGE UNLOCKED</span>
+          <span className="font-bold" style={{ color: "var(--acc-primary)" }}>{tr("에피소드 1 스테이지 해제", "EPISODE 1 STAGE UNLOCKED")}</span>
         </div>
       </div>
     </div>

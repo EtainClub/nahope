@@ -14,8 +14,12 @@ import {
   Compass,
   HelpCircle,
 } from "lucide-react";
+import { useLanguage } from "../../lib/i18n";
 
 export default function GuidePage() {
+  const { language } = useLanguage();
+  if (language === "ko") return <KoreanGuidePage />;
+
   return (
     <div
       style={{
@@ -44,7 +48,7 @@ export default function GuidePage() {
               boxShadow: "var(--glow-primary)",
             }}
           >
-            <BookOpen size={11} /> // FIELD GUIDE · CLASSIFIED
+            <BookOpen size={11} /> {"// FIELD GUIDE · CLASSIFIED"}
           </div>
           <h1
             className="display glitch-text"
@@ -565,7 +569,7 @@ export default function GuidePage() {
               marginBottom: 10,
             }}
           >
-            // BRIEFING COMPLETE · STAND BY FOR INSERTION
+            {"// BRIEFING COMPLETE · STAND BY FOR INSERTION"}
           </p>
           <p style={{ fontSize: 13, color: "var(--ink-1)", marginBottom: 16 }}>
             You are now cleared to enter the Hopo Substation. Good luck,
@@ -587,6 +591,196 @@ export default function GuidePage() {
             }}
           >
             ▶ LAUNCH EPISODE 1
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KoreanGuidePage() {
+  const contents = [
+    ["01", "호포항이란?", "#what"],
+    ["02", "시작하기", "#start"],
+    ["03", "$NAHOPE 토큰", "#token"],
+    ["04", "보안 등급", "#clearance"],
+    ["05", "에피소드 1 플레이", "#episode1"],
+    ["06", "트리거 벨트 퍼즐", "#puzzles"],
+    ["07", "인벤토리와 아이템", "#inventory"],
+    ["08", "엔딩", "#endings"],
+    ["09", "에피소드 2 해금", "#episode2"],
+    ["10", "커뮤니티와 시나리오", "#community"],
+    ["11", "X에 UGC 공유", "#ugc"],
+    ["12", "용어집", "#glossary"],
+    ["13", "문제 해결", "#troubleshoot"],
+  ];
+
+  return (
+    <div style={{ minHeight: "100vh", background: "var(--bg-0)", color: "var(--ink-0)", fontFamily: "var(--font-mono)", padding: "32px 16px 120px" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", border: "1px solid var(--acc-primary)", color: "var(--acc-primary)", fontSize: 10, letterSpacing: "0.24em", marginBottom: 16, boxShadow: "var(--glow-primary)" }}>
+            <BookOpen size={11} /> {"// 현장 지침서 · 기밀"}
+          </div>
+          <h1 className="display glitch-text" data-text="호포항 현장 지침서" style={{ fontSize: 36, letterSpacing: "0.08em", marginBottom: 10, color: "var(--ink-0)" }}>
+            호포항 현장 지침서
+          </h1>
+          <p style={{ fontFamily: "var(--font-sans, var(--font-mono))", fontSize: 14, color: "var(--ink-2)", maxWidth: 640, margin: "0 auto", lineHeight: 1.6 }}>
+            생존자 여러분, 환영합니다. 이 문서는 나홍진 감독의 영화 <span style={{ color: "var(--acc-primary)" }}>HOPE</span>에서 영감을 받은 인터랙티브 시네마틱 RPG, 호포항: 오메가 프로토콜의 공식 지침서입니다. 격리 구역에 들어가기 전에 모든 항목을 읽으십시오.
+          </p>
+        </div>
+
+        <Section title="// 목차" icon={Compass}>
+          <ol style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 8, listStyle: "none", padding: 0, margin: 0 }}>
+            {contents.map(([num, label, href]) => (
+              <li key={href}>
+                <a href={href} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", border: "1px solid var(--line)", color: "var(--ink-1)", textDecoration: "none", fontSize: 12 }}>
+                  <span style={{ color: "var(--acc-amber)", fontSize: 10 }}>{num}</span>{label}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="what" title="01 · 호포항이란?" icon={HelpCircle}>
+          <P>호포항: 오메가 프로토콜은 1970~80년대 DMZ 해안 마을 <B>호포항</B>을 배경으로 한 하드코어 <B>포인트 앤 클릭 수사 게임</B>입니다. 나홍진 감독 특유의 우주적 공포와 고전 게임 <B>유작(遺作)</B>의 연쇄 퍼즐 구조를 결합했습니다.</P>
+          <P>플레이 기록은 솔라나 밈코인 <B>$NAHOPE</B>의 가치를 증명하고 지키는 온체인 참여 장치입니다. 공동체의 발견과 시나리오는 실물 기밀 문서로 제작되어 <B>HOPE 파트 2: 우주의 인간</B> 제안서로 나홍진 감독에게 전달될 예정입니다.</P>
+          <Callout color="violet">수동적으로 관람하는 콘텐츠가 아닙니다. 클릭, 확보한 유물, 제출한 시나리오가 모두 진화하는 공동 서사의 일부가 됩니다.</Callout>
+        </Section>
+
+        <Section id="start" title="02 · 시작하기" icon={Wallet}>
+          <Step n={1} title="앱 열기">홈 화면에서 브리핑을 읽고 <B>에피소드 02 졸업 카운트다운</B>과 <B>본딩 커브</B> 진행률을 확인합니다.</Step>
+          <Step n={2} title="솔라나 지갑 연결">상단의 <B>지갑</B> 버튼이나 화면의 <B>지갑 연결</B> 버튼을 누릅니다. Phantom, Solflare, Backpack을 지원하며, 기본 테스트 지갑으로 게임을 미리 볼 수도 있습니다.</Step>
+          <Step n={3} title="프로필 확인"><Link href="/profile" style={linkStyle}>프로필</Link>에서 지갑 주소, $NAHOPE 잔액, 에피소드 진행도와 확보한 유물을 확인하고 일일 출석 보상을 받습니다.</Step>
+          <Step n={4} title="에피소드 1 시작"><Link href="/game" style={linkStyle}>에피소드 게임</Link>을 열어 호포 파출소로 진입합니다.</Step>
+        </Section>
+
+        <Section id="token" title="03 · $NAHOPE 토큰" icon={Coins}>
+          <P><B>$NAHOPE</B>는 호포항 세계를 구동하는 솔라나 밈코인입니다. 컨트랙트 주소:</P>
+          <Code block>CvKFHHfXqusmcrU18d6pvCWhJrWyteziqi99xJgjpump</Code>
+          <P>토큰은 <B>pump.fun</B>에서 출시되어 본딩 커브를 진행 중입니다. 커브가 100%에 도달하면 유동성이 Raydium 풀로 이동하며 <B>모든 플레이어에게 에피소드 02가 열립니다.</B></P>
+          <Callout color="cyan">고정 출시일이나 시계는 없습니다. 본딩 커브가 유일한 출시 일정이며 홈 화면에서 실시간으로 확인할 수 있습니다.</Callout>
+        </Section>
+
+        <Section id="clearance" title="04 · 보안 등급" icon={ShieldAlert}>
+          <P>일부 인물과 자료는 토큰 보유량으로 제한됩니다. $NAHOPE 잔액에 따라 보안 등급이 정해집니다.</P>
+          <Table rows={[
+            ["잔액", "보안 등급", "해금 내용"],
+            ["0 – 4,999", "제한", "기본 탐색과 공개 대화"],
+            ["5,000 이상", "기밀", "에피소드 1 전체 설정, 기밀 NPC 대화, 졸업 시 에피소드 2 입장"],
+            ["25,000 이상", "오메가", "향후 엘리트 시나리오, 거버넌스 투표 가중치, 전용 제출 권한"],
+          ]} />
+          <P>잔액이 부족하면 범석 소장, 성애 순경, 성기 하사가 기밀 기록을 공개하지 않습니다. 보유량을 늘린 뒤 다시 시도하십시오.</P>
+        </Section>
+
+        <Section id="episode1" title="05 · 에피소드 1 플레이" icon={Gamepad2}>
+          <P>에피소드 1 <B>“무지: 소에 새겨진 오메가 표식”</B>은 1983.08.◯◯ 18시 40분에 시작합니다. 안개가 마을 청년 봉식을 삼키기 전까지 <B>20턴</B> 안에 사건을 해결해야 합니다.</P>
+          <Table rows={[
+            ["구역", "조사 대상"],
+            ["사무실", "잠든 성기, 소장 서랍, 칼리반 소총, 금성 타자기, 야전 무전기"],
+            ["무기고", "잠긴 철제 사물함, 사물함 뒤편, 빈 윗선반"],
+            ["앞마당", "무전 안테나, 봉식, 밭으로 가는 문"],
+            ["DMZ 조밭", "훼손된 소, 뒤집힌 흙, 숲 가장자리"],
+            ["소나무 숲", "단단한 안개 장벽, 빈터, 숨겨진 해안 길"],
+            ["안개 낀 해안", "철제 해치와 그리스어가 아닌 비문"],
+          ]} />
+          <P>강조된 조사 지점을 클릭하면 대화나 아이템이 나타납니다. 아이템은 오른쪽 <B>증거판</B>에서 장착한 뒤 대상 지점을 클릭해 사용합니다. 올바른 조합이면 숨겨진 상호작용이 열립니다.</P>
+          <Callout color="amber">⏱ 중요한 행동은 1~3턴을 소비하고 단순 조사는 0턴입니다. 총 20턴을 신중하게 사용하십시오.</Callout>
+        </Section>
+
+        <Section id="puzzles" title="06 · 트리거 벨트 퍼즐" icon={KeyRound}>
+          <P><B>트리거 벨트</B>는 원인과 결과가 엄격하게 이어지는 퍼즐 사슬입니다. 무작정 클릭하면 턴을 낭비하거나 나쁜 엔딩에 갇힙니다. 정식 경로는 <B>엔딩 C · 목격자</B>입니다.</P>
+          <Callout color="amber">⚠ 스포일러 구역 — 아래에는 에피소드 1의 전체 해법이 있습니다.</Callout>
+          <ol style={{ paddingLeft: 18, color: "var(--ink-1)", fontSize: 13, lineHeight: 1.75 }}>
+            <li>사무실에서 무전기를 켜지 말고 잠든 <B>성기의 주머니</B>를 조사해 <B>무기고 열쇠</B>와 <B>놋쇠 라이터</B>를 얻습니다.</li>
+            <li>무기고에서 열쇠를 사물함에 사용해 <B>윤활유</B>와 <B>예비 탄창</B>을 얻고, 뒤편에서 <B>현장 보고서 1쪽</B>을 찾습니다.</li>
+            <li>사무실에서 윤활유를 소장 서랍에 사용해 <B>압수된 드라이버</B>와 <B>폴라로이드(1950)</B>를 얻습니다.</li>
+            <li>드라이버로 칼리반 소총을 분해해 <B>녹색 외계 점액</B>과 <B>번역기 파편</B>을 얻습니다. 예비 탄창을 쓰면 점액이 파괴됩니다.</li>
+            <li>앞마당 안테나를 조사해 좌표와 <B>80년대 야전 무전기</B>를 확보한 뒤 밭으로 이동합니다.</li>
+            <li>폴라로이드를 사무실 타자기에 사용해 <B>확대경</B>을 꺼내고, 소 사체를 확대 조사합니다.</li>
+            <li>17턴 전에 뒤집힌 흙에서 <B>호포 차량 번호판</B>을 얻고 숲으로 진입합니다.</li>
+            <li>현장 보고서를 가진 채 라이터를 안개에 사용하고, 20턴 전에 빈터에서 봉식을 구하면 <B>엔딩 C</B>입니다.</li>
+          </ol>
+          <P><B style={{ color: "var(--acc-violet)" }}>엔딩 D · 배교자</B>: 안개를 태운 뒤 번역기 파편을 장착하고 빈터를 조사합니다. 해안 길을 열어 비문에 파편을 사용한 다음, 녹색 점액을 철제 해치에 사용하십시오.</P>
+          <Callout color="danger">엔딩 A: 빈터에 도달하기 전에 턴을 모두 소모합니다. · 엔딩 B: 무전기로 성기를 깨운 뒤 주머니를 건드립니다.</Callout>
+        </Section>
+
+        <Section id="inventory" title="07 · 인벤토리와 아이템" icon={Package}>
+          <P>에피소드 1에는 <B>14개 아이템</B>이 있습니다. ★ 유물은 프로필에 남아 커뮤니티 제출 권한을 열고, ◆ 소실 가능 아이템은 늦게 행동하면 영구히 사라집니다.</P>
+          <Table rows={[
+            ["아이템", "발견 장소", "용도"],
+            ["무기고 열쇠", "사무실 · 성기의 주머니", "무기고 철제 사물함 개방"],
+            ["놋쇠 라이터", "사무실 · 성기의 주머니", "현장 보고서와 함께 안개 장벽 소각"],
+            ["윤활유", "무기고 · 철제 사물함", "소장 서랍 열기"],
+            ["예비 탄창", "무기고 · 철제 사물함", "잘못된 구경 — 소총에 쓰면 점액 파괴"],
+            ["압수된 드라이버", "사무실 · 소장 서랍", "칼리반 소총 분해"],
+            ["폴라로이드 (1950)", "사무실 · 소장 서랍", "타자기에서 확대경 추출"],
+            ["확대경", "사무실 · 타자기", "소 가죽의 Ω 표식 확인"],
+            ["녹색 외계 점액 ★", "사무실 · 칼리반 소총", "엔딩 D 해치 개방 유물"],
+            ["번역기 파편 ★", "사무실 · 칼리반 소총", "안테나 조율과 배교자 경로"],
+            ["현장 보고서 1쪽 ◆", "무기고 · 사물함 뒤", "안개 소각에 필요"],
+            ["호포 차량 번호판 ◆", "밭 · 뒤집힌 흙", "16턴 이후 소실"],
+            ["80년대 야전 무전기", "앞마당 · 안테나", "밭 입장 좌표 해금"],
+            ["오메가 표식 ★", "숲 · 빈터", "엔딩 C 보상"],
+            ["Ω 표식 (배교자) ★", "해안 · 철제 해치", "엔딩 D 전용 보상"],
+          ]} />
+        </Section>
+
+        <Section id="endings" title="08 · 엔딩" icon={ShieldAlert}>
+          <Table rows={[
+            ["엔딩", "조건", "결과"],
+            ["A · 무지에서 태어난 비극", "20턴 안에 빈터에 도달하지 못함", "봉식 사망, 유물 없음"],
+            ["B · 군법회의", "무전기로 성기를 깨운 뒤 소매치기", "강제 재시작, 유물 없음"],
+            ["C · 목격자", "20턴 전에 봉식을 빈터에서 구출", "오메가 표식·점액·번역기 파편 획득"],
+            ["D · 배교자", "봉식을 버리고 숨겨진 해안 경로 완료", "배교자 표식·점액·번역기 파편 획득"],
+          ]} />
+          <Callout color="violet">C와 D만 에피소드 완료로 기록되고 에피소드 2 입장 조건을 엽니다. 두 경로에서 얻는 오메가 유물은 서로 다릅니다.</Callout>
+        </Section>
+
+        <Section id="episode2" title="09 · 에피소드 2 해금" icon={Coins}>
+          <P>에피소드 2 <B>“끊어진 신호”</B>는 시간이 아니라 사건으로 해금됩니다. $NAHOPE 본딩 커브가 100%에 도달해 유동성이 Raydium으로 이동하면 에피소드가 열리며, <B>5,000 $NAHOPE 이상</B>을 보유한 기밀 등급 플레이어가 입장할 수 있습니다.</P>
+          <P>홈 화면의 졸업 카운트다운에서 본딩 진행률, 남은 비율, 필요한 SOL을 확인하십시오.</P>
+        </Section>
+
+        <Section id="community" title="10 · 커뮤니티와 시나리오" icon={Users}>
+          <Step n={1} title="희귀 유물 3개 이상 수집">★ 등급 유물을 3개 이상 확보하면 엘리트 제출 권한이 열립니다.</Step>
+          <Step n={2} title="시나리오 작성">확보한 유물을 결합해 HOPE 파트 2의 일관된 이야기 제안을 작성합니다.</Step>
+          <Step n={3} title="피드에 전송"><Link href="/community" style={linkStyle}>커뮤니티</Link>에 제출하면 공동체가 $NAHOPE 거버넌스로 투표합니다. 우승작은 기밀 문서 형식의 실물 책으로 제작되어 나홍진 감독 또는 제작사에 전달됩니다.</Step>
+        </Section>
+
+        <Section id="ugc" title="11 · X에 UGC 공유" icon={Share2}>
+          <P>인벤토리에서 확보한 유물은 <B>X에 밈 공유</B> 기능으로 $NAHOPE와 영화 HOPE를 포함한 게시물을 만들 수 있습니다. 공동체 반응을 얻은 게시물은 소량의 자동 에어드롭 보상 대상이 될 수 있습니다.</P>
+        </Section>
+
+        <Section id="glossary" title="12 · 용어집" icon={BookOpen}>
+          <Table rows={[
+            ["용어", "뜻"],
+            ["오메가 프로토콜 (Ω)", "우주적 공포 격리 규약. Ω는 모든 이상 현상을 표시합니다."],
+            ["트리거 벨트", "순서를 틀리면 턴을 낭비하거나 나쁜 엔딩에 이르는 인과 퍼즐 사슬."],
+            ["턴", "행동 단위. 중요 행동은 1~3턴, 단순 조사는 0턴이며 에피소드 1은 20턴 제한."],
+            ["조합 성공", "올바르게 장착한 아이템이 조사 지점의 숨은 상호작용을 여는 것."],
+            ["유물 (★)", "프로필에 남고 커뮤니티 제출 자격을 주는 희귀 아이템."],
+            ["소실 가능 (◆)", "늦게 행동하면 영구히 사라질 수 있는 아이템."],
+            ["본딩 커브", "100%에 도달하면 Raydium으로 졸업하는 pump.fun의 자동 가격 메커니즘."],
+            ["CGC", "공동 생성 콘텐츠. 파트 2를 위한 커뮤니티 스토리텔링."],
+          ]} />
+        </Section>
+
+        <Section id="troubleshoot" title="13 · 문제 해결" icon={HelpCircle}>
+          <FaqItem q="지갑 버튼이 작동하지 않습니다." a="Phantom, Solflare 또는 Backpack이 브라우저에 설치되어 있는지 확인하십시오. 모바일에서는 지갑의 내장 브라우저로 페이지를 여십시오." />
+          <FaqItem q="NPC가 대화를 거부합니다." a="기밀 등급이 부족합니다. 5,000 $NAHOPE 이상을 확보하고 게임 페이지를 새로고침하십시오." />
+          <FaqItem q="조사 지점이 반응하지 않습니다." a="증거판에서 필요한 아이템을 장착한 뒤 다시 클릭하십시오. 맞지 않는 아이템을 장착하면 조사 지점 테두리가 붉게 빛납니다." />
+          <FaqItem q="소나무 숲에 들어갈 수 없습니다." a="현장 보고서 1쪽을 가진 상태에서 놋쇠 라이터를 장착하고 안개를 태워야 합니다." />
+          <FaqItem q="엔딩 화면이 나타나지 않습니다." a="엔딩 C는 20턴 전에 번역기 파편을 장착하지 않은 상태로 빈터에 도달해야 합니다. 엔딩 D는 빈터, 비문, 해치의 세 행동을 순서대로 완료해야 합니다." />
+          <FaqItem q="에피소드 2는 언제 공개됩니까?" a="고정 날짜는 없습니다. $NAHOPE 본딩 커브가 100%로 졸업하는 순간 해금됩니다." />
+          <FaqItem q="모바일 화면이 좁습니다." a="하단의 현장·기록·증거 탭으로 패널을 전환하십시오. 이동 버튼은 조사 지점을 가리지 않도록 화면 이미지 아래에 있습니다." />
+        </Section>
+
+        <div style={{ marginTop: 48, padding: "24px 20px", border: "1px solid var(--acc-primary)", background: "color-mix(in srgb, var(--acc-primary) 4%, transparent)", textAlign: "center", boxShadow: "var(--glow-primary)" }}>
+          <p style={{ fontSize: 11, letterSpacing: "0.24em", color: "var(--acc-primary)", marginBottom: 10 }}>{"// 브리핑 완료 · 투입 대기"}</p>
+          <p style={{ fontSize: 13, color: "var(--ink-1)", marginBottom: 16 }}>호포 파출소 진입 승인이 완료되었습니다. 행운을 빕니다, 생존자.</p>
+          <Link href="/game" style={{ display: "inline-block", padding: "12px 24px", fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.2em", background: "var(--acc-primary)", color: "var(--bg-0)", textDecoration: "none", boxShadow: "var(--glow-primary)" }}>
+            ▶ 에피소드 1 시작
           </Link>
         </div>
       </div>

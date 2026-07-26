@@ -7,6 +7,7 @@ import { Home, Film, Gamepad2, Users, User, Wallet, Settings, BookOpen, HelpCirc
 import { database, UserProfile } from "../lib/firebase";
 import PaletteSwitcher from "./PaletteSwitcher";
 import packageJson from "../package.json";
+import { useLanguage } from "../lib/i18n";
 
 // Inline RadarDial SVG ornament
 function RadarDial({ size = 28 }: { size?: number }) {
@@ -29,6 +30,7 @@ function RadarDial({ size = 28 }: { size?: number }) {
 function SettingsMenu({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { language, setLanguage, tr } = useLanguage();
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -51,14 +53,14 @@ function SettingsMenu({ pathname }: { pathname: string }) {
   }, [pathname]);
 
   const items: Array<{ href: string; label: string; icon: React.ComponentType<{ size?: number }> }> = [
-    { href: "/guide", label: "FIELD GUIDE", icon: BookOpen },
-    { href: "/guide#troubleshoot", label: "TROUBLESHOOTING", icon: HelpCircle },
+    { href: "/guide", label: tr("현장 안내서", "FIELD GUIDE"), icon: BookOpen },
+    { href: "/guide#troubleshoot", label: tr("문제 해결", "TROUBLESHOOTING"), icon: HelpCircle },
   ];
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
-        aria-label="Settings menu"
+        aria-label={tr("설정 메뉴", "Settings menu")}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
@@ -103,7 +105,56 @@ function SettingsMenu({ pathname }: { pathname: string }) {
               borderBottom: "1px dashed var(--line)",
             }}
           >
-            // SETTINGS · MENU
+            {tr("// 설정 · 메뉴", "// SETTINGS · MENU")}
+          </div>
+          <div
+            style={{
+              padding: "10px",
+              borderBottom: "1px dashed var(--line)",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: 7,
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                letterSpacing: "0.16em",
+                color: "var(--ink-3)",
+                textTransform: "uppercase",
+              }}
+            >
+              {tr("언어", "LANGUAGE")}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+              {([
+                { value: "ko", label: "한국어" },
+                { value: "en", label: "ENGLISH" },
+              ] as const).map((option) => {
+                const isActive = language === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setLanguage(option.value)}
+                    aria-pressed={isActive}
+                    style={{
+                      padding: "8px 6px",
+                      border: `1px solid ${isActive ? "var(--acc-primary)" : "var(--line)"}`,
+                      background: isActive
+                        ? "color-mix(in srgb, var(--acc-primary) 12%, transparent)"
+                        : "var(--bg-2)",
+                      color: isActive ? "var(--acc-primary)" : "var(--ink-2)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 9,
+                      letterSpacing: "0.08em",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           {items.map((it) => {
             const Icon = it.icon;
@@ -149,6 +200,7 @@ function SettingsMenu({ pathname }: { pathname: string }) {
 export default function Navigation() {
   const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { tr } = useLanguage();
 
   const syncProfile = () => {
     if (typeof window === "undefined") return;
@@ -171,11 +223,11 @@ export default function Navigation() {
   }, []);
 
   const navItems = [
-    { name: "HOME",         href: "/",          icon: Home },
-    { name: "MOVIE INTRO",  href: "/intro",     icon: Film },
-    { name: "EPISODE GAME", href: "/game",       icon: Gamepad2 },
-    { name: "COMMUNITY",    href: "/community",  icon: Users },
-    { name: "PROFILE",      href: "/profile",    icon: User },
+    { name: tr("홈", "HOME"), shortName: tr("홈", "HOME"), href: "/", icon: Home },
+    { name: tr("영화 소개", "MOVIE INTRO"), shortName: tr("영화", "MOVIE"), href: "/intro", icon: Film },
+    { name: tr("에피소드 게임", "EPISODE GAME"), shortName: tr("게임", "GAME"), href: "/game", icon: Gamepad2 },
+    { name: tr("커뮤니티", "COMMUNITY"), shortName: tr("소통", "COMMUNITY"), href: "/community", icon: Users },
+    { name: tr("프로필", "PROFILE"), shortName: tr("프로필", "PROFILE"), href: "/profile", icon: User },
   ];
 
   const walletAddr = profile?.solanaAddress
@@ -214,10 +266,10 @@ export default function Navigation() {
           </span>
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <span className="eyebrow" style={{ fontSize: 9, color: "var(--acc-primary)" }}>
-              // OMEGA · SYS
+              {"// OMEGA · SYS"}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--ink-3)", letterSpacing: "0.16em" }}>
-              v{packageJson.version} · BUILD ε
+              v{packageJson.version} · {tr("빌드", "BUILD")} ε
             </span>
           </div>
         </Link>
@@ -269,7 +321,7 @@ export default function Navigation() {
             letterSpacing: "0.14em",
           }}>
             <Wallet size={11} style={{ color: "var(--ink-2)", flexShrink: 0 }} />
-            <span style={{ color: "var(--ink-2)" }}>WALLET</span>
+            <span style={{ color: "var(--ink-2)" }}>{tr("지갑", "WALLET")}</span>
             <span style={{ color: "var(--ink-0)" }}>{walletAddr}</span>
             <span style={{ color: "var(--ink-4)" }}>·</span>
             <span style={{ color: "var(--acc-primary)" }}>{balance} $NAHOPE</span>
@@ -358,7 +410,7 @@ export default function Navigation() {
                 textTransform: "uppercase" as const,
                 letterSpacing: "0.16em",
               }}>
-                {item.name.split(" ")[0]}
+                {item.shortName}
               </span>
               {isActive && (
                 <span style={{

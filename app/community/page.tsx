@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { database, CommunityPost, UserProfile } from "../../lib/firebase";
 import WalletConnectModal from "../../components/WalletConnectModal";
-import { MessageSquare, Flame, Award, Plus, X, ArrowUp, Tag } from "lucide-react";
+import { MessageSquare, Flame, Plus, X, ArrowUp, Tag } from "lucide-react";
+import { useLanguage } from "../../lib/i18n";
+import { localizeStoredItemName } from "../../lib/game/i18n";
 
 export default function CommunityPage() {
   const { connected } = useWallet();
+  const { language, tr } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<"all" | "scenario" | "brag">("all");
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -108,13 +111,13 @@ export default function CommunityPage() {
       <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 relative z-10">
         <div>
           <span className="eyebrow block mb-3 flicker" style={{ color: "var(--acc-cyan)" }}>
-            // COLLECTIVE DECRYPTION FEED //
+            {tr("// 집단 복호화 피드 //", "// COLLECTIVE DECRYPTION FEED //")}
           </span>
           <h1 className="display text-3xl sm:text-4xl uppercase" style={{ color: "var(--ink-0)" }}>
-            PORT TRANSMISSIONS
+            {tr("항구 전송 기록", "PORT TRANSMISSIONS")}
           </h1>
           <p className="text-xs text-gray-400 font-sans mt-2">
-            Read other survivors&apos; theories and check-ins, or transmit your own classified report.
+            {tr("다른 생존자의 이론과 인증 기록을 읽거나 자신만의 기밀 보고서를 전송하세요.", "Read other survivors' theories and check-ins, or transmit your own classified report.")}
           </p>
         </div>
 
@@ -130,7 +133,7 @@ export default function CommunityPage() {
           style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
         >
           <Plus className="w-4 h-4" />
-          WRITE TRANSMISSION
+          {tr("전송문 작성", "WRITE TRANSMISSION")}
         </button>
       </div>
 
@@ -152,7 +155,11 @@ export default function CommunityPage() {
                   fontWeight: isActive ? "bold" : undefined,
                 }}
               >
-                {cat === "all" ? "ALL LOGS" : cat === "scenario" ? "SCENARIO TRANSMISSIONS" : "INVENTORY BRAGS"}
+                {cat === "all"
+                  ? tr("전체 기록", "ALL LOGS")
+                  : cat === "scenario"
+                    ? tr("시나리오 전송", "SCENARIO TRANSMISSIONS")
+                    : tr("인벤토리 인증", "INVENTORY BRAGS")}
               </button>
             );
           })}
@@ -164,7 +171,9 @@ export default function CommunityPage() {
             <div className="panel panel-bracket p-12 relative text-center">
               <span className="br-bl" /><span className="br-br" />
               <MessageSquare className="w-12 h-12 text-gray-700 mx-auto mb-4 animate-bounce" />
-              <p className="text-xs text-gray-500 font-mono">NO TRANSMISSIONS DECRYPTED ON THIS CHANNEL</p>
+              <p className="text-xs text-gray-500 font-mono">
+                {tr("이 채널에서 복호화된 전송 기록이 없습니다", "NO TRANSMISSIONS DECRYPTED ON THIS CHANNEL")}
+              </p>
             </div>
           ) : (
             filteredPosts.map((post) => {
@@ -199,7 +208,9 @@ export default function CommunityPage() {
                     <span className="font-mono text-xs font-bold">
                       {post.votes.toLocaleString()}
                     </span>
-                    <span className="text-[7px] font-mono tracking-widest uppercase hidden md:inline">VOTE</span>
+                    <span className="text-[7px] font-mono tracking-widest uppercase hidden md:inline">
+                      {tr("투표", "VOTE")}
+                    </span>
                   </button>
 
                   {/* Body Content */}
@@ -220,12 +231,12 @@ export default function CommunityPage() {
                             color: accentColor,
                           }}
                         >
-                          {isScenario ? "SCENARIO" : "BRAG"}
+                          {isScenario ? tr("시나리오", "SCENARIO") : tr("인증", "BRAG")}
                         </span>
                       </div>
                       <span>
-                        {new Date(post.timestamp).toLocaleDateString()}{" "}
-                        {new Date(post.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(post.timestamp).toLocaleDateString(language === "ko" ? "ko-KR" : "en-US")}{" "}
+                        {new Date(post.timestamp).toLocaleTimeString(language === "ko" ? "ko-KR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
 
@@ -247,7 +258,7 @@ export default function CommunityPage() {
                             }}
                           >
                             <Tag className="w-2.5 h-2.5" />
-                            {item}
+                            {localizeStoredItemName(item, language)}
                           </span>
                         ))}
                       </div>
@@ -281,7 +292,7 @@ export default function CommunityPage() {
             <div className="flex justify-between items-center pb-3" style={{ borderBottom: "1px solid var(--line-bright)" }}>
               <span className="font-bold uppercase tracking-wider text-[11px] flex items-center gap-2" style={{ color: "var(--acc-primary)" }}>
                 <Flame className="w-4 h-4" style={{ animation: "pulse-glow 1s ease infinite" }} />
-                // TRANSMIT ENCRYPTED FILE
+                {tr("// 암호화 파일 전송", "// TRANSMIT ENCRYPTED FILE")}
               </span>
               <button
                 onClick={() => setShowModal(false)}
@@ -294,7 +305,7 @@ export default function CommunityPage() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {/* Category Select */}
               <div className="flex flex-col gap-1.5">
-                <span className="text-gray-500 font-bold">TRANSMISSION CHANNEL</span>
+                <span className="text-gray-500 font-bold">{tr("전송 채널", "TRANSMISSION CHANNEL")}</span>
                 <div className="flex gap-2">
                   <button
                     type="button"
@@ -311,7 +322,7 @@ export default function CommunityPage() {
                       color: "var(--ink-3)",
                     }}
                   >
-                    SCENARIO
+                    {tr("시나리오", "SCENARIO")}
                   </button>
                   <button
                     type="button"
@@ -328,17 +339,17 @@ export default function CommunityPage() {
                       color: "var(--ink-3)",
                     }}
                   >
-                    INVENTORY BRAG
+                    {tr("인벤토리 인증", "INVENTORY BRAG")}
                   </button>
                 </div>
               </div>
 
               {/* Author name */}
               <div className="flex flex-col gap-1.5">
-                <span className="text-gray-500 font-bold">AUTHOR SURVIVOR NAME</span>
+                <span className="text-gray-500 font-bold">{tr("작성자 생존자명", "AUTHOR SURVIVOR NAME")}</span>
                 <input
                   type="text"
-                  placeholder="Leave blank for random Survivor Tag"
+                  placeholder={tr("비워 두면 무작위 생존자 태그가 생성됩니다", "Leave blank for random Survivor Tag")}
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
                   className="px-3 py-2.5 text-xs text-white focus:outline-none"
@@ -348,14 +359,14 @@ export default function CommunityPage() {
 
               {/* Text proposal */}
               <div className="flex flex-col gap-1.5">
-                <span className="text-gray-500 font-bold">REPORT DETAILED CONTENT</span>
+                <span className="text-gray-500 font-bold">{tr("보고서 상세 내용", "REPORT DETAILED CONTENT")}</span>
                 <textarea
                   required
                   rows={5}
                   placeholder={
                     category === "scenario"
-                      ? "Describe your English theory for 'HOPE Part 2' based on the secured items. What is the cosmic entity's secret?"
-                      : "Brag about your secured inventory or token stash! Share the cheat codes for finding items."
+                      ? tr("확보한 아이템을 바탕으로 《HOPE 파트 2》 이론을 작성하세요. 우주 존재의 비밀은 무엇일까요?", "Describe your English theory for 'HOPE Part 2' based on the secured items. What is the cosmic entity's secret?")
+                      : tr("확보한 인벤토리나 토큰 보유량을 자랑하고 아이템 발견 비법을 공유하세요.", "Brag about your secured inventory or token stash! Share the cheat codes for finding items.")
                   }
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -366,11 +377,11 @@ export default function CommunityPage() {
 
               {/* Tag Secured Items */}
               <div className="flex flex-col gap-2">
-                <span className="text-gray-500 font-bold">ATTACH SECURED INVENTORY</span>
+                <span className="text-gray-500 font-bold">{tr("확보한 인벤토리 첨부", "ATTACH SECURED INVENTORY")}</span>
 
                 {profile && profile.inventory.length === 0 ? (
                   <p className="text-[10px] italic p-2" style={{ color: "var(--acc-danger)", border: "1px solid color-mix(in srgb, var(--acc-danger) 20%, transparent)", background: "color-mix(in srgb, var(--acc-danger) 5%, transparent)" }}>
-                    You haven&apos;t secured any game items yet! Visit the Episode Game to find gear and use them.
+                    {tr("아직 확보한 게임 아이템이 없습니다. 에피소드 게임에서 장비를 찾아 사용하세요.", "You haven't secured any game items yet! Visit the Episode Game to find gear and use them.")}
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto p-1" style={{ background: "var(--bg-0)", border: "1px solid var(--line)" }}>
@@ -394,7 +405,7 @@ export default function CommunityPage() {
                           }}
                         >
                           {isSelected ? "✓ " : "+ "}
-                          {item}
+                          {localizeStoredItemName(item, language)}
                         </button>
                       );
                     })}
@@ -408,7 +419,7 @@ export default function CommunityPage() {
                 className="w-full mt-2 font-bold py-3 text-xs tracking-widest hover:scale-[1.02] transition-transform"
                 style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
               >
-                ENCRYPT & TRANSMIT REPORT
+                {tr("보고서 암호화 및 전송", "ENCRYPT & TRANSMIT REPORT")}
               </button>
             </form>
           </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profile Dossier | Classified Survivor Record",
+  title: "프로필 기록 | 생존자 기밀 문서",
   description:
     "호포항 생존자 프로필. 솔라나 월렛 시뮬레이터, 일일 체크인, 보유 아이템을 관리하세요. Manage your Hopo Port survivor profile, daily check-in, and inventory.",
   robots: {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     follow: false,
   },
   openGraph: {
-    title: "HOPO PORT PROFILE | Classified Dossier",
+    title: "HOPO PORT 프로필 | 기밀 기록",
     description:
       "호포항 생존자 프로필 관리. Manage your survivor profile and daily check-in.",
     images: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         url: "/images/og-banner.png",
         width: 1200,
         height: 630,
-        alt: "HOPO PORT Profile - Classified Dossier",
+        alt: "HOPO PORT 프로필 - 생존자 기밀 기록",
       },
     ],
   },

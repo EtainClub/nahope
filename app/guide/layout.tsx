@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Field Guide | How to Play HOPO PORT",
+  title: "현장 지침서 | HOPO PORT 플레이 방법",
   description:
-    "Complete English-language field guide to HOPO PORT: OMEGA PROTOCOL. Learn how to connect your Solana wallet, play Episode 1, decode the trigger-belt puzzles, collect artifacts, unlock Episode 2 through the $NAHOPE bonding curve, and submit scenarios for Na Hong-jin's film HOPE Part 2.",
+    "HOPO PORT: OMEGA PROTOCOL 공식 현장 지침서. 솔라나 지갑 연결, 에피소드 1, 트리거 벨트 퍼즐, 유물 수집, 에피소드 2 해금과 시나리오 제출 방법을 확인하세요.",
   openGraph: {
-    title: "HOPO PORT Field Guide | How to Play",
+    title: "HOPO PORT 현장 지침서 | 플레이 방법",
     description:
-      "Step-by-step English guide to playing HOPO PORT: OMEGA PROTOCOL, the interactive cinematic RPG inspired by Na Hong-jin's film HOPE.",
+      "나홍진 감독의 영화 HOPE에서 영감을 받은 인터랙티브 시네마틱 RPG, HOPO PORT: OMEGA PROTOCOL의 단계별 한국어 안내서.",
     images: [
       {
         url: "/images/og-banner.png",
         width: 1200,
         height: 630,
-        alt: "HOPO PORT Field Guide",
+        alt: "HOPO PORT 현장 지침서",
       },
     ],
   },

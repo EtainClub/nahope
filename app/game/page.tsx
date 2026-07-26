@@ -14,10 +14,19 @@ import { useGameState } from "../../lib/game/state";
 import { INTERACTIONS, ITEMS, SCENES } from "../../lib/game/episode1";
 import type { ItemId, SceneId } from "../../lib/game/types";
 import { play as playSound, startBgm, stopBgm } from "../../lib/game/sound";
+import { useLanguage } from "../../lib/i18n";
+import {
+  getEndingCopy,
+  getItemCopy,
+  getSceneCopy,
+  localizeGameLog,
+  localizeGameRole,
+} from "../../lib/game/i18n";
 
 const EP2_GATE = 5000;
 
 export default function GamePage() {
+  const { language, tr } = useLanguage();
   const { connected } = useWallet();
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -116,16 +125,21 @@ export default function GamePage() {
     });
   }, [ending, state.flags, state.lostItems]);
 
-  const scene = SCENES[state.scene];
+  const scene = getSceneCopy(state.scene, language, SCENES[state.scene]);
   const activeItem = state.activeItem ? ITEMS[state.activeItem] : null;
+  const activeItemCopy = state.activeItem && activeItem
+    ? getItemCopy(state.activeItem, language, activeItem)
+    : null;
+  const endingCopy = ending ? getEndingCopy(ending.id, language, ending) : null;
 
   const neighbors = useMemo(() => {
     return scene.exits.map((id: SceneId) => {
       const target = SCENES[id];
+      const targetCopy = getSceneCopy(id, language, target);
       const locked = !!(target.lockedUntil && !state.flags.includes(target.lockedUntil));
-      return { id, title: target.title.split("·").pop()?.trim() ?? id, locked };
+      return { id, title: targetCopy.title.split("·").pop()?.trim() ?? id, locked };
     });
-  }, [scene, state.flags]);
+  }, [language, scene, state.flags]);
 
   const handleHotspot = (hotspotId: string) => inspect(scene.id, hotspotId);
 
@@ -177,7 +191,7 @@ export default function GamePage() {
         <section style={{ minHeight: 0 }} data-tab="plate" className={`game-pane ${mobileTab === "plate" ? "active" : ""}`}>
           <PlateCanvas
             scene={scene}
-            activeItemLabel={activeItem?.name ?? null}
+            activeItemLabel={activeItemCopy?.name ?? null}
             isHotspotValid={isHotspotValid}
             onHotspot={handleHotspot}
             onMove={move}
@@ -191,9 +205,9 @@ export default function GamePage() {
             fontFamily: "var(--font-mono)", fontSize: 11,
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
-            <span style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: 10 }}>Active</span>
+            <span style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: 10 }}>{tr("장착", "Active")}</span>
             <span style={{ color: activeItem ? "var(--acc-danger)" : "var(--text-2)" }}>
-              {activeItem ? activeItem.name : "— bare hands —"}
+              {activeItemCopy ? activeItemCopy.name : tr("— 맨손 —", "— bare hands —")}
             </span>
             {activeItem && (
               <button
@@ -206,7 +220,7 @@ export default function GamePage() {
                   color: "var(--text-2)", fontFamily: "var(--font-mono)", fontSize: 9,
                   padding: "2px 8px", cursor: "pointer", letterSpacing: "0.18em",
                 }}
-              >UNEQUIP</button>
+              >{tr("해제", "UNEQUIP")}</button>
             )}
           </div>
         </section>
@@ -245,7 +259,7 @@ export default function GamePage() {
               cursor: "pointer",
             }}
           >
-            {t}
+            {{ dossier: tr("기록", "dossier"), plate: tr("현장", "plate"), deck: tr("증거", "deck") }[t]}
           </button>
         ))}
       </nav>
@@ -265,9 +279,9 @@ export default function GamePage() {
             fontFamily: "var(--font-mono)", color: "var(--text-1)",
           }}>
             <div style={{ color: "var(--acc-violet)", letterSpacing: "0.24em", fontSize: 11, marginBottom: 12 }}>
-              EPISODE 1 · {ending.title.toUpperCase()}
+              {tr("에피소드", "EPISODE")} 1 · {endingCopy?.title.toUpperCase()}
             </div>
-            <p style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 20 }}>{ending.body}</p>
+            <p style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 20 }}>{endingCopy?.body}</p>
             {ending.unlocksNextEpisode && (
               <div style={{
                 padding: 10, marginBottom: 16,
@@ -275,7 +289,7 @@ export default function GamePage() {
                 color: profile && profile.tokenBalance >= EP2_GATE ? "var(--acc-primary)" : "var(--acc-danger)",
                 fontSize: 11, letterSpacing: "0.16em",
               }}>
-                EP.2 GATE · {EP2_GATE.toLocaleString()} $NAHOPE · YOU HOLD {(profile?.tokenBalance ?? 0).toLocaleString()}
+                {tr("EP.2 입장 조건", "EP.2 GATE")} · {EP2_GATE.toLocaleString()} $NAHOPE · {tr("보유량", "YOU HOLD")} {(profile?.tokenBalance ?? 0).toLocaleString()}
               </div>
             )}
             <div style={{ display: "flex", gap: 10 }}>
@@ -285,7 +299,7 @@ export default function GamePage() {
                 border: "1px solid var(--acc-primary)",
                 color: "var(--acc-primary)",
                 cursor: "pointer", letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10,
-              }}>RESTART</button>
+              }}>{tr("다시 시작", "RESTART")}</button>
               <Link href="/" style={{
                 flex: 1, padding: "10px 12px", textAlign: "center",
                 background: "transparent",
@@ -293,7 +307,7 @@ export default function GamePage() {
                 color: "var(--text-2)",
                 letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10,
                 textDecoration: "none",
-              }}>EXIT</Link>
+              }}>{tr("나가기", "EXIT")}</Link>
             </div>
           </div>
         </div>
@@ -331,8 +345,8 @@ export default function GamePage() {
               alignItems: "center",
               justifyContent: "space-between",
             }}>
-              <span>// EVIDENCE ACQUIRED</span>
-              <span className="text-term-green" style={{ fontSize: 9 }}>[NEW DISCOVERY]</span>
+              <span>{tr("// 증거 획득", "// EVIDENCE ACQUIRED")}</span>
+              <span className="text-term-green" style={{ fontSize: 9 }}>{tr("[새로운 발견]", "[NEW DISCOVERY]")}</span>
             </div>
 
             {/* Discovery Log Text (from left panel logs) */}
@@ -347,9 +361,9 @@ export default function GamePage() {
                 color: "var(--text-1)",
               }}>
                 <span style={{ color: "var(--acc-amber)", marginRight: 6, fontWeight: "bold" }}>
-                  [{discoveryLog.role}]
+                  [{localizeGameRole(discoveryLog.role, language)}]
                 </span>
-                {discoveryLog.text}
+                {localizeGameLog(discoveryLog.text, language)}
               </div>
             )}
 
@@ -366,6 +380,7 @@ export default function GamePage() {
               {discoveredItems.map((id) => {
                 const item = ITEMS[id];
                 if (!item) return null;
+                const itemCopy = getItemCopy(id, language, item);
                 return (
                   <div key={id} style={{
                     display: "flex",
@@ -396,7 +411,7 @@ export default function GamePage() {
                         {item.art ? (
                           <img
                             src={item.art}
-                            alt={item.name}
+                            alt={itemCopy.name}
                             style={{
                               width: "100%", height: "100%", objectFit: "cover",
                               imageRendering: "pixelated",
@@ -410,7 +425,7 @@ export default function GamePage() {
                             fontSize: 7, textAlign: "center",
                             textTransform: "uppercase",
                           }}>
-                            {item.name}
+                            {itemCopy.name}
                           </div>
                         )}
                       </div>
@@ -426,14 +441,14 @@ export default function GamePage() {
                         letterSpacing: "0.05em",
                         marginBottom: 4,
                       }}>
-                        {item.name}
+                        {itemCopy.name}
                       </div>
                       <div style={{
                         fontSize: 10,
                         color: "var(--text-2)",
                         lineHeight: 1.35,
                       }}>
-                        {item.short}
+                        {itemCopy.short}
                       </div>
                     </div>
                   </div>
@@ -469,7 +484,7 @@ export default function GamePage() {
                 e.currentTarget.style.background = "transparent";
               }}
             >
-              DISMISS DISCOVERY
+              {tr("발견물 확인", "DISMISS DISCOVERY")}
             </button>
           </div>
         </div>

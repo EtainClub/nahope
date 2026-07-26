@@ -3,6 +3,8 @@
 import { ITEMS, SCENES } from "../../lib/game/episode1";
 import type { ItemId, SceneId } from "../../lib/game/types";
 import { play as playSound } from "../../lib/game/sound";
+import { useLanguage } from "../../lib/i18n";
+import { getItemCopy, getSceneCopy } from "../../lib/game/i18n";
 
 interface Props {
   inventory: ItemId[];
@@ -18,6 +20,7 @@ const NODE_ORDER: SceneId[] = ["OFFICE", "ARMORY", "YARD", "FIELD", "FOREST", "C
 export default function EvidenceBoard({
   inventory, lostItems, activeItem, visitedScenes, currentScene, onEquip,
 }: Props) {
+  const { language, tr } = useLanguage();
   return (
     <div style={{
       display: "flex", flexDirection: "column",
@@ -31,7 +34,7 @@ export default function EvidenceBoard({
         color: "var(--acc-amber)", textTransform: "uppercase",
         letterSpacing: "0.18em", fontSize: 10,
       }}>
-        Evidence Deck
+        {tr("증거판", "Evidence Deck")}
       </div>
 
       <div style={{
@@ -60,15 +63,16 @@ export default function EvidenceBoard({
               textTransform: "uppercase",
               transform: "rotate(-1.6deg)",
             }}>
-              EVIDENCE PENDING
+              {tr("증거 대기 중", "EVIDENCE PENDING")}
             </div>
             <div style={{ marginTop: 10, fontSize: 10, color: "#6b5a2e", fontStyle: "italic" }}>
-              Pin discoveries here. Tap to equip.
+              {tr("발견물을 여기에 고정합니다. 눌러서 장착하십시오.", "Pin discoveries here. Tap to equip.")}
             </div>
           </div>
         )}
         {inventory.map((id) => {
           const item = ITEMS[id];
+          const itemCopy = getItemCopy(id, language, item);
           const active = activeItem === id;
           return (
             <div
@@ -108,7 +112,7 @@ export default function EvidenceBoard({
                   {item.art ? (
                     <img
                       src={item.art}
-                      alt={item.name}
+                      alt={itemCopy.name}
                       style={{
                         width: "100%", height: "100%", objectFit: "cover",
                         imageRendering: "pixelated",
@@ -123,7 +127,7 @@ export default function EvidenceBoard({
                       textAlign: "center",
                       letterSpacing: "0.1em", textTransform: "uppercase",
                     }}>
-                      {item.name}
+                      {itemCopy.name}
                     </div>
                   )}
                 </div>
@@ -133,7 +137,7 @@ export default function EvidenceBoard({
                   fontSize: 10, color: "#1a1208",
                   textAlign: "center", letterSpacing: "0.06em",
                 }}>
-                  {active ? "▼ ACTIVE" : "tap to equip"}
+                  {active ? tr("▼ 장착 중", "▼ ACTIVE") : tr("눌러서 장착", "tap to equip")}
                 </div>
               </button>
 
@@ -151,7 +155,7 @@ export default function EvidenceBoard({
                   letterSpacing: "0.05em",
                   wordBreak: "break-word",
                 }}>
-                  {item.name}
+                  {itemCopy.name}
                 </div>
                 <div style={{
                   fontSize: 9,
@@ -160,7 +164,7 @@ export default function EvidenceBoard({
                   lineHeight: 1.25,
                   wordBreak: "keep-all",
                 }}>
-                  {item.short}
+                  {itemCopy.short}
                 </div>
               </div>
             </div>
@@ -175,7 +179,7 @@ export default function EvidenceBoard({
             fontSize: 9,
             textAlign: "center",
           }}>
-            LOST · {ITEMS[id]?.name ?? id}
+            {tr("분실", "LOST")} · {ITEMS[id] ? getItemCopy(id, language, ITEMS[id]).name : id}
           </div>
         ))}
       </div>
@@ -183,7 +187,7 @@ export default function EvidenceBoard({
       {/* MAP */}
       <div style={{ padding: 10, borderTop: "1px solid var(--line-dim)" }}>
         <div style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 9, marginBottom: 6 }}>
-          Sector Map
+          {tr("구역 지도", "Sector Map")}
         </div>
         <div style={{ display: "flex", gap: 4, justifyContent: "space-between", alignItems: "center" }}>
           {NODE_ORDER.map((id) => {
@@ -200,7 +204,7 @@ export default function EvidenceBoard({
                 border: here ? "1px solid var(--acc-primary)" : "1px solid var(--line-dim)",
                 background: visited ? "transparent" : "var(--redact-black)",
               }}>
-                {visited ? SCENES[id].title.split("·").pop()?.trim() : "▮▮▮"}
+                {visited ? getSceneCopy(id, language, SCENES[id]).title.split("·").pop()?.trim() : "▮▮▮"}
               </div>
             );
           })}

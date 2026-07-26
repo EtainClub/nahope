@@ -4,25 +4,34 @@ import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { X, Wallet, AlertCircle, Loader2 } from "lucide-react";
 import { connectWalletAndAuth, database } from "../lib/firebase";
+import { useLanguage } from "../lib/i18n";
 
 const MOCK_ADDRESS = "Hopo...7XzP";
 
-const REASON_MESSAGES: Record<string, { title: string; desc: string }> = {
+const REASON_MESSAGES: Record<string, { title: string; desc: string; titleKo: string; descKo: string }> = {
   community: {
     title: "Wallet Required",
     desc: "Connecting a Solana wallet is required to post a transmission. Your post will be linked to your real wallet address.",
+    titleKo: "지갑 연결 필요",
+    descKo: "전송 기록을 게시하려면 Solana 지갑 연결이 필요합니다. 게시물은 실제 지갑 주소와 연결됩니다.",
   },
   episode2: {
     title: "Episode 2 Access",
     desc: "Episode 2 requires a connected Solana wallet and a minimum balance of 5,000 $NAHOPE.",
+    titleKo: "에피소드 2 접근",
+    descKo: "에피소드 2에는 Solana 지갑 연결과 최소 5,000 $NAHOPE 잔액이 필요합니다.",
   },
   episode3: {
     title: "Episode 3 Access",
     desc: "Episode 3 requires a minimum balance of 20,000 $NAHOPE.",
+    titleKo: "에피소드 3 접근",
+    descKo: "에피소드 3에는 최소 20,000 $NAHOPE 잔액이 필요합니다.",
   },
   episode4: {
     title: "Episode 4 Access",
     desc: "Episode 4 is restricted to Elite Hopo Port Defenders holding 100,000 $NAHOPE.",
+    titleKo: "에피소드 4 접근",
+    descKo: "에피소드 4는 100,000 $NAHOPE를 보유한 정예 호포항 방어자만 입장할 수 있습니다.",
   },
 };
 
@@ -40,6 +49,7 @@ export default function WalletConnectModal({
   reason,
 }: WalletConnectModalProps) {
   const { wallets, select, connect, connecting, publicKey } = useWallet();
+  const { language, tr } = useLanguage();
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -53,7 +63,7 @@ export default function WalletConnectModal({
       select(walletName as any);
       await connect();
     } catch (e: any) {
-      setError(e?.message ?? "Failed to connect wallet.");
+      setError(e?.message ?? tr("지갑 연결에 실패했습니다.", "Failed to connect wallet."));
     }
   };
 
@@ -123,7 +133,7 @@ export default function WalletConnectModal({
       onSuccess(pubkeyStr);
       onClose();
     } catch (e: any) {
-      setError(e?.message ?? "Authentication failed.");
+      setError(e?.message ?? tr("인증에 실패했습니다.", "Authentication failed."));
     } finally {
       setIsAuthenticating(false);
     }
@@ -154,7 +164,7 @@ export default function WalletConnectModal({
           <div className="flex items-center gap-2">
             <Wallet className="w-4 h-4" style={{ color: "var(--acc-primary)" }} />
             <span className="font-mono text-xs uppercase tracking-widest" style={{ color: "var(--acc-primary)" }}>
-              {msg.title}
+              {language === "ko" ? msg.titleKo : msg.title}
             </span>
           </div>
           <button
@@ -166,14 +176,14 @@ export default function WalletConnectModal({
         </div>
 
         <p className="text-gray-400 text-xs font-mono mb-5 leading-relaxed">
-          {msg.desc}
+          {language === "ko" ? msg.descKo : msg.desc}
         </p>
 
         {/* If wallet already connected, show finalize button */}
         {publicKey ? (
           <div className="space-y-3">
             <div className="px-4 py-3 font-mono text-xs" style={{ background: "var(--bg-1)", border: "1px solid color-mix(in srgb, var(--acc-primary) 30%, transparent)", color: "var(--acc-primary)" }}>
-              Connected: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+              {tr("연결됨", "Connected")}: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
             </div>
             <button
               onClick={handleFinalize}
@@ -184,7 +194,7 @@ export default function WalletConnectModal({
               {isConnecting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : null}
-              {isConnecting ? "Processing..." : "Continue"}
+              {isConnecting ? tr("처리 중…", "Processing...") : tr("계속", "Continue")}
             </button>
           </div>
         ) : (
@@ -209,14 +219,14 @@ export default function WalletConnectModal({
                     {wallet.adapter.name}
                   </span>
                   <span className="ml-auto font-mono uppercase" style={{ fontSize: 10, color: "var(--acc-primary)" }}>
-                    Detected
+                    {tr("감지됨", "Detected")}
                   </span>
                 </button>
               ))
             ) : (
               <div className="text-center py-4">
                 <p className="text-gray-500 text-xs font-mono mb-3">
-                  No wallets detected.
+                  {tr("감지된 지갑이 없습니다.", "No wallets detected.")}
                 </p>
                 {notDetectedWallets.slice(0, 2).map((wallet) => (
                   <a
@@ -235,7 +245,7 @@ export default function WalletConnectModal({
                       />
                     )}
                     <span className="font-mono text-xs text-gray-400">
-                      Install {wallet.adapter.name} →
+                      {tr("설치", "Install")} {wallet.adapter.name} →
                     </span>
                   </a>
                 ))}
@@ -245,7 +255,7 @@ export default function WalletConnectModal({
             {isConnecting && (
               <div className="flex items-center justify-center gap-2 py-2 text-xs font-mono text-gray-400">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Connecting...
+                {tr("연결 중…", "Connecting...")}
               </div>
             )}
           </div>
@@ -259,7 +269,7 @@ export default function WalletConnectModal({
         )}
 
         <p className="mt-4 text-center text-[10px] text-gray-600 font-mono">
-          Episode 1 is free to play — no wallet required.
+          {tr("에피소드 1은 지갑 없이 무료로 플레이할 수 있습니다.", "Episode 1 is free to play — no wallet required.")}
         </p>
       </div>
     </div>

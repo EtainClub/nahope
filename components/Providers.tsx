@@ -3,6 +3,7 @@
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { useMemo } from "react";
+import { LanguageProvider } from "../lib/i18n";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const endpoint =
@@ -15,10 +16,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={true}>
-        {children}
-      </WalletProvider>
-    </ConnectionProvider>
+    <LanguageProvider>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={wallets} autoConnect={true}>
+          {children}
+        </WalletProvider>
+      </ConnectionProvider>
+    </LanguageProvider>
   );
 }
