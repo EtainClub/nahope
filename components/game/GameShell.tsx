@@ -1,10 +1,12 @@
 "use client";
 
 import { Radio, Wallet, Volume2, VolumeX } from "lucide-react";
-import { MAX_TURNS } from "../../lib/game/episode1";
-import { useLanguage } from "../../lib/i18n";
 
 interface Props {
+  episodeNumber: 1 | 2 | 3 | 4;
+  maxTurns: number;
+  headerLabel: string;
+  onEpisodeChange: (episode: 1 | 2 | 3 | 4) => void;
   turn: number;
   scene: string;
   walletAddress: string | null;
@@ -15,10 +17,9 @@ interface Props {
   onReset: () => void;
 }
 
-export default function GameShell({ turn, scene, walletAddress, tokenBalance, onConnect, bgmEnabled, onToggleBgm, onReset }: Props) {
-  const { tr } = useLanguage();
-  const clamped = Math.min(turn, MAX_TURNS);
-  const ratio = clamped / MAX_TURNS;
+export default function GameShell({ episodeNumber, maxTurns, headerLabel, onEpisodeChange, turn, scene, walletAddress, tokenBalance, onConnect, bgmEnabled, onToggleBgm, onReset }: Props) {
+  const clamped = Math.min(turn, maxTurns);
+  const ratio = clamped / maxTurns;
   const danger = ratio >= 0.66;
   return (
     <header
@@ -33,9 +34,9 @@ export default function GameShell({ turn, scene, walletAddress, tokenBalance, on
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, letterSpacing: "0.16em", textTransform: "uppercase" }}>
-        <span style={{ color: "var(--acc-violet)" }}>1983.08.◯◯ · 18:40</span>
+        <span style={{ color: "var(--acc-violet)" }}>{headerLabel}</span>
         <span style={{ color: "var(--text-2)" }}>·</span>
-        <span style={{ color: "var(--acc-primary)" }}>Ω-CHANNEL <Radio size={11} style={{ display: "inline", verticalAlign: "middle" }} /></span>
+        <span style={{ color: "var(--acc-primary)" }}>CASE-LINK <Radio size={11} style={{ display: "inline", verticalAlign: "middle" }} /></span>
         <span style={{ color: "var(--text-2)" }}>·</span>
         <span>{scene}</span>
       </div>
@@ -51,14 +52,30 @@ export default function GameShell({ turn, scene, walletAddress, tokenBalance, on
           letterSpacing: "0.18em",
         }}
       >
-        <span>{tr("턴", "TURN")}</span>
-        <span style={{ fontWeight: 700, fontSize: 13 }}>{String(clamped).padStart(2, "0")}/{MAX_TURNS}</span>
+        <span>TURN</span>
+        <span style={{ fontWeight: 700, fontSize: 13 }}>{String(clamped).padStart(2, "0")}/{maxTurns}</span>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", gap: 4 }} aria-label="Episode selection">
+          {([1, 2, 3, 4] as const).map((episode) => (
+            <button
+              key={episode}
+              onClick={() => onEpisodeChange(episode)}
+              aria-pressed={episodeNumber === episode}
+              style={{
+                background: episodeNumber === episode ? "var(--acc-violet)" : "transparent",
+                border: "1px solid var(--line-bright)",
+                color: episodeNumber === episode ? "var(--bg-0)" : "var(--text-2)",
+                padding: "4px 8px", fontFamily: "var(--font-mono)", fontSize: 9,
+                letterSpacing: "0.14em", cursor: "pointer",
+              }}
+            >EP.{episode}</button>
+          ))}
+        </div>
         <button
           onClick={() => {
-            if (window.confirm(tr("새 게임을 시작할까요? 현재 진행 상황이 사라집니다.", "Start a new game? Current progress will be lost."))) onReset();
+            if (window.confirm("Start a new game? Current progress will be lost.")) onReset();
           }}
           style={{
             background: "transparent",
@@ -67,7 +84,7 @@ export default function GameShell({ turn, scene, walletAddress, tokenBalance, on
             padding: "4px 10px", fontFamily: "var(--font-mono)", fontSize: 10,
             letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
           }}
-        >{tr("새 게임", "NEW GAME")}</button>
+        >NEW GAME</button>
 
         <button
           onClick={onToggleBgm}
@@ -80,10 +97,10 @@ export default function GameShell({ turn, scene, walletAddress, tokenBalance, on
             letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
             transition: "all 0.15s ease",
           }}
-          title={bgmEnabled ? tr("배경 음악 끄기", "Mute Background Music") : tr("배경 음악 켜기", "Unmute Background Music")}
+          title={bgmEnabled ? "Mute Background Music" : "Unmute Background Music"}
         >
           {bgmEnabled ? <Volume2 size={12} /> : <VolumeX size={12} />}
-          <span>BGM: {bgmEnabled ? tr("켜짐", "ON") : tr("꺼짐", "OFF")}</span>
+          <span>BGM: {bgmEnabled ? "ON" : "OFF"}</span>
         </button>
 
         <button
@@ -100,7 +117,7 @@ export default function GameShell({ turn, scene, walletAddress, tokenBalance, on
           <Wallet size={12} />
           {walletAddress
             ? `${walletAddress.slice(0, 4)}…${walletAddress.slice(-4)} · ${tokenBalance.toLocaleString()} $NAHOPE`
-            : tr("지갑 연결", "CONNECT WALLET")}
+            : "CONNECT WALLET"}
         </button>
       </div>
     </header>

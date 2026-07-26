@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { LogEntry } from "../../lib/game/types";
+import type { CaseRecord, LogEntry } from "../../lib/game/types";
 import { useLanguage } from "../../lib/i18n";
 import { localizeGameLog, localizeGameRole } from "../../lib/game/i18n";
 
@@ -9,6 +9,7 @@ interface Props {
   logs: LogEntry[];
   ambient: string;
   flags: string[];
+  caseRecord: CaseRecord;
 }
 
 const KIND_COLOR: Record<string, string> = {
@@ -19,8 +20,8 @@ const KIND_COLOR: Record<string, string> = {
   default: "var(--text-1)",
 };
 
-export default function Dossier({ logs, ambient, flags }: Props) {
-  const { language, tr } = useLanguage();
+export default function Dossier({ logs, ambient, flags, caseRecord }: Props) {
+  const { language } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scrollRef.current;
@@ -42,7 +43,7 @@ export default function Dossier({ logs, ambient, flags }: Props) {
         textTransform: "uppercase", letterSpacing: "0.18em",
         fontSize: 10,
       }}>
-        {tr("수사 기록 · 교신록", "DOSSIER · TRANSCRIPT")}
+        DOSSIER · TRANSCRIPT
       </div>
 
       <div
@@ -71,7 +72,7 @@ export default function Dossier({ logs, ambient, flags }: Props) {
         {ambient}
       </div>
 
-      {/* Field report — partially redacted, evidence-driven reveal */}
+      {/* Episode record — each fact is revealed only after it is established. */}
       <div className="paper-redact" style={{
         margin: 10,
         padding: "10px 12px",
@@ -80,30 +81,21 @@ export default function Dossier({ logs, ambient, flags }: Props) {
         border: "1px solid #6b5a2e",
       }}>
         <div style={{ textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 6 }}>
-          {tr("현장 보고서 · 호포항", "Field Report · Hopo Port")}
+          {caseRecord.title}
         </div>
-        <div>
-          {tr("1983.08.◯◯ — 소 사체 훼손, ", "1983.08.◯◯ — Cattle mutilation, ")}
-          <span className={flags.includes("COW_INSPECTED") ? "" : "redact"}>{tr("가죽에 새겨진 Ω 문양", "symbol Ω carved into hide")}</span>.
-        </div>
-        <div>
-          {tr("대상: ", "Subject: ")}
-          <span className={flags.includes("REPORT_FOUND") ? "" : "redact"}>{tr("그 문양은 33년마다 돌아온다", "the symbol returns every 33 years")}</span>.
-        </div>
-        <div>
-          {tr("교차 참조: ", "Cross-ref: ")}
-          <span className={flags.includes("MAGNIFIER_PRIED") ? "" : "redact"}>{tr("폴라로이드, 1950년, 아동 대상", "Polaroid, 1950, child subject")}</span>.
-        </div>
-        <div style={{ color: "#6b5a2e", marginTop: 6 }}>
-          {tr("2 — 3쪽: ", "Pages 2 — 3: ")}<span className="redact">                              </span>
-        </div>
-        {(flags.includes("APOSTATE_STEP_1") || flags.includes("APOSTATE_STEP_2")) && (
-          <div style={{ color: "#6b3a1e", marginTop: 6, fontStyle: "italic" }}>
-            {tr("여백 메모 · ", "margin note · ")}<span className={flags.includes("APOSTATE_STEP_1") ? "" : "redact"}>{tr("그는 이미 잘못된 방식으로 웃고 있었다", "he was already smiling wrong")}</span>
-            {" · "}
-            <span className={flags.includes("APOSTATE_STEP_2") ? "" : "redact"}>{tr("글자들은 말하기 전에 기울어진다", "the letters lean before they speak")}</span>
+        {caseRecord.rows.map((row) => (
+          <div key={row.label}>
+            {row.label}: {" "}
+            <span className={flags.includes(row.revealFlag) ? "" : "redact"}>
+              {row.text}
+            </span>.
           </div>
-        )}
+        ))}
+        {caseRecord.notes?.map((note) => flags.includes(note.revealFlag) ? (
+          <div key={note.revealFlag} style={{ color: "#6b3a1e", marginTop: 4, fontStyle: "italic" }}>
+            {note.text}
+          </div>
+        ) : null)}
       </div>
     </div>
   );

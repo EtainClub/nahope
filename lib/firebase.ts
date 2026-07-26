@@ -77,7 +77,8 @@ if (typeof window !== "undefined") {
 }
 
 // Interfaces
-export interface Ep1State {
+export interface EpisodeProgressState {
+  version?: number;
   endingId: "A" | "B" | "C" | "D";
   flags: string[];
   lostItems: string[];
@@ -93,7 +94,10 @@ export interface UserProfile {
   lastCheckIn: string | null;
   createdAt?: number;
   lastSeen?: number;
-  ep1?: Ep1State;
+  ep1?: EpisodeProgressState;
+  ep2?: EpisodeProgressState;
+  ep3?: EpisodeProgressState;
+  ep4?: EpisodeProgressState;
   completedEndings?: string[];
 }
 
@@ -123,8 +127,8 @@ const DEFAULT_POSTS: CommunityPost[] = [
     category: "scenario",
     author: "HopoSurvivor_88",
     authorAddress: "8xY7...9PqR",
-    text: "Part 2 opens in a hidden military bunker beneath Hopo Port. Sung-ki discovers that the Korean Defense Unit was secretly experimenting on the extraterrestrial debris since the 1970s. Utilizing the translator fragment, he hacks into the alien hive mind frequency, planning to weaponize the cosmic radiation against the mothership using his modified Carbine rifle.",
-    items: ["Lost Carbine Rifle", "Omega (Ω) Amulet", "Translator Fragment"],
+    text: "Part 2 begins with Sung-gi among the human witnesses who learned that Bamigir's grief could look like aggression. Bum-seok's Hopo case file — cattle wounds, oversized track cast, and the encounter photograph — becomes evidence that keeps the surviving royal vessel from being treated as a simple invasion force.",
+    items: ["Hopo Incident File", "Cattle-Site Photograph", "Soil Track Cast"],
     votes: 14820,
     votedBy: [],
     timestamp: Date.now() - 7200000,
@@ -145,8 +149,8 @@ const DEFAULT_POSTS: CommunityPost[] = [
     category: "brag",
     author: "SolanaMemeLord",
     authorAddress: "Fxz3...8KyL",
-    text: "Look at my Omega collection! Picked up the Green Alien Slime by using the screwdriver on the desk rifle. Took me an hour to figure out! Also holding 120,000 $NAHOPE! Ready for Episode 2! 🚀👽",
-    items: ["Green Alien Slime", "Lost Carbine Rifle", "Cabinet Key"],
+    text: "Completed the full Hopo evidence chain without firing: documented the cattle site, proved the tiger theory wrong, traced the tracks back toward the village, and preserved Bum-seok's unfired cartridge.",
+    items: ["Unfired Cartridge", "Bamigir Encounter Photograph", "Unknown Subject Case File"],
     votes: 421,
     votedBy: [],
     timestamp: Date.now() - 14400000,

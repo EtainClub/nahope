@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { Scene, SceneId } from "../../lib/game/types";
 import { play as playSound } from "../../lib/game/sound";
-import { useLanguage } from "../../lib/i18n";
 
 interface Props {
   scene: Scene;
@@ -15,7 +14,6 @@ interface Props {
 }
 
 export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, onHotspot, onMove, neighbors }: Props) {
-  const { tr } = useLanguage();
   const [hover, setHover] = useState<string | null>(null);
 
   return (
@@ -118,7 +116,7 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
                 pointerEvents: "none",
                 boxShadow: "0 0 8px color-mix(in srgb, var(--acc-primary) 40%, transparent)",
               }}>
-                {activeItemLabel ? `${tr("사용", "USE")} ${activeItemLabel} → ${h.label}` : h.label}
+                {activeItemLabel ? `USE ${activeItemLabel} → ${h.label}` : h.label}
               </span>
             )}
           </button>
@@ -151,7 +149,7 @@ export default function PlateCanvas({ scene, activeItemLabel, isHotspotValid, on
               opacity: n.locked ? 0.55 : 1,
             }}
           >
-            → {n.title} {n.locked ? tr("· 잠김", "· locked") : ""}
+            → {n.title} {n.locked ? "· locked" : ""}
           </button>
         ))}
       </div>

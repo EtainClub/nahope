@@ -41,10 +41,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://nahope.com"),
   title: {
-    default: "HOPO PORT: OMEGA PROTOCOL | 나홍진 감독의 HOPE 인터랙티브 RPG",
+    default: "HOPO PORT: OMEGA PROTOCOL | HOPE Interactive RPG",
     template: "%s | HOPO PORT",
   },
-  description: "나홍진 감독의 SF 코즈믹 호러 영화 'HOPE(호프)'에서 영감을 받은 인터랙티브 시네마틱 RPG. 포인트 앤 클릭으로 호포항을 탐험하고, 아이템을 수집하고, 커뮤니티와 함께 Part 2 시나리오를 만들어 감독에게 전달하세요. Enter Hopo Port Control Zone: an interactive cinematic RPG inspired by Na Hong-jin's upcoming film 'HOPE'.",
+  description: "Enter Hopo Port Control Zone: an interactive cinematic RPG inspired by Na Hong-jin's released film HOPE. Investigate the cattle incident, challenge the tiger theory, and build a community scenario for Part 2.",
   keywords: ["hopo port", "omega protocol", "나홍진", "HOPE 영화", "호프", "cannes 2026", "na hong jin", "movie hope", "solana", "$NAHOPE", "meme coin", "sci-fi RPG", "interactive fiction", "point and click", "cosmic horror", "황정민", "조인성", "정호연"],
   authors: [{ name: "Hopo Port Survivor Community" }],
   creator: "Hopo Port Survivor Community",

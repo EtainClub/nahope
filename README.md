@@ -6,7 +6,7 @@
 
 ## 📖 Overview
 
-**HOPE: THE HOPO PORT MYSTERY** is a collaborative RPG platform that merges the universe of director Na Hong-jin's upcoming film \<Hope\> (1970–80s Cold War era, an isolated DMZ coastal village, mysterious cosmic horror) with the hardcore point-and-click puzzle mechanics of the classic game \<Isaku (遺作)\>.
+**HOPE: THE HOPO PORT MYSTERY** is a collaborative RPG platform that adapts the released film \<Hope\>—its isolated coastal village, false tiger hunt, alien crash survivors, and escalating cosmic horror—through hardcore point-and-click puzzle mechanics inspired by \<Isaku (遺作)\>.
 
 It delivers an unprecedented **"Cinematic Governance"** experience to users of the `$NAHOPE` memecoin ecosystem, allowing them to explore the film's universe in real-time and generate narratives.
 
@@ -15,6 +15,14 @@ It delivers an unprecedented **"Cinematic Governance"** experience to users of t
 1. **Na Hong-jin Cinematic Horror** — Recreating his signature ominous, unpredictable "ontological cosmic horror" through technical mechanics and narrative text
 2. **Hardcore Puzzle Difficulty** — Benchmarking \<Isaku\>'s interconnected puzzle structure to encourage community discussion and strategy sharing
 3. **Collective Narrative Creation (CGC)** — Users generate memes and scenarios from gameplay discoveries, then collectively propose the next storyline (Part 2) to director Na Hong-jin via community governance vote
+
+---
+
+## 📚 Story Documentation
+
+- **[Game Story Bible](docs/game_story_bible.md)** — Authoritative narrative, worldbuilding, and implemented Episode 1–4 stories
+- [Episode 1–4 Guide](app/guide/page.tsx) — Playable puzzle routes, ending matrices, and adaptation boundaries
+- [Pre-release Story Design](docs/game_story_design.md) — Archived speculative concept; not current canon
 
 ---
 
@@ -100,15 +108,38 @@ The game page (`/game`) benchmarks Isaku's classic 3-panel structure:
 
 A logic structure designed so that thoughtless clicking leads to failure. Players must read game logs and deduce causal relationships between objects (the **"trigger belt"**) to advance.
 
-**Example:**
-1. Stealthily steal the `Armory Key` from the sleeping guard
-2. Unlock the armory to retrieve `Lubricating Oil`
-3. Use the oil to open the stuck desk drawer and obtain the `Confiscated Screwdriver`
-4. Disassemble the `Calivan Rifle` with the screwdriver → discover `Alien Slime` → safely proceed to the fields
+**Episode 1 evidence chain:**
+1. Review the duty roster, collect the evidence camera and field equipment, and confirm that Hopo's communications are severed beyond the local hardware.
+2. Delay Sung-gi's premature tiger hunt, then photograph and measure the uneaten cattle carcass.
+3. Compare the wounds and tracks against the predator guide to reject the tiger theory.
+4. Observe the immense figure from the ridge and withhold fire when Bum-seok recognizes grief.
+5. Follow the subject to Hopo's ruined main road, document the wounded Bamigir's tears, and file the unknown-subject report.
+
+
+**Episode 2 causality chain:**
+1. Stabilize the search line and preserve Bamigir's aftermath without distributing ammunition.
+2. Search Yang-bae's mannequin workshop, open the cold room, and document Kali's projectile wound.
+3. Match the spent casing to Yang-bae's statement and trace his route into the mountain.
+4. Document multiple anatomies and the crashed silver vessel, then connect its child-sized compartment to Kali.
+5. Hold fire during the royal survivors' encirclement and choose either a safe withdrawal or a complete first-shot report.
+
+**Episode 3 contact chain:**
+1. Stabilize the returning hunters, record every casualty, and remove the rifle bolts from the human line.
+2. Combine the casualty ledger with Nak-yeon's lived evacuation map to build a complete civilian manifest.
+3. Move Kali under medical custody, document the human projectile, and carry the child in a protected cradle.
+4. Use Hae-sul's witness movements to distinguish Aydobor's search route from the civilian corridor.
+5. Display human disarmament, hold the grove with Sung-ae's flare, then choose evacuation or Kali's wordless return.
+
+**Episode 4 archive chain:**
+1. Establish chain of custody across the surviving archive, testimony recorder, and sealed artifact cases.
+2. Reconstruct the cattle incident, human first shot, alien search, and reciprocal withdrawal on the causality board.
+3. Separate proven facts, supported inferences, and creative proposals before certifying the layered archive.
+4. Draft a game-original *Humans in Space* scenario around Kali, Zor, and the human witness without rewriting evidence as fact.
+5. Register authorship, publish an open archive index, and choose public release or community-governed transmission.
 
 ### Token-Gating
 
-Access to subsequent episodes is validated via Solana RPC by checking the user's `$NAHOPE` balance (e.g., Episode 2 requires 5,000 $NAHOPE).
+Episode 2 requires an Episode 1 clear plus 5,000 $NAHOPE; Episode 3 requires an Episode 2 clear plus 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, at least three rare artifacts, and 100,000 $NAHOPE. Connected-wallet balances are checked by a no-cache Next.js server route using Solana RPC and the configured `NAHOPE_MINT`; progression and artifact prerequisites come from the saved player profile.
 
 ### UGC Reward System
 

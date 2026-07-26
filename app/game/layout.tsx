@@ -2,27 +2,27 @@ import type { Metadata } from "next";
 import GameRouteBodyClass from "../../components/game/GameRouteBodyClass";
 
 export const metadata: Metadata = {
-  title: "에피소드 1: 인지 수색 | 인터랙티브 플레이",
+  title: "HOPO PORT Episodes 1–4 | Interactive Investigation",
   description:
-    "호포항 파출소를 포인트 앤 클릭으로 탐험하세요. 사무실, 농로, 창고를 수색하며 도구를 찾고 외계 유물의 비밀을 밝혀내세요. Play the interactive point-and-click room escape game. Explore the Hopo Port police substation.",
+    "Investigate Hopo, return Kali, rebuild the surviving archive, and submit the Hope Protocol for community review.",
   openGraph: {
-    title: "HOPO PORT 게임 | 에피소드 1 인터랙티브 RPG",
+    title: "HOPO PORT | Episodes 1–4 Interactive RPG",
     description:
-      "포인트 앤 클릭 방 탈출 게임. 호포항 파출소를 탐험하고 외계 유물을 수집하세요. Interactive point-and-click room escape.",
+      "A four-episode investigation spanning The Hopo Tiger, The Hunt Reverses, Human Dust, and Omega Protocol.",
     images: [
       {
         url: "/images/og-banner.png",
         width: 1200,
         height: 630,
-        alt: "HOPO PORT 에피소드 1 - 인터랙티브 포인트 앤 클릭 게임",
+        alt: "HOPO PORT Episodes 1 through 4 interactive investigation",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HOPO PORT 게임 | 에피소드 1 인터랙티브 RPG",
+    title: "HOPO PORT | Episodes 1–4 Interactive RPG",
     description:
-      "포인트 앤 클릭 방 탈출 게임. Explore the Hopo Port police substation and find alien artifacts.",
+      "Document Bamigir, uncover Kali, evacuate Hopo, and preserve the record through Omega Protocol.",
     images: ["/images/og-banner.png"],
   },
 };

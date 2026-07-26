@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "현장 지침서 | HOPO PORT 플레이 방법",
+  title: "Episodes 1–4 Field Guide | HOPO PORT",
   description:
-    "HOPO PORT: OMEGA PROTOCOL 공식 현장 지침서. 솔라나 지갑 연결, 에피소드 1, 트리거 벨트 퍼즐, 유물 수집, 에피소드 2 해금과 시나리오 제출 방법을 확인하세요.",
+    "Complete routes, ending matrices, access rules, and canon boundaries for all four HOPO PORT episodes.",
   openGraph: {
-    title: "HOPO PORT 현장 지침서 | 플레이 방법",
+    title: "HOPO PORT Field Guide | Episodes 1–4",
     description:
-      "나홍진 감독의 영화 HOPE에서 영감을 받은 인터랙티브 시네마틱 RPG, HOPO PORT: OMEGA PROTOCOL의 단계별 한국어 안내서.",
+      "Solve The Hopo Tiger, The Hunt Reverses, Human Dust, and Omega Protocol through evidence and restraint.",
     images: [
       {
         url: "/images/og-banner.png",
         width: 1200,
         height: 630,
-        alt: "HOPO PORT 현장 지침서",
+        alt: "HOPO PORT Episodes 1 through 4 field guide",
       },
     ],
-  },
+  }
 };
 
 export default function GuideLayout({ children }: { children: React.ReactNode }) {

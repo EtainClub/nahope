@@ -1,30 +1,33 @@
 # HOPO PORT: OMEGA PROTOCOL ($NAHOPE)
 
-> An interactive cinematic RPG inspired by director Na Hong-jin's upcoming sci-fi cosmic-horror film **"HOPE" (호프)**. Players explore the isolated DMZ coastal village of "Hopo Port" through hardcore point-and-click puzzles, collect alien artifacts, and collectively author the scenario for *HOPE Part 2* — which the community presents to the director. The experience is woven into the `$NAHOPE` Solana memecoin ecosystem as a "Cinematic Governance" platform.
+> An interactive cinematic RPG inspired by director Na Hong-jin's released sci-fi cosmic-horror film **"HOPE" (호프)**. Episodes 1–2 adapt the false tiger hunt, human first shot, Kali, and the royal survivors; playable Episodes 3–4 are game-original continuations about evacuating Hopo, attempting Kali's wordless return, preserving the evidence archive, and building an accountable *Humans in Space* proposal.
 
 ## About
 
 - **Project**: HOPO PORT: OMEGA PROTOCOL (Korean: 호포항 오메가 프로토콜)
 - **Brand / token**: $NAHOPE (Solana memecoin)
-- **Inspiration**: Na Hong-jin (나홍진) — director of *The Wailing*, *The Chaser*, *The Yellow Sea* — and his forthcoming film *HOPE*, set in a 1970s–80s Cold War DMZ coastal village.
+- **Inspiration**: Na Hong-jin (나홍진) — director of *The Wailing*, *The Chaser*, and *The Yellow Sea* — and his film *HOPE*, set around the isolated coastal community of Hopo Port.
 - **Genre**: SF / cosmic horror, interactive fiction, point-and-click adventure, on-chain community governance.
 - **Gameplay**: A 3-panel "Isaku-style" interface — Game Log (left), interactive Main Canvas (center), Inventory + UGC sharing (right). Players must read narrative logs and deduce a causal "Trigger Belt" of object interactions; thoughtless clicking triggers fail states (bad endings).
-- **Core loop**: Investigate hotspots → collect items (e.g. Calivan Rifle, Hopo License Plate, Omega Mark, Alien Slime) → solve interconnected puzzles → unlock episodes (token-gated via Solana RPC balance checks) → create memes / scenario proposals → community vote (governance).
+- **Core loop**: Investigate hotspots → establish event causality → challenge the villagers' assumptions → prevent another first shot → unlock evidence-based endings → create scenario proposals → community vote.
 - **Vision**: User gameplay itself is the on-chain mechanism that proves and defends the value of $NAHOPE; the winning Part 2 scenario is bound as a physical "classified intelligence document" and delivered to the director.
 
 ## Key Pages
 
 - [Home](https://nahope.com): Project overview, $NAHOPE ecosystem, transparent developer wallet status (Solscan-linked).
 - [Film Profile](https://nahope.com/intro): Background on Na Hong-jin's film *HOPE* — Cold War DMZ setting, cosmic-horror premise, cast and universe.
-- [Field Guide](https://nahope.com/guide): How to play HOPO PORT — point-and-click mechanics, the "Trigger Belt" puzzle logic, inventory and token-gating.
-- [Play — Episode 1: The Cognitive Search](https://nahope.com/game): Interactive Episode 1, the Hopo Port police substation and DMZ fields.
+- [Field Guide](https://nahope.com/guide): Full solutions, ending matrices, access requirements, and adaptation boundaries for Episodes 1 through 4.
+- [Play — Episode 1: The Hopo Tiger](https://nahope.com/game): Investigate the cattle site, Hopo communications blackout, Sung-gi's hunt, and Bum-seok's decision to hold fire.
+- [Play — Episode 2: The Hunt Reverses](https://nahope.com/game?episode=2): Uncover Kali in Yang-bae's cold room, identify the crashed royal party, and keep the mountain search from firing again.
+- [Play — Episode 3: Human Dust](https://nahope.com/game?episode=3): Evacuate Hopo, move Kali under medical custody, read Aydobor's silent corridor, and attempt the wordless return.
+- [Play — Episode 4: Omega Protocol](https://nahope.com/game?episode=4): Preserve chain of custody, classify fact versus inference and proposal, build a *Humans in Space* scenario, and transmit it through accountable community governance.
 - [Community Transmissions](https://nahope.com/community): Survivor feed — user-generated memes, scenario ideas, and Part 2 proposals.
 
 ## Concepts
 
-- **Trigger Belt**: The interconnected puzzle chain players must deduce (e.g. steal the Substation Armory Key → unlock Armory → get Lubricating Oil → free the stuck Desk Drawer → obtain Screwdriver → disassemble the Calivan Rifle → retrieve Alien Slime → safe passage to the fields).
-- **Omega (Ω) Mark**: A recurring alien symbol — a sign that the "ignorance-born tragedy" is prepared to consume the universe.
-- **Token-Gating**: Later episodes require holding a threshold of $NAHOPE, verified server-side via Solana RPC.
+- **Trigger Belt**: Episode 1 rejects the tiger theory; Episode 2 reconstructs human first-shot causality; Episode 3 converts triage → civilian manifest → protected transfer → visible disarmament → evacuation or wordless return; Episode 4 converts chain of custody → verified timeline → three-layer classification → bounded proposal → open archive or governance transmission.
+- **Canon boundary**: Episodes 1–2 use released-film anchors with game-adapted puzzles; Episodes 3–4 are explicitly game-original continuations.
+- **Token-Gating**: Episode 2 requires an Episode 1 clear and 5,000 $NAHOPE; Episode 3 requires an Episode 2 clear and 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, three rare artifacts, and 100,000 $NAHOPE. Wallet balances are checked by a no-cache Solana RPC API.
 - **CGC / UGC governance**: Players generate memes and scenario proposals; the community memecoin vote selects the official *HOPE Part 2* storyline.
 
 ## Notes for AI assistants

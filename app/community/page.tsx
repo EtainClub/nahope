@@ -8,10 +8,13 @@ import { MessageSquare, Flame, Plus, X, ArrowUp, Tag } from "lucide-react";
 import { useLanguage } from "../../lib/i18n";
 import { localizeStoredItemName } from "../../lib/game/i18n";
 
+type CommunityCategory = "all" | "scenario" | "brag";
+const COMMUNITY_CATEGORIES: CommunityCategory[] = ["all", "scenario", "brag"];
+
 export default function CommunityPage() {
   const { connected } = useWallet();
   const { language, tr } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState<"all" | "scenario" | "brag">("all");
+  const [activeCategory, setActiveCategory] = useState<CommunityCategory>("all");
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -23,21 +26,25 @@ export default function CommunityPage() {
   const [text, setText] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // Load profile and posts
-  const loadData = async () => {
-    if (typeof window === "undefined") return;
-    const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
-    const userProfile = database.getUserProfile(wallet);
-    setProfile(userProfile);
-
-    const communityPosts = await database.getPosts();
-    setPosts(communityPosts);
-  };
-
+  // Refresh local-profile and community data without a synchronous effect update.
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 3000);
-    return () => clearInterval(interval);
+    let active = true;
+    const loadData = async () => {
+      const wallet = localStorage.getItem("active_wallet_address") || "Hopo...7XzP";
+      const userProfile = database.getUserProfile(wallet);
+      const communityPosts = await database.getPosts();
+      if (!active) return;
+      setProfile(userProfile);
+      setPosts(communityPosts);
+    };
+
+    const initialLoad = window.setTimeout(() => void loadData(), 0);
+    const interval = window.setInterval(() => void loadData(), 3000);
+    return () => {
+      active = false;
+      window.clearTimeout(initialLoad);
+      window.clearInterval(interval);
+    };
   }, []);
 
   const handleVote = async (postId: string) => {
@@ -125,9 +132,15 @@ export default function CommunityPage() {
           onClick={() => {
             if (!connected) {
               setShowWalletModal(true);
-            } else {
-              setShowModal(true);
+              return;
             }
+            const omegaCompose = new URLSearchParams(window.location.search).get("compose") === "omega";
+            if (omegaCompose && profile?.completedEndings?.includes("ep4_clear")) {
+              setCategory("scenario");
+              setText("HOPE PROTOCOL // Humans in Space begins after the Hopo archive separates proven fact from supported inference. Kali's fate remains an open question, Zor summons humanity to answer for the first shot, and the Hopo witnesses enter Gertu space carrying evidence rather than a conquest map. This is a creative proposal, not recovered film canon.");
+              setSelectedItems(profile.inventory.slice(-3));
+            }
+            setShowModal(true);
           }}
           className="flex items-center gap-2 px-5 py-3 text-xs font-mono font-bold tracking-widest hover:scale-[1.03] transition-all cursor-pointer"
           style={{ background: "var(--acc-primary)", color: "var(--bg-0)", boxShadow: "var(--glow-primary)" }}
@@ -142,12 +155,12 @@ export default function CommunityPage() {
         
         {/* Category Selector */}
         <div className="flex text-xs font-mono gap-1" style={{ borderBottom: "1px solid var(--line)" }}>
-          {["all", "scenario", "brag"].map((cat) => {
+          {COMMUNITY_CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat;
             return (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat as any)}
+                onClick={() => setActiveCategory(cat)}
                 className="px-4 py-2.5 uppercase tracking-widest border-b-2 transition-all cursor-pointer"
                 style={{
                   borderBottomColor: isActive ? "var(--acc-primary)" : "transparent",

@@ -1,530 +1,289 @@
-// Episode 1 — "Ignorance: The Omega Mark on the Cow"
-// All puzzle, dialogue, and ending data lives here. The reducer in
-// ./state.ts treats this file as the source of truth.
+// Episode 1 — "The Hopo Tiger"
+// A film-canon reconstruction of the first Hopo Port incident.
 
 import type {
   EndingDescriptor,
   EndingId,
+  GameDefinition,
   Interaction,
   Item,
-  ItemId,
   Scene,
   SceneId,
 } from "./types";
 
-// Tuning notes (Isaku-style, but playable):
-//   · Canonical solve uses ~17 turns of intentional actions (5 moves +
-//     12 hotspot interactions).  MAX_TURNS = 20 gives ~3 turns of slack for
-//     red herrings / wrong-item probes before Ending A.
-//   · YOUTH_LEAVES_AT is a *narrative* anchor, not a forced turn-burn.
-export const MAX_TURNS = 20;
-export const YOUTH_LEAVES_AT = 14;
+// The intended route costs roughly 23 turns. Seven turns of slack preserve
+// the Isaku-style pressure without making careful observation a trap.
+export const MAX_TURNS = 30;
 
-// ── Items ───────────────────────────────────────────────────────────────
-export const ITEMS: Record<ItemId, Item> = {
-  ARMORY_KEY: { id: "ARMORY_KEY", name: "Armory Key", short: "Sgt. Sung-ki's brass key.  No tag, no number.", art: "/images/game/ep1/items/armory_key.png" },
-  LIGHTER: { id: "LIGHTER", name: "Brass Lighter", short: "Engraved 'HOPO 1971'.  Half a tank of fluid.", art: "/images/game/ep1/items/lighter.png" },
-  OIL: { id: "OIL", name: "Lubricating Oil", short: "Cold-war issue, made in Pyeongtaek.", art: "/images/game/ep1/items/oil.png" },
-  SPARE_MAG: { id: "SPARE_MAG", name: "Spare Magazine", short: "Wrong caliber.  Do NOT load this.", art: "/images/game/ep1/items/spare_mag.png" },
-  SCREWDRIVER: { id: "SCREWDRIVER", name: "Confiscated Screwdriver", short: "Crosshead.  Confiscated from a child, the tag says.", art: "/images/game/ep1/items/screwdriver.png" },
-  POLAROID_1950: { id: "POLAROID_1950", name: "Polaroid (1950)", short: "A boy with the Ω carved into his forehead.  Smiling.", art: "/images/game/ep1/items/polaroid_1950.svg" },
-  MAGNIFIER: { id: "MAGNIFIER", name: "Magnifying Glass", short: "Pried from the back of the Polaroid frame.", art: "/images/game/ep1/items/magnifier.svg" },
-  GREEN_SLIME: { id: "GREEN_SLIME", name: "Green Alien Slime", short: "Hardened.  Smells of ozone and pine sap.", artifact: true, art: "/images/game/ep1/items/green_slime.svg" },
-  TRANSLATOR_FRAG: { id: "TRANSLATOR_FRAG", name: "Translator Fragment", short: "Greek alphabet card.  Ω is circled in red wax.", artifact: true, art: "/images/game/ep1/items/translator_frag.svg" },
-  FIELD_REPORT_P1: { id: "FIELD_REPORT_P1", name: "Field Report p.1", short: "'The symbol returns every 33 years.'  Pages 2 and 3 are missing.", losable: true, art: "/images/game/ep1/items/field_report_p1.svg" },
-  LICENSE_PLATE: { id: "LICENSE_PLATE", name: "Hopo License Plate", short: "Half-buried beside the cow.  Reads 'HOPO 4-9'.", losable: true, art: "/images/game/ep1/items/license_plate.svg" },
-  RADIO_80S: { id: "RADIO_80S", name: "80s Field Radio", short: "Tunes from 88 to 108 MHz.  And one channel above that.", art: "/images/game/ep1/items/radio_80s.svg" },
-  OMEGA_MARK: { id: "OMEGA_MARK", name: "Omega Mark", short: "A pewter pendant in the shape of Ω.  Warm to the touch.", artifact: true, art: "/images/game/ep1/items/omega_mark.svg" },
-  OMEGA_MARK_APOSTATE: { id: "OMEGA_MARK_APOSTATE", name: "Ω Mark (Apostate)", short: "Inscribed on the back: a word that is not Greek.", artifact: true, art: "/images/game/ep1/items/omega_mark_apostate.svg" },
+export const ITEMS: Record<string, Item> = {
+  EQUIPMENT_KEY: { id: "EQUIPMENT_KEY", name: "Equipment Cabinet Key", short: "Tagged HOPO SUBSTATION. Returned after every shift.", art: "/images/game/ep1/items/equipment_key.svg" },
+  DUTY_ROSTER: { id: "DUTY_ROSTER", name: "Resident Duty Roster", short: "Households, elders, and the eight reservists currently in Hopo Port.", art: "/images/game/ep1/items/duty_roster.svg" },
+  CAMERA: { id: "CAMERA", name: "Police Evidence Camera", short: "One roll loaded. Photographs before conclusions.", art: "/images/game/ep1/items/camera.svg" },
+  FIELD_RULER: { id: "FIELD_RULER", name: "Field Measuring Rule", short: "A folding rule marked in centimeters.", art: "/images/game/ep1/items/field_ruler.svg" },
+  EVIDENCE_BAG: { id: "EVIDENCE_BAG", name: "Plaster Evidence Kit", short: "Canvas bag with plaster, water vial, and specimen envelopes.", art: "/images/game/ep1/items/evidence_bag.svg" },
+  TIGER_GUIDE: { id: "TIGER_GUIDE", name: "Predator Field Guide", short: "Field notes compare wound spacing, prints, and feeding behavior.", art: "/images/game/ep1/items/tiger_guide.svg" },
+  CARBINE_AMMO: { id: "CARBINE_AMMO", name: "Carbine Ammunition", short: "Live rounds. A conclusion made of brass and lead.", art: "/images/game/ep1/items/carbine_ammo.svg", losable: true },
+  BINOCULARS: { id: "BINOCULARS", name: "Field Binoculars", short: "Military surplus. The right lens is chipped.", art: "/images/game/ep1/items/binoculars.svg" },
+  COW_PHOTO: { id: "COW_PHOTO", name: "Carcass Photograph", short: "The hide is raked open, but no flesh has been eaten.", art: "/images/game/ep1/items/cow_photo.svg", artifact: true },
+  WOUND_MEASUREMENTS: { id: "WOUND_MEASUREMENTS", name: "Wound Measurements", short: "Parallel wounds wider and higher than the field guide permits.", art: "/images/game/ep1/items/wound_measurements.svg" },
+  SOIL_CAST: { id: "SOIL_CAST", name: "Unknown Track Cast", short: "A partial impression too deep for a tiger of any recorded size.", art: "/images/game/ep1/items/soil_cast.svg", artifact: true },
+  ENCOUNTER_PHOTO: { id: "ENCOUNTER_PHOTO", name: "Bamigir Encounter Photograph", short: "The wounded sentry is crying. Bum-seok's rifle remains lowered.", art: "/images/game/ep1/items/encounter_photo.svg", artifact: true },
+  CASE_FILE: { id: "CASE_FILE", name: "Unknown Subject Case File", short: "Official classification: not a tiger, motive unknown, threat moving toward Hopo Port.", art: "/images/game/ep1/items/case_file.svg", artifact: true },
+  UNFIRED_CARTRIDGE: { id: "UNFIRED_CARTRIDGE", name: "Unfired Cartridge", short: "Bum-seok saw grief in the unknown subject and lowered the rifle.", art: "/images/game/ep1/items/unfired_cartridge.svg", artifact: true },
 };
 
-// ── Scenes ──────────────────────────────────────────────────────────────
-export const SCENES: Record<SceneId, Scene> = {
+export const SCENES: Record<string, Scene> = {
   OFFICE: {
-    id: "OFFICE",
-    title: "Substation · Office",
-    ambient: "An oil lamp.  Sgt. Sung-ki snoring.  The wall clock has stopped at 18:40.",
-    art: "/images/game/ep1/office.png",
-    exits: ["ARMORY", "YARD"],
+    id: "OFFICE", title: "Hopo Substation · Duty Room",
+    ambient: "Daylight on old paperwork. Both the telephone and police radio are silent.",
+    art: "/images/game/ep1/office.png", exits: ["ARMORY", "YARD"],
     hotspots: [
-      { id: "SUNGKI_POCKET", label: "Sung-ki's Pocket", top: "58%", left: "25%", width: "16%", height: "22%" },
-      { id: "CHIEF_DRAWER", label: "Chief's Drawer", top: "62%", left: "0%", width: "10%", height: "18%" },
-      { id: "RIFLE_RACK", label: "Calivan Rifle", top: "35%", left: "70%", width: "18%", height: "32%" },
-      { id: "TYPEWRITER", label: "Goldstar Typewriter", top: "75%", left: "32%", width: "14%", height: "16%" },
-      { id: "RADIO", label: "Field Radio", top: "65%", left: "55%", width: "12%", height: "14%" },
+      { id: "DUTY_LOG", label: "Duty Log", top: "58%", left: "25%", width: "16%", height: "22%" },
+      { id: "CAMERA_CABINET", label: "Evidence Cabinet", top: "62%", left: "0%", width: "10%", height: "18%" },
+      { id: "RIFLE_RACK", label: "Service Carbine", top: "35%", left: "70%", width: "18%", height: "32%" },
+      { id: "TELEPHONE", label: "Telephone", top: "75%", left: "32%", width: "14%", height: "16%" },
+      { id: "RADIO", label: "Police Radio", top: "65%", left: "55%", width: "12%", height: "14%" },
     ],
   },
   ARMORY: {
-    id: "ARMORY",
-    title: "Substation · Armory Locker",
-    ambient: "Dust.  Cordite.  A locker that hasn't been opened in years.",
-    art: "/images/game/ep1/armory.png",
-    exits: ["OFFICE"],
+    id: "ARMORY", title: "Hopo Substation · Equipment Room",
+    ambient: "Survey tools, reserve ammunition, and yesterday's maintenance sheet.",
+    art: "/images/game/ep1/armory.png", exits: ["OFFICE"],
     hotspots: [
-      { id: "LOCKER", label: "Steel Locker", top: "25%", left: "8%", width: "10%", height: "60%" },
-      { id: "BEHIND_LOCKER", label: "Behind the Locker", top: "30%", left: "42%", width: "12%", height: "40%" },
-      { id: "SHELF", label: "Top Shelf", top: "2%", left: "10%", width: "60%", height: "12%" },
+      { id: "LOCKER", label: "Equipment Locker", top: "25%", left: "8%", width: "10%", height: "60%" },
+      { id: "BEHIND_LOCKER", label: "Maintenance Sheet", top: "30%", left: "42%", width: "12%", height: "40%" },
+      { id: "SHELF", label: "Field Shelf", top: "2%", left: "10%", width: "60%", height: "12%" },
     ],
   },
   YARD: {
-    id: "YARD",
-    title: "Substation · Front Yard",
-    ambient: "Barbed wire.  The fog is moving against the wind.",
-    art: "/images/game/ep1/yard.png",
-    exits: ["OFFICE", "FIELD"],
+    id: "YARD", title: "Hopo Substation · Front Yard",
+    ambient: "Sung-gi and the village hunters wait beside the patrol car, already calling it a tiger.",
+    art: "/images/game/ep1/yard.png", exits: ["OFFICE", "FIELD"],
     hotspots: [
       { id: "ANTENNA", label: "Radio Antenna", top: "10%", left: "70%", width: "16%", height: "60%" },
-      { id: "BONG_SIK", label: "Village Youth", top: "55%", left: "45%", width: "12%", height: "40%" },
-      { id: "GATE", label: "Gate to Field", top: "60%", left: "5%", width: "16%", height: "32%" },
+      { id: "SUNG_GI", label: "Sung-gi · Hunter", top: "55%", left: "45%", width: "12%", height: "40%" },
+      { id: "PATROL_CAR", label: "Patrol Car", top: "60%", left: "5%", width: "16%", height: "32%" },
     ],
   },
   FIELD: {
-    id: "FIELD",
-    title: "DMZ · Millet Field",
-    ambient: "A mutilated cow.  The blood has evaporated.  The flies will not land.",
-    art: "/images/game/ep1/field.png",
-    exits: ["YARD", "FOREST"],
+    id: "FIELD", title: "Hopo Fields · Cattle Site",
+    ambient: "A cow lies opened in broad daylight. Nothing has fed on it.",
+    art: "/images/game/ep1/field.png", exits: ["YARD", "FOREST"],
     hotspots: [
-      { id: "COW", label: "The Cow", top: "55%", left: "15%", width: "30%", height: "30%" },
-      { id: "PLATE_DIRT", label: "Disturbed Soil", top: "80%", left: "70%", width: "16%", height: "16%" },
-      { id: "FOREST_EDGE", label: "Forest Edge", top: "10%", left: "70%", width: "20%", height: "40%" },
+      { id: "COW", label: "Cattle Carcass", top: "55%", left: "15%", width: "30%", height: "30%" },
+      { id: "SOIL", label: "Compressed Soil", top: "80%", left: "70%", width: "16%", height: "16%" },
+      { id: "FOREST_EDGE", label: "Pine Ridge", top: "10%", left: "70%", width: "20%", height: "40%" },
     ],
   },
   FOREST: {
-    id: "FOREST",
-    title: "Pine Forest · Fog Wall",
-    ambient: "Pines, but the resin is wrong.  The fog has a temperature.",
-    art: "/images/game/ep1/forest.png",
-    exits: ["FIELD", "COAST"],
-    lockedUntil: "FOG_BURNED",
+    id: "FOREST", title: "Pine Ridge · Search Line",
+    ambient: "Broken branches rise above a man's head. The tracks turn back toward the village.",
+    art: "/images/game/ep1/forest.png", exits: ["FIELD", "COAST"], lockedUntil: "FOREST_AUTHORIZED",
     hotspots: [
-      { id: "FOG_WALL", label: "The Fog", top: "10%", left: "20%", width: "30%", height: "70%" },
-      { id: "CLEARING", label: "The Clearing", top: "30%", left: "50%", width: "20%", height: "40%" },
-      { id: "COAST_PATH", label: "Path to the Coast", top: "60%", left: "80%", width: "14%", height: "32%" },
+      { id: "TRACKS", label: "Deep Tracks", top: "10%", left: "20%", width: "30%", height: "70%" },
+      { id: "LOOKOUT", label: "Ridge Lookout", top: "30%", left: "50%", width: "20%", height: "40%" },
+      { id: "DESCENT", label: "Descent to Hopo", top: "60%", left: "80%", width: "14%", height: "32%" },
     ],
   },
   COAST: {
-    id: "COAST",
-    title: "Foggy Coast · Hidden",
-    ambient: "Salt.  And under the salt, something that isn't Greek.",
-    art: "/images/game/ep1/coast.png",
-    exits: ["FOREST"],
-    lockedUntil: "COAST_OPEN",
+    id: "COAST", title: "Hopo Port · Ruined Main Road",
+    ambient: "Vehicles and walls lie wrecked in daylight. The wounded Bamigir is still moving.",
+    art: "/images/game/ep1/coast.png", exits: ["FOREST"], lockedUntil: "ROAD_OPEN",
     hotspots: [
-      { id: "HATCH", label: "Iron Hatch", top: "55%", left: "40%", width: "20%", height: "30%" },
-      { id: "INSCRIPTION", label: "Inscription", top: "15%", left: "65%", width: "35%", height: "20%" },
+      { id: "WRECKAGE", label: "Impact Wreckage", top: "55%", left: "40%", width: "20%", height: "30%" },
+      { id: "BAMIGIR", label: "Wounded Bamigir", top: "15%", left: "65%", width: "35%", height: "20%" },
     ],
   },
 };
 
-// ── Endings ─────────────────────────────────────────────────────────────
 export const ENDINGS: Record<EndingId, EndingDescriptor> = {
-  A: {
-    id: "A",
-    title: "Ending A — Ignorance-Born Tragedy",
-    body: "Bong-sik never comes back.  Sgt. Sung-ki finds the body at dawn, mutters something under his breath, and the channel cuts to static.",
-  },
-  B: {
-    id: "B",
-    title: "Ending B — Court-Martial",
-    body: "Sgt. Sung-ki locks the office door from the outside.  The episode is over.  Restart.",
-    isRestart: true,
-  },
-  C: {
-    id: "C",
-    title: "Ending C — Witness",
-    body: "Bong-sik lives.  You hold the Ω Mark in your hand.  The next episode opens.",
-    grantsArtifacts: ["OMEGA_MARK", "GREEN_SLIME", "TRANSLATOR_FRAG"],
-    unlocksNextEpisode: true,
-  },
-  D: {
-    id: "D",
-    title: "Ending D — Apostate",
-    body: "You walk to the coast and leave him behind.  The inscription answers in a language no one in this village can read.",
-    grantsArtifacts: ["OMEGA_MARK_APOSTATE", "GREEN_SLIME", "TRANSLATOR_FRAG"],
-    unlocksNextEpisode: true,
-  },
+  A: { id: "A", title: "Ending A — The Tiger Hunt", body: "The report says tiger. Sung-gi leads the young men into the forest with live ammunition. By the time Hopo learns the word was wrong, they have become the hunted." },
+  B: { id: "B", title: "Ending B — Premature Fire", body: "Bum-seok fires before identifying the subject. The report becomes a weapon, and Hopo loses its only chance to understand why the wounded creature was crying.", isRestart: true },
+  C: { id: "C", title: "Ending C — Unknown Subject", body: "The case file rejects the tiger theory, the elders are marked for evacuation, and Sung-gi's hunt is delayed. Hopo has not understood the visitor, but it has stopped pretending that it has.", grantsArtifacts: ["CASE_FILE", "COW_PHOTO", "SOIL_CAST"], unlocksNextEpisode: true },
+  D: { id: "D", title: "Ending D — The Creature Was Crying", body: "Bum-seok records the wounded sentry's tears and the shot he chose not to fire. The evidence cannot prove innocence, but it destroys the comforting lie that Hopo faced a mindless beast.", grantsArtifacts: ["CASE_FILE", "ENCOUNTER_PHOTO", "UNFIRED_CARTRIDGE"], unlocksNextEpisode: true },
 };
 
-// ── Interactions (the trigger belt) ─────────────────────────────────────
-// Rule scan order matters.  More specific rules (with `requires`) MUST come
-// before their fallback variants, and `once: true` rules MUST come before
-// the bare "nothing happens" fallbacks.
 export const INTERACTIONS: Interaction[] = [
-  // --- OFFICE ------------------------------------------------------------
+  // OFFICE
   {
-    id: "office.sungki.wakes",
-    scene: "OFFICE", hotspot: "SUNGKI_POCKET",
-    requires: { flag: "RADIO_ON" },
-    setFlags: ["SUNGKI_AWAKE"],
-    triggersEnding: "B",
-    log: { role: "SUNG-KI", text: "'…야 이 새끼야, 너 지금 뭐 만지냐?'", kind: "danger" },
+    id: "office.case.compile", scene: "OFFICE", hotspot: "DUTY_LOG",
+    requires: { item: "COW_PHOTO", has: ["SOIL_CAST", "WOUND_MEASUREMENTS"], flagsAll: ["EVAC_READY", "SIGNAL_EXTERNAL", "NOT_TIGER", "HELD_FIRE"], flagsNone: ["CASE_FILED"] },
+    grants: ["CASE_FILE"], setFlags: ["CASE_FILED"], triggersEnding: "C",
+    log: { role: "BUM-SEOK", text: "'Strike tiger from the report. Unknown subject. Protect the elders and keep Sung-gi out of that forest.'", kind: "system" }, once: true,
   },
   {
-    id: "office.sungki.picked",
-    scene: "OFFICE", hotspot: "SUNGKI_POCKET",
-    requires: { flagsNone: ["SUNGKI_PICKED", "SUNGKI_AWAKE"] },
-    grants: ["ARMORY_KEY", "LIGHTER"],
-    setFlags: ["SUNGKI_PICKED"],
-    turnCost: 1,
-    log: { role: "SYSTEM", text: "Sung-ki's breathing is deep.  Two keys, a brass lighter.", kind: "system" },
-    once: true,
+    id: "office.duty.open", scene: "OFFICE", hotspot: "DUTY_LOG", requires: { flagsNone: ["SHIFT_REVIEWED"] },
+    grants: ["EQUIPMENT_KEY", "DUTY_ROSTER"], setFlags: ["SHIFT_REVIEWED"],
+    log: { role: "SYSTEM", text: "Eight reservists are away at the wildfire. The roster leaves mostly elders in Hopo. The cabinet key is clipped inside.", kind: "system" }, once: true,
   },
+  { id: "office.duty.idle", scene: "OFFICE", hotspot: "DUTY_LOG", log: { role: "SYSTEM", text: "The blank incident line waits for a noun. Tiger is only Sung-gi's guess.", kind: "default" }, turnCost: 0 },
   {
-    id: "office.sungki.empty",
-    scene: "OFFICE", hotspot: "SUNGKI_POCKET",
-    log: { role: "SYSTEM", text: "His pockets are empty now.  He turns in his sleep.", kind: "default" },
-    turnCost: 0,
+    id: "office.camera.open", scene: "OFFICE", hotspot: "CAMERA_CABINET", requires: { item: "EQUIPMENT_KEY", flagsNone: ["CAMERA_TAKEN"] },
+    grants: ["CAMERA"], setFlags: ["CAMERA_TAKEN"], log: { role: "SYSTEM", text: "Evidence camera, one roll. The label says: photograph before moving anything.", kind: "system" }, once: true,
   },
+  { id: "office.camera.locked", scene: "OFFICE", hotspot: "CAMERA_CABINET", requires: { flagsNone: ["CAMERA_TAKEN"] }, log: { role: "SYSTEM", text: "Locked. The duty officer keeps the key with the roster.", kind: "default" } },
+  { id: "office.camera.empty", scene: "OFFICE", hotspot: "CAMERA_CABINET", log: { role: "SYSTEM", text: "The evidence cabinet is empty.", kind: "default" }, turnCost: 0 },
+  {
+    id: "office.rifle.load", scene: "OFFICE", hotspot: "RIFLE_RACK", requires: { item: "CARBINE_AMMO" }, destroys: ["CARBINE_AMMO"], triggersEnding: "B",
+    log: { role: "SYSTEM", text: "A round chambers. Movement crosses the window. Bum-seok fires before the shape has a name; the shot disappears into Hopo and the pursuit begins.", kind: "danger" }, once: true,
+  },
+  { id: "office.rifle.idle", scene: "OFFICE", hotspot: "RIFLE_RACK", log: { role: "BUM-SEOK", text: "'A dead cow is evidence. It is not permission to shoot the next thing that moves.'", kind: "voice" }, turnCost: 0 },
+  {
+    id: "office.telephone.check", scene: "OFFICE", hotspot: "TELEPHONE", requires: { flagsNone: ["LANDLINE_CHECKED"] }, setFlags: ["LANDLINE_CHECKED"],
+    log: { role: "SYSTEM", text: "No dial tone. The line is intact inside the room; the failure lies beyond the substation.", kind: "system" }, turnCost: 0, once: true,
+  },
+  { id: "office.telephone.idle", scene: "OFFICE", hotspot: "TELEPHONE", log: { role: "SYSTEM", text: "The receiver carries only the room's own silence.", kind: "default" }, turnCost: 0 },
+  {
+    id: "office.radio.check", scene: "OFFICE", hotspot: "RADIO", requires: { flagsNone: ["RADIO_CHECKED"] }, setFlags: ["RADIO_CHECKED"],
+    log: { role: "RADIO", text: "The set powers on. No carrier, no district station, no wildfire crews. Communications are severed beyond Hopo.", kind: "danger" }, turnCost: 0, once: true,
+  },
+  { id: "office.radio.idle", scene: "OFFICE", hotspot: "RADIO", log: { role: "RADIO", text: "Dead air. Not static—absence.", kind: "default" }, turnCost: 0 },
 
+  // EQUIPMENT ROOM
   {
-    id: "office.radio.toggle.on",
-    scene: "OFFICE", hotspot: "RADIO",
-    requires: { flagsNone: ["RADIO_ON"] },
-    setFlags: ["RADIO_ON"],
-    log: { role: "RADIO", text: "Static.  And under the static, a sound like breathing.", kind: "omega" },
-    turnCost: 0,
+    id: "armory.locker.open", scene: "ARMORY", hotspot: "LOCKER", requires: { item: "EQUIPMENT_KEY", flagsNone: ["LOCKER_OPEN"] },
+    grants: ["FIELD_RULER", "EVIDENCE_BAG", "CARBINE_AMMO"], setFlags: ["LOCKER_OPEN"],
+    log: { role: "SYSTEM", text: "A measuring rule, plaster kit, and sealed carbine ammunition. Observation and force stored on the same shelf.", kind: "system" }, once: true,
   },
+  { id: "armory.locker.closed", scene: "ARMORY", hotspot: "LOCKER", requires: { flagsNone: ["LOCKER_OPEN"] }, log: { role: "SYSTEM", text: "The equipment locker is locked.", kind: "default" } },
+  { id: "armory.locker.empty", scene: "ARMORY", hotspot: "LOCKER", log: { role: "SYSTEM", text: "Only empty hooks remain.", kind: "default" }, turnCost: 0 },
   {
-    id: "office.radio.toggle.off",
-    scene: "OFFICE", hotspot: "RADIO",
-    requires: { flag: "RADIO_ON" },
-    clearFlags: ["RADIO_ON"],
-    log: { role: "SYSTEM", text: "You kill the radio.  The room is too quiet now.", kind: "system" },
-    turnCost: 0,
+    id: "armory.maintenance.read", scene: "ARMORY", hotspot: "BEHIND_LOCKER", requires: { flag: "LOCKER_OPEN", flagsNone: ["FEED_LINE_SERVICED"] }, setFlags: ["FEED_LINE_SERVICED"],
+    log: { role: "SYSTEM", text: "Maintenance sheet: radio feed line and antenna tested yesterday. Both passed.", kind: "system" }, turnCost: 0, once: true,
   },
+  { id: "armory.maintenance.blocked", scene: "ARMORY", hotspot: "BEHIND_LOCKER", log: { role: "SYSTEM", text: "The sheet is pinned behind the locker door.", kind: "default" }, turnCost: 0 },
+  {
+    id: "armory.shelf.take", scene: "ARMORY", hotspot: "SHELF", requires: { flagsNone: ["FIELD_GEAR_TAKEN"] }, grants: ["TIGER_GUIDE", "BINOCULARS"], setFlags: ["FIELD_GEAR_TAKEN"],
+    log: { role: "SYSTEM", text: "A predator guide and chipped binoculars. The tiger diagrams are smaller than Sung-gi's story.", kind: "system" }, once: true,
+  },
+  { id: "armory.shelf.empty", scene: "ARMORY", hotspot: "SHELF", log: { role: "SYSTEM", text: "Dust outlines the gear you removed.", kind: "default" }, turnCost: 0 },
 
+  // YARD
   {
-    id: "office.drawer.oil",
-    scene: "OFFICE", hotspot: "CHIEF_DRAWER",
-    requires: { item: "OIL", flagsNone: ["DRAWER_OPEN"] },
-    consumes: [],
-    grants: ["SCREWDRIVER", "POLAROID_1950"],
-    setFlags: ["DRAWER_OPEN"],
-    log: { role: "SYSTEM", text: "The drawer slides open.  A screwdriver.  A Polaroid from 1950.", kind: "system" },
-    once: true,
+    id: "yard.sunggi.arm", scene: "YARD", hotspot: "SUNG_GI", requires: { item: "CARBINE_AMMO", flagsNone: ["HUNT_DEPARTED"] }, consumes: ["CARBINE_AMMO"], setFlags: ["HUNT_DEPARTED"], triggersEnding: "A",
+    log: { role: "SUNG-GI", text: "'Tiger, bear, whatever. We have rifles.' Sung-gi takes the ammunition and leads the young men into the pines.", kind: "danger" }, once: true,
   },
   {
-    id: "office.drawer.stuck",
-    scene: "OFFICE", hotspot: "CHIEF_DRAWER",
-    requires: { flagsNone: ["DRAWER_OPEN"] },
-    log: { role: "SYSTEM", text: "The drawer is stuck.  Rust, or something thicker.", kind: "default" },
-    turnCost: 1,
+    id: "yard.sunggi.compare", scene: "YARD", hotspot: "SUNG_GI", requires: { item: "TIGER_GUIDE", flag: "SUNGGI_STATEMENT", flagsNone: ["HUNT_DELAYED"] }, setFlags: ["HUNT_DELAYED", "NO_FEEDING_REPORTED"],
+    log: { role: "SUNG-GI", text: "'Fine. It clawed the cow, but it didn't eat a bite. We'll wait until you see it.'", kind: "voice" }, once: true,
   },
   {
-    id: "office.drawer.empty",
-    scene: "OFFICE", hotspot: "CHIEF_DRAWER",
-    log: { role: "SYSTEM", text: "The drawer is empty.", kind: "default" },
-    turnCost: 0,
+    id: "yard.sunggi.statement", scene: "YARD", hotspot: "SUNG_GI", requires: { flagsNone: ["SUNGGI_STATEMENT"] }, setFlags: ["SUNGGI_STATEMENT"],
+    log: { role: "SUNG-GI", text: "'Something tore up a cow by the millet field. Looks like a tiger, but the marks are too high.'", kind: "voice" }, once: true,
   },
+  { id: "yard.sunggi.waits", scene: "YARD", hotspot: "SUNG_GI", log: { role: "SUNG-GI", text: "'Bring me a fact, hyung. Then decide what we are hunting.'", kind: "default" }, turnCost: 0 },
+  {
+    id: "yard.antenna.trace", scene: "YARD", hotspot: "ANTENNA", requires: { flagsAll: ["RADIO_CHECKED", "FEED_LINE_SERVICED"], flagsNone: ["SIGNAL_EXTERNAL"] }, setFlags: ["SIGNAL_EXTERNAL"],
+    log: { role: "SYSTEM", text: "The antenna and feed line are undamaged. Hopo is isolated, but the substation equipment did not cause it.", kind: "danger" }, turnCost: 0, once: true,
+  },
+  { id: "yard.antenna.idle", scene: "YARD", hotspot: "ANTENNA", log: { role: "SYSTEM", text: "The mast is upright. Check the set and its maintenance history before blaming the hardware.", kind: "default" }, turnCost: 0 },
+  {
+    id: "yard.car.evacuate", scene: "YARD", hotspot: "PATROL_CAR", requires: { item: "DUTY_ROSTER", flagsAll: ["FIGURE_SEEN", "HELD_FIRE", "NOT_TIGER"], flagsNone: ["EVAC_READY"] }, setFlags: ["EVAC_READY"],
+    log: { role: "BUM-SEOK", text: "'Circle the elder households. No siren. Move everyone to the concrete clinic before panic names this thing for us.'", kind: "system" }, once: true,
+  },
+  { id: "yard.car.idle", scene: "YARD", hotspot: "PATROL_CAR", log: { role: "SYSTEM", text: "The patrol car can carry a warning or spread a panic. It needs a plan and a roster.", kind: "default" }, turnCost: 0 },
 
+  // FIELD
   {
-    id: "office.polaroid.magnifier",
-    scene: "OFFICE", hotspot: "TYPEWRITER",
-    requires: { item: "POLAROID_1950", has: ["POLAROID_1950"], flagsNone: ["MAGNIFIER_PRIED"] },
-    grants: ["MAGNIFIER"],
-    setFlags: ["MAGNIFIER_PRIED"],
-    log: { role: "SYSTEM", text: "You pry the back of the Polaroid frame off against the typewriter.  A magnifier was hidden inside.", kind: "system" },
-    once: true,
+    id: "field.cow.photo", scene: "FIELD", hotspot: "COW", requires: { item: "CAMERA", flagsNone: ["COW_PHOTOGRAPHED"] }, grants: ["COW_PHOTO"], setFlags: ["COW_PHOTOGRAPHED"],
+    log: { role: "SYSTEM", text: "The shutter records parallel wounds and an untouched carcass. Whatever killed the cow did not feed.", kind: "system" }, once: true,
   },
   {
-    id: "office.typewriter.idle",
-    scene: "OFFICE", hotspot: "TYPEWRITER",
-    log: { role: "SYSTEM", text: "Goldstar typewriter.  The ribbon is dry.  It will not type.", kind: "default" },
-    turnCost: 0,
+    id: "field.cow.measure", scene: "FIELD", hotspot: "COW", requires: { item: "FIELD_RULER", flag: "COW_PHOTOGRAPHED", flagsNone: ["WOUNDS_MEASURED"] }, grants: ["WOUND_MEASUREMENTS"], setFlags: ["WOUNDS_MEASURED"],
+    log: { role: "SYSTEM", text: "The wound span exceeds the largest tiger diagram. The highest strike landed above a standing man's shoulder.", kind: "danger" }, once: true,
   },
+  {
+    id: "field.cow.compare", scene: "FIELD", hotspot: "COW", requires: { item: "TIGER_GUIDE", has: ["WOUND_MEASUREMENTS"], flagsAll: ["NO_FEEDING_REPORTED"], flagsNone: ["NOT_TIGER"] }, setFlags: ["NOT_TIGER", "FOREST_AUTHORIZED"],
+    log: { role: "BUM-SEOK", text: "'It did not feed. Wrong height, wrong span. Write unknown subject—not tiger.'", kind: "system" }, once: true,
+  },
+  { id: "field.cow.idle", scene: "FIELD", hotspot: "COW", log: { role: "SYSTEM", text: "The cow was killed with overwhelming force. A guess will not explain why it was left uneaten.", kind: "default" }, turnCost: 0 },
+  {
+    id: "field.soil.cast", scene: "FIELD", hotspot: "SOIL", requires: { item: "EVIDENCE_BAG", flag: "COW_PHOTOGRAPHED", flagsNone: ["SOIL_CAST_TAKEN"] }, grants: ["SOIL_CAST"], setFlags: ["SOIL_CAST_TAKEN"],
+    log: { role: "SYSTEM", text: "The plaster hardens around a partial track. Its depth suggests a mass no local predator could carry.", kind: "system" }, once: true,
+  },
+  { id: "field.soil.idle", scene: "FIELD", hotspot: "SOIL", log: { role: "SYSTEM", text: "Compressed earth, not a clean print. Preserve it before comparing it.", kind: "default" }, turnCost: 0 },
+  { id: "field.forest.enter", scene: "FIELD", hotspot: "FOREST_EDGE", requires: { flag: "FOREST_AUTHORIZED" }, moveTo: "FOREST", log: { role: "SYSTEM", text: "You enter the pines only after striking tiger from the report.", kind: "system" } },
+  { id: "field.forest.locked", scene: "FIELD", hotspot: "FOREST_EDGE", log: { role: "SYSTEM", text: "Do not send another armed man into the trees until the carcass contradicts the tiger story.", kind: "default" }, turnCost: 0 },
 
+  // FOREST
   {
-    id: "office.rifle.mag.destroy",
-    scene: "OFFICE", hotspot: "RIFLE_RACK",
-    requires: { item: "SPARE_MAG", flagsNone: ["RIFLE_DISASSEMBLED"] },
-    consumes: [],
-    destroys: ["GREEN_SLIME"],   // future-destroys; harmless if not yet held
-    setFlags: ["RIFLE_FIRED"],
-    log: { role: "SYSTEM", text: "Wrong caliber.  The chamber jams open with a crack — and any green residue inside is now ash.", kind: "danger" },
-    turnCost: 2,
-    once: true,
+    id: "forest.tracks.compare", scene: "FOREST", hotspot: "TRACKS", requires: { item: "SOIL_CAST", flagsNone: ["TRACK_COMPARED"] }, setFlags: ["TRACK_COMPARED"],
+    log: { role: "SYSTEM", text: "The field impression matches. The stride crosses broken branches at human head height, then turns back toward Hopo.", kind: "danger" }, once: true,
+  },
+  { id: "forest.tracks.idle", scene: "FOREST", hotspot: "TRACKS", log: { role: "SYSTEM", text: "Deep, incomplete impressions. A cast from the field would establish whether the same subject made them.", kind: "default" }, turnCost: 0 },
+  {
+    id: "forest.lookout.fire", scene: "FOREST", hotspot: "LOOKOUT", requires: { item: "CARBINE_AMMO", flag: "FIGURE_SEEN", flagsNone: ["HELD_FIRE"] }, destroys: ["CARBINE_AMMO"], triggersEnding: "B",
+    log: { role: "SYSTEM", text: "Bum-seok fires at the moving outline before identifying it. The subject vanishes into Hopo, and fear becomes the only evidence left.", kind: "danger" }, once: true,
   },
   {
-    id: "office.rifle.screwdriver",
-    scene: "OFFICE", hotspot: "RIFLE_RACK",
-    requires: { item: "SCREWDRIVER", flagsNone: ["RIFLE_DISASSEMBLED", "RIFLE_FIRED"] },
-    consumes: [],
-    grants: ["GREEN_SLIME", "TRANSLATOR_FRAG"],
-    setFlags: ["RIFLE_DISASSEMBLED"],
-    log: { role: "SYSTEM", text: "You unscrew the receiver.  In the barrel: hardened green slime, and a folded card with the Greek alphabet.  Ω is circled.", kind: "omega" },
-    once: true,
+    id: "forest.lookout.observe", scene: "FOREST", hotspot: "LOOKOUT", requires: { item: "BINOCULARS", flag: "TRACK_COMPARED", flagsNone: ["FIGURE_SEEN"] }, setFlags: ["FIGURE_SEEN"],
+    log: { role: "SYSTEM", text: "An immense upright figure crosses the road below. It is moving toward Hopo, not hiding in the forest.", kind: "omega" }, once: true,
   },
   {
-    id: "office.rifle.locked",
-    scene: "OFFICE", hotspot: "RIFLE_RACK",
-    log: { role: "SYSTEM", text: "The Calivan is locked to the rack.  You can see something inside the barrel.", kind: "default" },
-    turnCost: 0,
+    id: "forest.lookout.hold", scene: "FOREST", hotspot: "LOOKOUT", requires: { flag: "FIGURE_SEEN", flagsNone: ["HELD_FIRE"] }, grants: ["UNFIRED_CARTRIDGE"], setFlags: ["HELD_FIRE"],
+    log: { role: "BUM-SEOK", text: "The subject turns. There is grief in its face. Bum-seok lowers the rifle before fear can become evidence.", kind: "omega" }, turnCost: 0, once: true,
   },
+  { id: "forest.lookout.idle", scene: "FOREST", hotspot: "LOOKOUT", log: { role: "SYSTEM", text: "The ridge overlooks too much country for the naked eye. Tracks first, then distance.", kind: "default" }, turnCost: 0 },
+  {
+    id: "forest.descent.open", scene: "FOREST", hotspot: "DESCENT", requires: { flag: "HELD_FIRE", flagsNone: ["ROAD_OPEN"] }, setFlags: ["ROAD_OPEN"], moveTo: "COAST",
+    log: { role: "SYSTEM", text: "You follow the subject's route down to Hopo's ruined main road.", kind: "system" }, once: true,
+  },
+  { id: "forest.descent.locked", scene: "FOREST", hotspot: "DESCENT", log: { role: "SYSTEM", text: "Something is below, but pursuing it before deciding whether to fire would only repeat the mistake.", kind: "default" }, turnCost: 0 },
 
-  // --- ARMORY ------------------------------------------------------------
+  // RUINED HOPO MAIN ROAD
   {
-    id: "armory.locker.open",
-    scene: "ARMORY", hotspot: "LOCKER",
-    requires: { item: "ARMORY_KEY", flagsNone: ["LOCKER_OPEN"] },
-    grants: ["OIL", "SPARE_MAG"],
-    setFlags: ["LOCKER_OPEN"],
-    log: { role: "SYSTEM", text: "The locker swings open.  Oil.  A spare magazine.  Something pale behind the locker.", kind: "system" },
-    once: true,
+    id: "road.wreckage.compare", scene: "COAST", hotspot: "WRECKAGE", requires: { item: "WOUND_MEASUREMENTS", flag: "FIGURE_SEEN", flagsNone: ["SAME_SUBJECT"] }, setFlags: ["SAME_SUBJECT"],
+    log: { role: "SYSTEM", text: "The reach and impact height match the cattle-site measurements. The figure from the ridge has entered Hopo.", kind: "danger" }, once: true,
+  },
+  { id: "road.wreckage.idle", scene: "COAST", hotspot: "WRECKAGE", log: { role: "SYSTEM", text: "Metal and concrete failed above a man's reach. Compare the damage with the cattle-site measurements.", kind: "default" }, turnCost: 0 },
+  {
+    id: "road.bamigir.photo", scene: "COAST", hotspot: "BAMIGIR", requires: { item: "CAMERA", flag: "SAME_SUBJECT", flagsAll: ["HELD_FIRE"], flagsNone: ["TEARS_DOCUMENTED"] }, grants: ["ENCOUNTER_PHOTO"], setFlags: ["TEARS_DOCUMENTED"],
+    log: { role: "SYSTEM", text: "Through the lens, the wounded sentry is crying. The photograph explains neither motive nor innocence; it only records that the 'beast' can grieve.", kind: "omega" }, once: true,
   },
   {
-    id: "armory.locker.closed",
-    scene: "ARMORY", hotspot: "LOCKER",
-    requires: { flagsNone: ["LOCKER_OPEN"] },
-    log: { role: "SYSTEM", text: "Locked.  You need a key.", kind: "default" },
-    turnCost: 1,
+    id: "road.bamigir.witness", scene: "COAST", hotspot: "BAMIGIR", requires: { item: "UNFIRED_CARTRIDGE", has: ["ENCOUNTER_PHOTO"], flagsAll: ["TEARS_DOCUMENTED", "HELD_FIRE", "NOT_TIGER"] }, grants: ["CASE_FILE"], triggersEnding: "D",
+    log: { role: "BUM-SEOK", text: "Bum-seok seals the photograph with the unfired cartridge. His report begins: 'The creature was crying. I could not pull the trigger.'", kind: "omega" }, once: true,
   },
-  {
-    id: "armory.behind.locker",
-    scene: "ARMORY", hotspot: "BEHIND_LOCKER",
-    requires: { flag: "LOCKER_OPEN", flagsNone: ["REPORT_FOUND"] },
-    grants: ["FIELD_REPORT_P1"],
-    setFlags: ["REPORT_FOUND"],
-    log: { role: "SYSTEM", text: "A torn page is wedged behind the locker.  '…the symbol returns every 33 years.'  Pages 2 and 3 are not here.", kind: "system" },
-    once: true,
-  },
-  {
-    id: "armory.behind.blocked",
-    scene: "ARMORY", hotspot: "BEHIND_LOCKER",
-    log: { role: "SYSTEM", text: "The locker hasn't been moved in years.  You can't reach behind it yet.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "armory.shelf",
-    scene: "ARMORY", hotspot: "SHELF",
-    log: { role: "SYSTEM", text: "Empty ammo crates and a calendar from 1979.", kind: "default" },
-    turnCost: 0,
-  },
-
-  // --- YARD --------------------------------------------------------------
-  {
-    id: "yard.antenna.tune",
-    scene: "YARD", hotspot: "ANTENNA",
-    requires: { has: ["GREEN_SLIME", "TRANSLATOR_FRAG"], flagsNone: ["RADIO_TUNED"] },
-    setFlags: ["RADIO_TUNED"],
-    grants: ["RADIO_80S"],
-    log: { role: "RADIO", text: "You smear the slime across the contact, line up the Greek card.  Coordinates resolve: 38°N, the field.", kind: "omega" },
-    once: true,
-  },
-  {
-    id: "yard.antenna.idle",
-    scene: "YARD", hotspot: "ANTENNA",
-    log: { role: "SYSTEM", text: "The antenna hums.  Nothing answers yet.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "yard.bongsik.first",
-    scene: "YARD", hotspot: "BONG_SIK",
-    requires: { flagsNone: ["BONG_SIK_TALKED"] },
-    setFlags: ["BONG_SIK_TALKED"],
-    log: { role: "BONG-SIK", text: "'분대장님, 형들이 농로로 갔어요.  저도 가야 돼요.'", kind: "voice" },
-    turnCost: 1,
-  },
-  {
-    id: "yard.bongsik.second",
-    scene: "YARD", hotspot: "BONG_SIK",
-    requires: { flag: "BONG_SIK_TALKED", flagsNone: ["BONG_SIK_LEFT"] },
-    setFlags: ["BONG_SIK_LEFT"],
-    log: { role: "BONG-SIK", text: "'…아니에요.  됐어요.'  He leaves before you can stop him.", kind: "danger" },
-    turnCost: 3,
-    once: true,
-  },
-  {
-    id: "yard.gate.locked",
-    scene: "YARD", hotspot: "GATE",
-    requires: { flagsNone: ["RADIO_TUNED"] },
-    log: { role: "SYSTEM", text: "The fog is too thick to risk it without coordinates.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "yard.gate.open",
-    scene: "YARD", hotspot: "GATE",
-    requires: { flag: "RADIO_TUNED" },
-    moveTo: "FIELD",
-    log: { role: "SYSTEM", text: "You step through the gate.  The fog parts, briefly.", kind: "system" },
-    turnCost: 1,
-  },
-
-  // --- FIELD -------------------------------------------------------------
-  {
-    id: "field.cow.magnifier",
-    scene: "FIELD", hotspot: "COW",
-    requires: { item: "MAGNIFIER", flagsNone: ["COW_INSPECTED"] },
-    setFlags: ["COW_INSPECTED"],
-    log: { role: "SYSTEM", text: "Under magnification: an Ω burned into the hide, with smaller letters around it that are not Greek.", kind: "omega" },
-    once: true,
-  },
-  {
-    id: "field.cow.idle",
-    scene: "FIELD", hotspot: "COW",
-    log: { role: "SYSTEM", text: "A mutilated cow.  The blood seems to have evaporated.  The flies will not land.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "field.plate.found",
-    scene: "FIELD", hotspot: "PLATE_DIRT",
-    requires: { flag: "COW_INSPECTED", turnLte: 16, flagsNone: ["PLATE_TAKEN", "PLATE_LOST"] },
-    grants: ["LICENSE_PLATE"],
-    setFlags: ["PLATE_TAKEN"],
-    log: { role: "SYSTEM", text: "Half-buried beside the cow: a license plate.  'HOPO 4-9'.", kind: "system" },
-    once: true,
-  },
-  {
-    id: "field.plate.lost",
-    scene: "FIELD", hotspot: "PLATE_DIRT",
-    requires: { turnGte: 17, flagsNone: ["PLATE_TAKEN", "PLATE_LOST"] },
-    destroys: ["LICENSE_PLATE"],
-    setFlags: ["PLATE_LOST"],
-    log: { role: "SYSTEM", text: "Crows lift off as you approach.  Whatever was here, they've taken it.", kind: "danger" },
-    once: true,
-  },
-  {
-    id: "field.plate.empty",
-    scene: "FIELD", hotspot: "PLATE_DIRT",
-    log: { role: "SYSTEM", text: "Disturbed soil.  Nothing left.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "field.forest.locked",
-    scene: "FIELD", hotspot: "FOREST_EDGE",
-    requires: { flagsNone: ["COW_INSPECTED"] },
-    log: { role: "SYSTEM", text: "You don't go into a forest until you understand the field.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    id: "field.forest.enter",
-    scene: "FIELD", hotspot: "FOREST_EDGE",
-    requires: { flag: "COW_INSPECTED" },
-    moveTo: "FOREST",
-    log: { role: "SYSTEM", text: "You step under the pines.  The fog has a temperature.", kind: "system" },
-    turnCost: 1,
-  },
-
-  // --- FOREST ------------------------------------------------------------
-  {
-    id: "forest.fog.burn",
-    scene: "FOREST", hotspot: "FOG_WALL",
-    requires: { item: "LIGHTER", has: ["FIELD_REPORT_P1"], flagsNone: ["FOG_BURNED"] },
-    consumes: [],
-    setFlags: ["FOG_BURNED"],
-    log: { role: "SYSTEM", text: "Page 1 catches.  The fog reels back from the flame as if it could feel it.", kind: "omega" },
-    once: true,
-  },
-  {
-    id: "forest.fog.idle",
-    scene: "FOREST", hotspot: "FOG_WALL",
-    log: { role: "SYSTEM", text: "The fog is solid.  Not a substance — a refusal.", kind: "default" },
-    turnCost: 0,
-  },
-  {
-    // Apostate prelude: walk into the clearing with TRANSLATOR equipped → you
-    // hesitate, you read the air, you choose not to save him.  This is the
-    // first of the three Ending D triggers; it is intentionally not signposted.
-    id: "forest.clearing.apostate-step",
-    scene: "FOREST", hotspot: "CLEARING",
-    requires: { item: "TRANSLATOR_FRAG", flag: "FOG_BURNED", flagsNone: ["CLEARING_DONE", "BONG_SIK_SAVED"] },
-    setFlags: ["APOSTATE_STEP_1", "CLEARING_DONE"],
-    log: { role: "SYSTEM", text: "You hold the Greek card up to the light.  You do not move toward him.", kind: "omega" },
-    turnCost: 1,
-    once: true,
-  },
-  {
-    id: "forest.clearing.save",
-    scene: "FOREST", hotspot: "CLEARING",
-    requires: { flag: "FOG_BURNED", turnLte: 19, flagsNone: ["CLEARING_DONE"] },
-    grants: ["OMEGA_MARK"],
-    setFlags: ["CLEARING_DONE", "BONG_SIK_SAVED"],
-    triggersEnding: "C",
-    log: { role: "SYSTEM", text: "Bong-sik is standing in the clearing — smiling wrong.  You pull him back by the collar.  The Ω falls into your palm.", kind: "system" },
-    once: true,
-  },
-  {
-    id: "forest.clearing.late",
-    scene: "FOREST", hotspot: "CLEARING",
-    requires: { flag: "FOG_BURNED", turnGte: 20, flagsNone: ["CLEARING_DONE"] },
-    setFlags: ["CLEARING_DONE"],
-    triggersEnding: "A",
-    log: { role: "SUNG-KI", text: "'…아이복판이 죽어 있냐 씨.'", kind: "danger" },
-    once: true,
-  },
-  {
-    id: "forest.coast.open",
-    scene: "FOREST", hotspot: "COAST_PATH",
-    requires: { flag: "FOG_BURNED", flagsNone: ["COAST_OPEN"] },
-    setFlags: ["COAST_OPEN"],
-    log: { role: "SYSTEM", text: "A path you didn't see before.  It goes seaward.", kind: "omega" },
-    once: true,
-  },
-  {
-    id: "forest.coast.enter",
-    scene: "FOREST", hotspot: "COAST_PATH",
-    requires: { flag: "COAST_OPEN" },
-    moveTo: "COAST",
-    log: { role: "SYSTEM", text: "You follow the path seaward.", kind: "system" },
-    turnCost: 1,
-  },
-
-  // --- COAST (hidden Ending D path) -------------------------------------
-  // Step 2 of three: study the inscription *first*, before approaching the
-  // hatch.  Order matters.  Inspecting in the wrong sequence does nothing.
-  {
-    id: "coast.inscription.read",
-    scene: "COAST", hotspot: "INSCRIPTION",
-    requires: { item: "TRANSLATOR_FRAG", flag: "APOSTATE_STEP_1", flagsNone: ["APOSTATE_STEP_2"] },
-    setFlags: ["APOSTATE_STEP_2"],
-    log: { role: "OMEGA", text: "The card refuses to fit.  The letters lean the wrong way — and yet you understand half of one word.", kind: "omega" },
-    turnCost: 0,
-    once: true,
-  },
-  {
-    id: "coast.inscription.idle",
-    scene: "COAST", hotspot: "INSCRIPTION",
-    log: { role: "SYSTEM", text: "Letters that lean the wrong way.  Pages 2 and 3 would have helped.", kind: "default" },
-    turnCost: 0,
-  },
-  // Step 3 (final) of three: open the hatch with Slime smeared on the wheel
-  // — and only after step 2 has been read.
-  {
-    id: "coast.hatch.apostate",
-    scene: "COAST", hotspot: "HATCH",
-    requires: {
-      item: "GREEN_SLIME",
-      has: ["TRANSLATOR_FRAG"],
-      flagsAll: ["APOSTATE_STEP_1", "APOSTATE_STEP_2"],
-      flagsNone: ["BONG_SIK_SAVED"],
-    },
-    consumes: [],
-    grants: ["OMEGA_MARK_APOSTATE"],
-    triggersEnding: "D",
-    log: { role: "OMEGA", text: "The hatch reads you back.  It is not Greek.  It is older, and it knows you left him.", kind: "omega" },
-    once: true,
-  },
-  {
-    // Half-knowing attempt — gives a one-line hint without firing the ending.
-    id: "coast.hatch.hint",
-    scene: "COAST", hotspot: "HATCH",
-    requires: { has: ["TRANSLATOR_FRAG"], flag: "APOSTATE_STEP_1", flagsNone: ["APOSTATE_STEP_2", "BONG_SIK_SAVED"] },
-    log: { role: "SYSTEM", text: "The wheel does not turn.  The inscription is watching.", kind: "default" },
-    turnCost: 1,
-  },
-  {
-    id: "coast.hatch.locked",
-    scene: "COAST", hotspot: "HATCH",
-    log: { role: "SYSTEM", text: "The hatch is heavier than the world.  Something is missing.", kind: "default" },
-    turnCost: 0,
-  },
+  { id: "road.bamigir.idle", scene: "COAST", hotspot: "BAMIGIR", log: { role: "SYSTEM", text: "The towering wounded figure watches Hopo through tears. Observation must come before judgment.", kind: "default" }, turnCost: 0 },
 ];
 
-// ── Convenience: starting state ─────────────────────────────────────────
 export const INITIAL_LOGS = [
-  { turn: 1, role: "SYSTEM", text: "1983.08.◯◯ · 18:40 · ω-channel synced.", kind: "system" as const },
-  { turn: 1, role: "BUM-SEOK", text: "'We are completely blocked.  No phones, no police radios.  Keep your eyes open.'", kind: "voice" as const },
-  { turn: 1, role: "TUTORIAL", text: "Move between rooms · equip items on the deck · click hotspots to act.", kind: "default" as const },
+  { turn: 1, role: "SYSTEM", text: "HOPO PORT · DAY OF INCIDENT · 10:17", kind: "system" as const },
+  { turn: 1, role: "SUNG-GI", text: "'Hyung, something tore up a cow by the millet field. The others are calling it a tiger.'", kind: "voice" as const },
+  { turn: 1, role: "BUM-SEOK", text: "'Do not name it before I see it. Nobody goes into the forest yet.'", kind: "voice" as const },
+  { turn: 1, role: "TUTORIAL", text: "Move between locations · equip evidence · select hotspots to investigate.", kind: "default" as const },
 ];
 
 export const INITIAL_SCENE: SceneId = "OFFICE";
+
+export const EPISODE_1: GameDefinition = {
+  id: "ep1",
+  number: 1,
+  version: 3,
+  title: "The Hopo Tiger",
+  headerLabel: "HOPO PORT · DAY OF INCIDENT",
+  maxTurns: MAX_TURNS,
+  storageKey: "hope-ep1-canon-v3-state",
+  scenes: SCENES,
+  sceneOrder: ["OFFICE", "ARMORY", "YARD", "FIELD", "FOREST", "COAST"],
+  items: ITEMS,
+  interactions: INTERACTIONS,
+  endings: ENDINGS,
+  initialScene: INITIAL_SCENE,
+  initialLogs: INITIAL_LOGS,
+  waitText: "You wait. The dead radio stays silent while the village grows louder.",
+  successfulEndings: ["C", "D"],
+  caseRecord: {
+    title: "Incident Record · Hopo Port",
+    rows: [
+      { label: "Initial report — cattle carcass", text: "claw trauma; carcass left uneaten", revealFlag: "COW_PHOTOGRAPHED" },
+      { label: "Classification", text: "NOT A TIGER · unknown subject", revealFlag: "NOT_TIGER" },
+      { label: "Communications", text: "telephone and police radio severed beyond local hardware", revealFlag: "SIGNAL_EXTERNAL" },
+      { label: "Search direction", text: "oversized tracks return toward Hopo Port", revealFlag: "TRACK_COMPARED" },
+    ],
+    notes: [
+      { text: "margin note · subject displayed grief; fire withheld", revealFlag: "HELD_FIRE" },
+      { text: "encounter note · tears visible; intent remains unknown", revealFlag: "TEARS_DOCUMENTED" },
+    ],
+  },
+};

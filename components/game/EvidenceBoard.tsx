@@ -1,12 +1,14 @@
 "use client";
 
-import { ITEMS, SCENES } from "../../lib/game/episode1";
-import type { ItemId, SceneId } from "../../lib/game/types";
+import Image from "next/image";
+
+import type { GameDefinition, ItemId, SceneId } from "../../lib/game/types";
 import { play as playSound } from "../../lib/game/sound";
 import { useLanguage } from "../../lib/i18n";
 import { getItemCopy, getSceneCopy } from "../../lib/game/i18n";
 
 interface Props {
+  definition: GameDefinition;
   inventory: ItemId[];
   lostItems: ItemId[];
   activeItem: ItemId | null;
@@ -15,12 +17,11 @@ interface Props {
   onEquip: (item: ItemId | null) => void;
 }
 
-const NODE_ORDER: SceneId[] = ["OFFICE", "ARMORY", "YARD", "FIELD", "FOREST", "COAST"];
 
 export default function EvidenceBoard({
-  inventory, lostItems, activeItem, visitedScenes, currentScene, onEquip,
+  definition, inventory, lostItems, activeItem, visitedScenes, currentScene, onEquip,
 }: Props) {
-  const { language, tr } = useLanguage();
+  const { language } = useLanguage();
   return (
     <div style={{
       display: "flex", flexDirection: "column",
@@ -34,7 +35,7 @@ export default function EvidenceBoard({
         color: "var(--acc-amber)", textTransform: "uppercase",
         letterSpacing: "0.18em", fontSize: 10,
       }}>
-        {tr("증거판", "Evidence Deck")}
+          Evidence Deck
       </div>
 
       <div style={{
@@ -63,15 +64,15 @@ export default function EvidenceBoard({
               textTransform: "uppercase",
               transform: "rotate(-1.6deg)",
             }}>
-              {tr("증거 대기 중", "EVIDENCE PENDING")}
+              EVIDENCE PENDING
             </div>
             <div style={{ marginTop: 10, fontSize: 10, color: "#6b5a2e", fontStyle: "italic" }}>
-              {tr("발견물을 여기에 고정합니다. 눌러서 장착하십시오.", "Pin discoveries here. Tap to equip.")}
+              Pin discoveries here. Tap to equip.
             </div>
           </div>
         )}
         {inventory.map((id) => {
-          const item = ITEMS[id];
+          const item = definition.items[id];
           const itemCopy = getItemCopy(id, language, item);
           const active = activeItem === id;
           return (
@@ -110,13 +111,12 @@ export default function EvidenceBoard({
                   overflow: "hidden",
                 }}>
                   {item.art ? (
-                    <img
+                    <Image
                       src={item.art}
                       alt={itemCopy.name}
-                      style={{
-                        width: "100%", height: "100%", objectFit: "cover",
-                        imageRendering: "pixelated",
-                      }}
+                      fill
+                      sizes="(max-width: 900px) 50vw, 140px"
+                      style={{ objectFit: "cover", imageRendering: "pixelated" }}
                     />
                   ) : (
                     <div style={{
@@ -137,7 +137,7 @@ export default function EvidenceBoard({
                   fontSize: 10, color: "#1a1208",
                   textAlign: "center", letterSpacing: "0.06em",
                 }}>
-                  {active ? tr("▼ 장착 중", "▼ ACTIVE") : tr("눌러서 장착", "tap to equip")}
+                  {active ? "▼ ACTIVE" : "tap to equip"}
                 </div>
               </button>
 
@@ -179,7 +179,7 @@ export default function EvidenceBoard({
             fontSize: 9,
             textAlign: "center",
           }}>
-            {tr("분실", "LOST")} · {ITEMS[id] ? getItemCopy(id, language, ITEMS[id]).name : id}
+              LOST · {definition.items[id] ? getItemCopy(id, language, definition.items[id]).name : id}
           </div>
         ))}
       </div>
@@ -187,10 +187,10 @@ export default function EvidenceBoard({
       {/* MAP */}
       <div style={{ padding: 10, borderTop: "1px solid var(--line-dim)" }}>
         <div style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 9, marginBottom: 6 }}>
-          {tr("구역 지도", "Sector Map")}
+          Sector Map
         </div>
         <div style={{ display: "flex", gap: 4, justifyContent: "space-between", alignItems: "center" }}>
-          {NODE_ORDER.map((id) => {
+          {definition.sceneOrder.map((id) => {
             const visited = visitedScenes.includes(id);
             const here = currentScene === id;
             return (
@@ -204,7 +204,7 @@ export default function EvidenceBoard({
                 border: here ? "1px solid var(--acc-primary)" : "1px solid var(--line-dim)",
                 background: visited ? "transparent" : "var(--redact-black)",
               }}>
-                {visited ? getSceneCopy(id, language, SCENES[id]).title.split("·").pop()?.trim() : "▮▮▮"}
+                {visited ? getSceneCopy(id, language, definition.scenes[id]).title.split("·").pop()?.trim() : "▮▮▮"}
               </div>
             );
           })}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#080b12"/><stop offset="1" stop-color="#1a1420"/></linearGradient>
+    <linearGradient id="road" x2="0" y2="1"><stop stop-color="#22262b"/><stop offset="1" stop-color="#07090c"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1240" cy="140" r="120" fill="#44243b" opacity=".25"/>
+  <path d="M0 450 180 170l90 280 180-360 170 360 220-310 140 310 190-350 190 350 240-280 100 300v230H0Z" fill="#080d0c"/>
+  <g fill="#111815" stroke="#25342d" stroke-width="8"><path d="M80 520 200 130l90 390Z"/><path d="M1210 510 1330 80l110 430Z"/><path d="M1380 530 1510 150l90 380Z"/></g>
+  <path d="M0 720 520 500h480l600 240v160H0Z" fill="url(#road)"/>
+  <path d="m0 795 580-210h380l640 225" fill="none" stroke="#5b4b43" stroke-width="14" opacity=".45"/>
+  <g fill="#08090b" stroke="#815d54" stroke-width="5">
+    <path d="M230 500h230l30 195H190Z"/><path d="M255 480h165v42H255Z"/>
+    <path d="M930 505h230l55 200H885Z"/><path d="M965 482h130v45H965Z"/>
+  </g>
+  <g stroke="#9b9388" stroke-width="8" fill="none"><path d="M225 550h245M250 585h220M930 560h245"/></g>
+  <g fill="#141416" stroke="#66545d" stroke-width="5">
+    <circle cx="995" cy="390" r="38"/><path d="M950 430h90l35 190H920Z"/><path d="m955 500-125 105M1035 490l105 90"/>
+    <circle cx="650" cy="560" r="34"/><path d="m610 595 105 5 78 95-250-10Z"/>
+  </g>
+  <g transform="translate(110 560)" fill="#17191c" stroke="#b6a16f" stroke-width="5"><rect width="230" height="34"/><path d="m20 0 55-110M75 0l55-125M135 0l55-118M190 0l32-105"/></g>
+  <path d="M1260 250q80-55 145 10-105-5-165 65Z" fill="#a3e635" opacity=".22" filter="url(#glow)"/>
+  <g stroke="#7c5d66" opacity=".25"><path d="M0 120h1600M0 250h1600M0 380h1600M0 510h1600M0 640h1600M0 770h1600"/></g>
+</svg>
