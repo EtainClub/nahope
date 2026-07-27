@@ -1,43 +1,84 @@
 import type { AppLanguage } from "../i18n";
-import type { EndingId, ItemId, Scene, SceneId } from "./types";
+import { GAME_KO, GAME_ROLES_KO } from "./ko";
+import type { CaseRecord, EndingId, ItemId, Scene, SceneId } from "./types";
 
-// Episode 1 is authored in English. Keep these helpers as stable boundaries for
-// saved profiles and future translations without presenting stale localized lore.
-export function getItemCopy(
-  _id: ItemId,
-  _language: AppLanguage,
-  fallback: { name: string; short: string },
-) {
-  return fallback;
+export function localizeGameText(text: string, language: AppLanguage) {
+  return language === "ko" ? (GAME_KO[text] ?? text) : text;
 }
 
-export function localizeStoredItemName(name: string, _language: AppLanguage) {
-  void _language;
-  return name;
+export function getItemCopy(
+  _id: ItemId,
+  language: AppLanguage,
+  fallback: { name: string; short: string },
+) {
+  return language === "ko"
+    ? {
+        name: localizeGameText(fallback.name, language),
+        short: localizeGameText(fallback.short, language),
+      }
+    : fallback;
+}
+
+export function localizeStoredItemName(name: string, language: AppLanguage) {
+  return localizeGameText(name, language);
 }
 
 export function getSceneCopy(
   _id: SceneId,
-  _language: AppLanguage,
+  language: AppLanguage,
   fallback: Scene,
 ): Scene {
-  return fallback;
+  if (language === "en") return fallback;
+  return {
+    ...fallback,
+    title: localizeGameText(fallback.title, language),
+    ambient: localizeGameText(fallback.ambient, language),
+    art: fallback.art,
+    hotspots: fallback.hotspots.map((hotspot) => ({
+      ...hotspot,
+      label: localizeGameText(hotspot.label, language),
+    })),
+  };
 }
 
 export function getEndingCopy(
   _id: EndingId,
-  _language: AppLanguage,
+  language: AppLanguage,
   fallback: { title: string; body: string },
 ) {
-  return fallback;
+  return language === "ko"
+    ? {
+        title: localizeGameText(fallback.title, language),
+        body: localizeGameText(fallback.body, language),
+      }
+    : fallback;
 }
 
-export function localizeGameRole(role: string, _language: AppLanguage) {
-  void _language;
-  return role;
+export function getCaseRecordCopy(caseRecord: CaseRecord, language: AppLanguage): CaseRecord {
+  if (language === "en") return caseRecord;
+  return {
+    ...caseRecord,
+    title: localizeGameText(caseRecord.title, language),
+    rows: caseRecord.rows.map((row) => ({
+      ...row,
+      label: localizeGameText(row.label, language),
+      text: localizeGameText(row.text, language),
+    })),
+    notes: caseRecord.notes?.map((note) => ({
+      ...note,
+      text: localizeGameText(note.text, language),
+    })),
+  };
 }
 
-export function localizeGameLog(text: string, _language: AppLanguage) {
-  void _language;
-  return text;
+export function localizeGameRole(role: string, language: AppLanguage) {
+  return language === "ko" ? (GAME_ROLES_KO[role] ?? role) : role;
+}
+
+export function localizeGameLog(text: string, language: AppLanguage) {
+  if (language === "en") return text;
+  if (text.startsWith("→ ")) {
+    return `→ ${localizeGameText(text.slice(2), language)}`;
+  }
+  return localizeGameText(text, language);
 }

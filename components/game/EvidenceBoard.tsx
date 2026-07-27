@@ -21,7 +21,7 @@ interface Props {
 export default function EvidenceBoard({
   definition, inventory, lostItems, activeItem, visitedScenes, currentScene, onEquip,
 }: Props) {
-  const { language } = useLanguage();
+  const { language, tr } = useLanguage();
   return (
     <div style={{
       display: "flex", flexDirection: "column",
@@ -35,7 +35,7 @@ export default function EvidenceBoard({
         color: "var(--acc-amber)", textTransform: "uppercase",
         letterSpacing: "0.18em", fontSize: 10,
       }}>
-          Evidence Deck
+          {tr("증거 보관함", "Evidence Deck")}
       </div>
 
       <div style={{
@@ -64,10 +64,10 @@ export default function EvidenceBoard({
               textTransform: "uppercase",
               transform: "rotate(-1.6deg)",
             }}>
-              EVIDENCE PENDING
+              {tr("증거 대기 중", "EVIDENCE PENDING")}
             </div>
             <div style={{ marginTop: 10, fontSize: 10, color: "#6b5a2e", fontStyle: "italic" }}>
-              Pin discoveries here. Tap to equip.
+              {tr("발견한 증거가 여기에 추가됩니다. 눌러서 장착하십시오.", "Pin discoveries here. Tap to equip.")}
             </div>
           </div>
         )}
@@ -137,7 +137,7 @@ export default function EvidenceBoard({
                   fontSize: 10, color: "#1a1208",
                   textAlign: "center", letterSpacing: "0.06em",
                 }}>
-                  {active ? "▼ ACTIVE" : "tap to equip"}
+                  {active ? tr("▼ 장착 중", "▼ ACTIVE") : tr("눌러서 장착", "tap to equip")}
                 </div>
               </button>
 
@@ -179,7 +179,7 @@ export default function EvidenceBoard({
             fontSize: 9,
             textAlign: "center",
           }}>
-              LOST · {definition.items[id] ? getItemCopy(id, language, definition.items[id]).name : id}
+              {tr("분실", "LOST")} · {definition.items[id] ? getItemCopy(id, language, definition.items[id]).name : id}
           </div>
         ))}
       </div>
@@ -187,7 +187,7 @@ export default function EvidenceBoard({
       {/* MAP */}
       <div style={{ padding: 10, borderTop: "1px solid var(--line-dim)" }}>
         <div style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 9, marginBottom: 6 }}>
-          Sector Map
+          {tr("구역 지도", "Sector Map")}
         </div>
         <div style={{ display: "flex", gap: 4, justifyContent: "space-between", alignItems: "center" }}>
           {definition.sceneOrder.map((id) => {

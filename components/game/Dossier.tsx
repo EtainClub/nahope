@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { CaseRecord, LogEntry } from "../../lib/game/types";
 import { useLanguage } from "../../lib/i18n";
-import { localizeGameLog, localizeGameRole } from "../../lib/game/i18n";
+import { getCaseRecordCopy, localizeGameLog, localizeGameRole } from "../../lib/game/i18n";
 
 interface Props {
   logs: LogEntry[];
@@ -21,7 +21,8 @@ const KIND_COLOR: Record<string, string> = {
 };
 
 export default function Dossier({ logs, ambient, flags, caseRecord }: Props) {
-  const { language } = useLanguage();
+  const { language, tr } = useLanguage();
+  const localizedCaseRecord = getCaseRecordCopy(caseRecord, language);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scrollRef.current;
@@ -43,7 +44,7 @@ export default function Dossier({ logs, ambient, flags, caseRecord }: Props) {
         textTransform: "uppercase", letterSpacing: "0.18em",
         fontSize: 10,
       }}>
-        DOSSIER · TRANSCRIPT
+        {tr("사건 기록 · 대화 로그", "DOSSIER · TRANSCRIPT")}
       </div>
 
       <div
@@ -81,9 +82,9 @@ export default function Dossier({ logs, ambient, flags, caseRecord }: Props) {
         border: "1px solid #6b5a2e",
       }}>
         <div style={{ textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 6 }}>
-          {caseRecord.title}
+          {localizedCaseRecord.title}
         </div>
-        {caseRecord.rows.map((row) => (
+        {localizedCaseRecord.rows.map((row) => (
           <div key={row.label}>
             {row.label}: {" "}
             <span className={flags.includes(row.revealFlag) ? "" : "redact"}>
@@ -91,7 +92,7 @@ export default function Dossier({ logs, ambient, flags, caseRecord }: Props) {
             </span>.
           </div>
         ))}
-        {caseRecord.notes?.map((note) => flags.includes(note.revealFlag) ? (
+        {localizedCaseRecord.notes?.map((note) => flags.includes(note.revealFlag) ? (
           <div key={note.revealFlag} style={{ color: "#6b3a1e", marginTop: 4, fontStyle: "italic" }}>
             {note.text}
           </div>

@@ -36,7 +36,7 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_RUINS",
     title: "Hopo Port · Triage Line",
     ambient: "Bamigir is down. Sung-ae treats the living while Sung-ki prepares to sweep the mountain.",
-    art: "/images/game/ep2/ruins.svg",
+    art: "/images/game/ep2/ruins.webp",
     exits: ["EP2_WORKSHOP"],
     hotspots: [
       { id: "COMMAND_POST", label: "Search Command Post", top: "10%", left: "6%", width: "30%", height: "32%" },
@@ -49,7 +49,7 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_WORKSHOP",
     title: "Hopo Port · Yang-bae's Workshop",
     ambient: "Unfinished mannequins face a humming cold-room door. Yang-bae will not meet your eyes.",
-    art: "/images/game/ep2/workshop.svg",
+    art: "/images/game/ep2/workshop.webp",
     exits: ["EP2_RUINS", "EP2_FREEZER", "EP2_TRAIL"],
     hotspots: [
       { id: "MANNEQUINS", label: "Mannequin Row", top: "12%", left: "6%", width: "30%", height: "58%" },
@@ -62,7 +62,7 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_FREEZER",
     title: "Workshop · Cold Room",
     ambient: "The compressor drowns the village outside. Something small lies beneath a canvas sheet.",
-    art: "/images/game/ep2/freezer.svg",
+    art: "/images/game/ep2/freezer.webp",
     exits: ["EP2_WORKSHOP"],
     lockedUntil: "FREEZER_OPEN",
     hotspots: [
@@ -75,7 +75,7 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_TRAIL",
     title: "Mountain Trail · Hunter Line",
     ambient: "Sung-ki's party moves uphill. Yang-bae knows this path better than he admitted.",
-    art: "/images/game/ep2/trail.svg",
+    art: "/images/game/ep2/trail.webp",
     exits: ["EP2_WORKSHOP", "EP2_WRECK"],
     lockedUntil: "TRAIL_OPEN",
     hotspots: [
@@ -89,13 +89,13 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_WRECK",
     title: "Pine Basin · Silver Wreck",
     ambient: "A silver vessel has torn a trench through the forest. Tracks lead away from its ruptured hull.",
-    art: "/images/game/ep2/wreck.svg",
+    art: "/images/game/ep2/wreck.webp",
     exits: ["EP2_TRAIL", "EP2_GLADE"],
     lockedUntil: "WRECK_OPEN",
     hotspots: [
       { id: "HULL", label: "Ruptured Silver Hull", top: "18%", left: "8%", width: "48%", height: "48%" },
       { id: "FOOTPRINTS", label: "Tracks from the Wreck", top: "66%", left: "50%", width: "30%", height: "22%" },
-      { id: "OPEN_HATCH", label: "Child-sized Compartment", top: "25%", left: "62%", width: "24%", height: "30%" },
+      { id: "OPEN_HATCH", label: "Child-sized Compartment", top: "18%", left: "42%", width: "24%", height: "34%" },
       { id: "DESCENT", label: "Voices below the Basin", top: "58%", left: "82%", width: "14%", height: "34%" },
     ],
   },
@@ -103,7 +103,7 @@ export const EP2_SCENES: Record<string, Scene> = {
     id: "EP2_GLADE",
     title: "Deep Forest · Encirclement",
     ambient: "Three different figures surround the hunters. They speak to one another, but none has struck first.",
-    art: "/images/game/ep2/glade.svg",
+    art: "/images/game/ep2/glade.webp",
     exits: ["EP2_WRECK"],
     lockedUntil: "GLADE_OPEN",
     hotspots: [

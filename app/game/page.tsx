@@ -25,6 +25,7 @@ import {
   getSceneCopy,
   localizeGameLog,
   localizeGameRole,
+  localizeGameText,
 } from "../../lib/game/i18n";
 
 const EP3_GATE = 20_000;
@@ -107,7 +108,7 @@ export default function GamePage() {
 }
 
 function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefinition; onEpisodeChange: (episode: GameDefinition["number"]) => void }) {
-  const { language } = useLanguage();
+  const { language, tr } = useLanguage();
   const { connected, publicKey } = useWallet();
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -298,45 +299,48 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
 
   if (gate && !episodeUnlocked) {
     const balanceLabel = episodeAccess.status === "checking"
-      ? "Checking $NAHOPE balance on Solana"
+      ? tr("Solana에서 $NAHOPE 잔액 확인 중", "Checking $NAHOPE balance on Solana")
       : episodeAccess.status === "error"
-        ? "Server balance verification unavailable"
-        : `${verifiedBalance.toLocaleString()} / ${gate.requiredBalance.toLocaleString()} $NAHOPE server verified`;
+        ? tr("서버 잔액 확인을 사용할 수 없음", "Server balance verification unavailable")
+        : tr(
+            `${verifiedBalance.toLocaleString()} / ${gate.requiredBalance.toLocaleString()} $NAHOPE 서버 확인`,
+            `${verifiedBalance.toLocaleString()} / ${gate.requiredBalance.toLocaleString()} $NAHOPE server verified`,
+          );
     const requirements = [
-      { label: "Wallet connected", met: connected },
-      { label: `Episode ${prerequisiteEpisode} cleared`, met: prerequisiteCleared },
-      ...(definition.number === 4 ? [{ label: `${rareArtifactCount} / 3 rare Hopo artifacts retained`, met: artifactThresholdMet }] : []),
+      { label: tr("지갑 연결", "Wallet connected"), met: connected },
+      { label: tr(`에피소드 ${prerequisiteEpisode} 클리어`, `Episode ${prerequisiteEpisode} cleared`), met: prerequisiteCleared },
+      ...(definition.number === 4 ? [{ label: tr(`희귀 호포 유물 ${rareArtifactCount} / 3개 보유`, `${rareArtifactCount} / 3 rare Hopo artifacts retained`), met: artifactThresholdMet }] : []),
       { label: balanceLabel, met: hasRequiredBalance },
     ];
 
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-0)", color: "var(--text-1)", display: "grid", placeItems: "center", padding: 24 }}>
         <section style={{ width: "min(560px, 100%)", border: "1px solid var(--acc-violet)", padding: 28, fontFamily: "var(--font-mono)", background: "rgba(5,7,10,0.96)" }}>
-          <div style={{ color: "var(--acc-violet)", fontSize: 11, letterSpacing: "0.22em", marginBottom: 12 }}>EPISODE {definition.number} ACCESS</div>
-          <h1 style={{ margin: "0 0 10px", fontSize: 24, letterSpacing: "0.06em" }}>{definition.title.toUpperCase()}</h1>
+          <div style={{ color: "var(--acc-violet)", fontSize: 11, letterSpacing: "0.22em", marginBottom: 12 }}>{tr(`에피소드 ${definition.number} 접근`, `EPISODE ${definition.number} ACCESS`)}</div>
+          <h1 style={{ margin: "0 0 10px", fontSize: 24, letterSpacing: "0.06em" }}>{localizeGameText(definition.title, language)}</h1>
           <p style={{ color: "var(--text-2)", fontSize: 12, lineHeight: 1.7, marginBottom: 20 }}>
-            {gate.description}
+            {localizeGameText(gate.description, language)}
           </p>
           <div style={{ display: "grid", gap: 8, marginBottom: 22 }}>
             {requirements.map((requirement) => (
               <div key={requirement.label} style={{ border: `1px solid ${requirement.met ? "var(--acc-primary)" : "var(--line-bright)"}`, color: requirement.met ? "var(--acc-primary)" : "var(--text-2)", padding: "9px 11px", fontSize: 11, letterSpacing: "0.1em" }}>
-                [{requirement.met ? "VERIFIED" : "LOCKED"}] {requirement.label.toUpperCase()}
+                [{requirement.met ? tr("확인", "VERIFIED") : tr("잠김", "LOCKED")}] {requirement.label}
               </div>
             ))}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             {!connected && (
               <button onClick={() => setShowWalletModal(true)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--acc-primary)", background: "transparent", color: "var(--acc-primary)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
-                CONNECT WALLET
+                {tr("지갑 연결", "CONNECT WALLET")}
               </button>
             )}
             {connected && !hasRequiredBalance && episodeAccess.status !== "checking" && (
               <button onClick={() => setBalanceRefresh((value) => value + 1)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--acc-violet)", background: "transparent", color: "var(--acc-violet)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
-                VERIFY BALANCE
+                {tr("잔액 확인", "VERIFY BALANCE")}
               </button>
             )}
             <button onClick={() => onEpisodeChange(prerequisiteEpisode)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--line-bright)", background: "transparent", color: "var(--text-1)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
-              PLAY EPISODE {prerequisiteEpisode}
+              {tr(`에피소드 ${prerequisiteEpisode} 플레이`, `PLAY EPISODE ${prerequisiteEpisode}`)}
             </button>
           </div>
         </section>
@@ -361,7 +365,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
       <GameShell
         episodeNumber={definition.number}
         maxTurns={definition.maxTurns}
-        headerLabel={definition.headerLabel}
+        headerLabel={localizeGameText(definition.headerLabel, language)}
         onEpisodeChange={onEpisodeChange}
         turn={state.turn}
         scene={scene.title}
@@ -404,9 +408,9 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
             fontFamily: "var(--font-mono)", fontSize: 11,
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
-            <span style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: 10 }}>Active</span>
+            <span style={{ color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: 10 }}>{tr("장착", "Active")}</span>
             <span style={{ color: activeItem ? "var(--acc-danger)" : "var(--text-2)" }}>
-              {activeItemCopy ? activeItemCopy.name : "— bare hands —"}
+              {activeItemCopy ? activeItemCopy.name : tr("— 맨손 —", "— bare hands —")}
             </span>
             {activeItem && (
               <button
@@ -419,7 +423,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                   color: "var(--text-2)", fontFamily: "var(--font-mono)", fontSize: 9,
                   padding: "2px 8px", cursor: "pointer", letterSpacing: "0.18em",
                 }}
-            >UNEQUIP</button>
+            >{tr("장착 해제", "UNEQUIP")}</button>
             )}
           </div>
         </section>
@@ -459,7 +463,11 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
               cursor: "pointer",
             }}
           >
-                {{ dossier: "dossier", plate: "plate", deck: "deck" }[t]}
+                {{
+                  dossier: tr("기록", "dossier"),
+                  plate: tr("현장", "plate"),
+                  deck: tr("증거", "deck"),
+                }[t]}
           </button>
         ))}
       </nav>
@@ -479,7 +487,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
             fontFamily: "var(--font-mono)", color: "var(--text-1)",
           }}>
             <div style={{ color: "var(--acc-violet)", letterSpacing: "0.24em", fontSize: 11, marginBottom: 12 }}>
-              EPISODE {definition.number} · {endingCopy?.title.toUpperCase()}
+              {tr(`에피소드 ${definition.number}`, `EPISODE ${definition.number}`)} · {endingCopy?.title}
             </div>
             <p style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 20 }}>{endingCopy?.body}</p>
             {ending.unlocksNextEpisode && definition.number <= 3 && (
@@ -489,9 +497,9 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 color: "var(--acc-violet)",
                 fontSize: 11, letterSpacing: "0.16em",
               }}>
-                {definition.number === 1 && "EP.2 OPEN · NO WALLET OR PRIOR CLEAR REQUIRED"}
-                {definition.number === 2 && `EP.3 GATE · ${EP3_GATE.toLocaleString()} $NAHOPE · SERVER VERIFICATION REQUIRED`}
-                {definition.number === 3 && `EP.4 GATE · ${EP4_GATE.toLocaleString()} $NAHOPE · 3 RARE ARTIFACTS · SERVER VERIFICATION REQUIRED`}
+                {definition.number === 1 && tr("에피소드 2 개방 · 지갑 또는 사전 클리어 불필요", "EP.2 OPEN · NO WALLET OR PRIOR CLEAR REQUIRED")}
+                {definition.number === 2 && tr(`에피소드 3 조건 · ${EP3_GATE.toLocaleString()} $NAHOPE · 서버 확인 필요`, `EP.3 GATE · ${EP3_GATE.toLocaleString()} $NAHOPE · SERVER VERIFICATION REQUIRED`)}
+                {definition.number === 3 && tr(`에피소드 4 조건 · ${EP4_GATE.toLocaleString()} $NAHOPE · 희귀 유물 3개 · 서버 확인 필요`, `EP.4 GATE · ${EP4_GATE.toLocaleString()} $NAHOPE · 3 RARE ARTIFACTS · SERVER VERIFICATION REQUIRED`)}
               </div>
             )}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
@@ -501,7 +509,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 border: "1px solid var(--acc-primary)",
                 color: "var(--acc-primary)",
                 cursor: "pointer", letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10,
-              }}>RESTART</button>
+              }}>{tr("다시 시작", "RESTART")}</button>
               {definition.number === 1 && ending.unlocksNextEpisode && (
                 <button onClick={() => onEpisodeChange(2)} style={{
                   flex: 1, padding: "10px 12px",
@@ -509,7 +517,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                   border: "1px solid var(--acc-violet)",
                   color: "var(--bg-0)",
                   cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase", fontSize: 10,
-                }}>CONTINUE TO EPISODE 2</button>
+                }}>{tr("에피소드 2로 계속", "CONTINUE TO EPISODE 2")}</button>
               )}
               {definition.number === 2 && ending.unlocksNextEpisode && (
                 <button onClick={() => onEpisodeChange(3)} style={{
@@ -518,7 +526,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                   border: "1px solid var(--acc-violet)",
                   color: "var(--bg-0)",
                   cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase", fontSize: 10,
-                }}>CONTINUE TO EPISODE 3</button>
+                }}>{tr("에피소드 3으로 계속", "CONTINUE TO EPISODE 3")}</button>
               )}
               {definition.number === 3 && ending.unlocksNextEpisode && (
                 <button onClick={() => onEpisodeChange(4)} style={{
@@ -527,7 +535,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                   border: "1px solid var(--acc-violet)",
                   color: "var(--bg-0)",
                   cursor: "pointer", letterSpacing: "0.16em", textTransform: "uppercase", fontSize: 10,
-                }}>CONTINUE TO EPISODE 4</button>
+                }}>{tr("에피소드 4로 계속", "CONTINUE TO EPISODE 4")}</button>
               )}
               {definition.number === 4 && ending.id === "D" && (
                 <Link href="/community?compose=omega" style={{
@@ -537,7 +545,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                   color: "var(--bg-0)",
                   letterSpacing: "0.16em", textTransform: "uppercase", fontSize: 10,
                   textDecoration: "none",
-                }}>SUBMIT TO COMMUNITY REVIEW</Link>
+                }}>{tr("커뮤니티 검토에 제출", "SUBMIT TO COMMUNITY REVIEW")}</Link>
               )}
               <Link href="/" style={{
                 flex: 1, padding: "10px 12px", textAlign: "center",
@@ -546,7 +554,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 color: "var(--text-2)",
                 letterSpacing: "0.2em", textTransform: "uppercase", fontSize: 10,
                 textDecoration: "none",
-              }}>EXIT</Link>
+              }}>{tr("나가기", "EXIT")}</Link>
             </div>
           </div>
         </div>
@@ -584,8 +592,8 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
               alignItems: "center",
               justifyContent: "space-between",
             }}>
-              <span>{"// EVIDENCE ACQUIRED"}</span>
-                  <span className="text-term-green" style={{ fontSize: 9 }}>[NEW DISCOVERY]</span>
+              <span>{tr("// 증거 획득", "// EVIDENCE ACQUIRED")}</span>
+                  <span className="text-term-green" style={{ fontSize: 9 }}>[{tr("새 발견", "NEW DISCOVERY")}]</span>
             </div>
 
             {/* Discovery Log Text (from left panel logs) */}
@@ -722,7 +730,7 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 e.currentTarget.style.background = "transparent";
               }}
             >
-                    DISMISS DISCOVERY
+                    {tr("확인", "DISMISS DISCOVERY")}
             </button>
           </div>
         </div>
