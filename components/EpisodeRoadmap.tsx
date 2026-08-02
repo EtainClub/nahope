@@ -46,7 +46,7 @@ export default function EpisodeRoadmap() {
               {tr("호포항의 호랑이", "Hopo Port Tiger")}
             </h3>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              {tr("Investigate the mutilated cow, challenge the tiger theory, and keep Sung-gi's hunters out of the forest.", "Investigate the mutilated cow, challenge the tiger theory, and keep Sung-gi's hunters out of the forest.")}
+              {tr("훼손된 소를 조사하고 호랑이 가설을 반박해 성기의 사냥대가 숲으로 들어가지 못하게 하세요.", "Investigate the mutilated cow, challenge the tiger theory, and keep Sung-gi's hunters out of the forest.")}
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line-bright)", color: "var(--acc-primary)" }}>
@@ -60,21 +60,21 @@ export default function EpisodeRoadmap() {
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-start">
               <span className="font-mono font-bold px-2 py-0.5" style={{ fontSize: 10, color: "var(--acc-violet)", background: "var(--bg-2)" }}>
-                EPISODE 02
+                에피소드 02
               </span>
               <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-violet)" }}>
-                OPEN ACCESS
+                1화 클리어 필요
               </span>
             </div>
             <h3 className="display text-base uppercase mt-2" style={{ color: "var(--ink-0)" }}>
-              The Hunt Reverses
+              열두 존재를 부르다
             </h3>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Trace Yang-bae&apos;s first shot from Kali&apos;s cold room to the crashed royal vessel, then stop the mountain search from firing again.
+              소에서 쥐까지 열두 표식을 순서대로 호명하고, 성애와 함께 잘못된 이름이 총성이 되는 순간을 막으세요.
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line)", color: "var(--acc-violet)" }}>
-            STATUS: PLAYABLE · NO WALLET REQUIRED →
+            상태: 에피소드 1 클리어 후 개방 →
           </div>
         </Link>
 
@@ -84,21 +84,21 @@ export default function EpisodeRoadmap() {
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-start">
               <span className="font-mono font-bold px-2 py-0.5" style={{ fontSize: 10, color: "var(--acc-danger)", background: "var(--bg-2)" }}>
-                EPISODE 03
+                에피소드 03
               </span>
               <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-danger)" }}>
-                20,000 $NAHOPE GATED
+                2화 클리어 필요
               </span>
             </div>
             <h3 className="display text-base uppercase mt-2" style={{ color: "var(--ink-0)" }}>
-              Human Dust
+              역굿
             </h3>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Evacuate Hopo, recover Kali from the cold room, and turn disarmament, evidence, and the returned child into a wordless truce.
+              해에서 자까지 의식을 거꾸로 풀고, 장닭과 말의 양기를 지키며 열두 증거를 고정하세요.
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line)", color: "var(--acc-danger)" }}>
-            STATUS: PLAYABLE · EP.2 CLEAR REQUIRED →
+            상태: 플레이 가능 · 에피소드 2 클리어 필요 →
           </div>
         </Link>
 
@@ -108,21 +108,21 @@ export default function EpisodeRoadmap() {
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-start">
               <span className="font-mono font-bold px-2 py-0.5" style={{ fontSize: 10, color: "var(--acc-cyan)", background: "var(--bg-2)" }}>
-                EPISODE 04
+                에피소드 04
               </span>
               <span className="font-mono font-bold" style={{ fontSize: 9, color: "var(--acc-cyan)" }}>
-                100,000 $NAHOPE GATED
+                3화 클리어 필요
               </span>
             </div>
             <h3 className="display text-base uppercase mt-2" style={{ color: "var(--ink-0)" }}>
-              Omega Protocol
+              열세 번째 목격자
             </h3>
             <p className="text-xs text-gray-400 font-sans leading-relaxed">
-              Rebuild the Hopo archive, separate fact from inference and invention, then submit a three-artifact Humans in Space proposal for community review.
+              증거·현현·창작을 분리하고, 화면 앞의 열세 번째 목격자로서 공동체 송별 의식을 완성하세요.
             </p>
           </div>
           <div className="pt-3 mt-4 eyebrow" style={{ borderTop: "1px solid var(--line)", color: "var(--acc-cyan)" }}>
-            STATUS: PLAYABLE · EP.3 CLEAR + 3 ARTIFACTS →
+            상태: 플레이 가능 · 에피소드 3 클리어 필요 →
           </div>
         </Link>
 

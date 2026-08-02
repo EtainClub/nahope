@@ -25,7 +25,25 @@ export type SceneId =
   | "EP4_CLASSIFIER"
   | "EP4_SCENARIO"
   | "EP4_GOVERNANCE"
-  | "EP4_TRANSMISSION";
+  | "EP4_TRANSMISSION"
+  | "EP2_CATTLE_GROUND"
+  | "EP2_RABBIT_RIDGE"
+  | "EP2_AUTOPSY_TENT"
+  | "EP2_YANGBAE_WORKSHOP"
+  | "EP2_DAWN_YARD"
+  | "EP2_HAESUL_HOUSE"
+  | "EP3_HAESUL_HOUSE"
+  | "EP3_DAWN_YARD"
+  | "EP3_YANGBAE_WORKSHOP"
+  | "EP3_AUTOPSY_TENT"
+  | "EP3_RABBIT_RIDGE"
+  | "EP3_ZERO_HOUR"
+  | "EP4_ZERO_CHAMBER"
+  | "EP4_FIXED_VAULT"
+  | "EP4_PRESENCE_HALL"
+  | "EP4_PROPOSAL_LAB"
+  | "EP4_PUBLIC_ARCHIVE"
+  | "EP4_SENDING_GATE";
 
 export type ItemId =
   | "EQUIPMENT_KEY"
@@ -89,7 +107,76 @@ export type ItemId =
   | "AUTHORSHIP_RECORD"
   | "GOVERNANCE_PACKET"
   | "OPEN_ARCHIVE_INDEX"
-  | "HOPE_PROTOCOL";
+  | "HOPE_PROTOCOL"
+  | "COW_HOUR_RECORD"
+  | "TIGER_NAME_ORDER"
+  | "RABBIT_HIDE_ROUTE"
+  | "DRAGON_CRASH_TRACE"
+  | "WORM_TIME_SAMPLE"
+  | "HORSE_PASSAGE_LOG"
+  | "YANGBAE_CAUSAL_NOTE"
+  | "MONGCHI_NAME_TAG"
+  | "ROOSTER_CALL_TAPE"
+  | "DOG_SURVIVOR_ROUTE"
+  | "HAESUL_REVERSE_SEAL"
+  | "TWELVE_CALLS_RECORD"
+  | "RITUAL_CLOCK"
+  | "ZERO_HOUR_GAP_RECORD"
+  | "ANCHORED_WITNESS_LEDGER"
+  | "HUMAN_FIRST_SHOT_RECORD"
+  | "YANG_PATH_MAP"
+  | "CRASH_DISTRESS_WAVE"
+  | "SECOND_HUNT_REBUTTAL"
+  | "OMEGA_ZERO_SIGNAL"
+  | "TWELVE_LIVING_WITNESSES"
+  | "FIXED_POINT_LEDGER"
+  | "MUTABLE_CAUSE_MAP"
+  | "PRESENCE_TESTIMONY"
+  | "THREE_LAYER_RITUAL_ARCHIVE"
+  | "THIRTEENTH_PROPOSAL"
+  | "COMMUNITY_RITE_PACKET"
+  | "SENDING_OFF_RECORD";
+
+export type ZodiacSign =
+  | "JA"
+  | "CHUK"
+  | "IN"
+  | "MYO"
+  | "JIN"
+  | "SA"
+  | "O"
+  | "MI"
+  | "SIN"
+  | "YU"
+  | "SUL"
+  | "HAE";
+
+export type RitualPhase = "invocation" | "reverse" | "sending";
+export type CycleDirection = "forward" | "reverse" | "outside";
+export type YangAnchor = "rooster" | "horse";
+
+export interface ZodiacMarker {
+  sign: ZodiacSign;
+  animal: string;
+  label: string;
+  revealFlag: string;
+}
+
+export interface PresenceEvent {
+  id: string;
+  title: string;
+  text: string;
+  visualCue: string;
+}
+
+export interface RitualDefinition {
+  phase: RitualPhase;
+  direction: CycleDirection;
+  initialCycleIndex: number;
+  markers: ZodiacMarker[];
+  presenceEvents?: Record<string, PresenceEvent>;
+  boundaryCollapseEnding?: EndingId;
+}
 
 export type EndingId = "A" | "B" | "C" | "D";
 
@@ -143,12 +230,19 @@ export interface Interaction {
     flagsNone?: string[];
     turnLte?: number;
     turnGte?: number;
+    cycleIndex?: number;
+    anchoredAll?: string[];
   };
   consumes?: ItemId[];
   destroys?: ItemId[];
   grants?: ItemId[];
   setFlags?: string[];
   clearFlags?: string[];
+  shiftCycle?: number;
+  anchorEvidence?: string[];
+  boundaryDelta?: number;
+  extinguishesYang?: YangAnchor;
+  presenceId?: string;
   moveTo?: SceneId;
   log: Omit<LogEntry, "turn">;
   turnCost?: number;
@@ -201,6 +295,7 @@ export interface GameDefinition {
   waitText: string;
   caseRecord: CaseRecord;
   successfulEndings: EndingId[];
+  ritual?: RitualDefinition;
 }
 
 export interface GameState {
@@ -214,6 +309,14 @@ export interface GameState {
   logs: LogEntry[];
   endingId: EndingId | null;
   visitedScenes: SceneId[];
+  cycleIndex: number;
+  loopCount: number;
+  anchoredEvidence: string[];
+  boundaryIntegrity: number;
+  roosterAlive: boolean;
+  horsePathOpen: boolean;
+  witnessedPresence: string[];
+  presenceSeed: number;
 }
 
 export type Action =

@@ -106,9 +106,9 @@ interface WalletConnectModalProps {
 | reason | Korean message |
 |--------|---------------|
 | `community` | 커뮤니티 글 작성은 Solana 지갑 연결이 필요합니다 |
-| `episode2` | Optional wallet connection for saving progress; Episode 2 itself remains open |
-| `episode3` | 에피소드 3: 20,000 $NAHOPE 필요 |
-| `episode4` | 에피소드 4: 100,000 $NAHOPE 필요 (엘리트 방어자) |
+| `episode2` | 진행 상황을 프로필에 연결하기 위한 선택적 지갑 연결 |
+| `episode3` | 진행 상황을 프로필에 연결하기 위한 선택적 지갑 연결 |
+| `episode4` | 진행 상황을 프로필에 연결하기 위한 선택적 지갑 연결 |
 
 **Connect flow**:
 1. User selects wallet (Phantom / Backpack / Solflare)

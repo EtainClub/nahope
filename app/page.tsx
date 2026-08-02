@@ -9,6 +9,8 @@ import ScenarioFeed, { INITIAL_SCENARIOS, Scenario } from "../components/Scenari
 import { ArrowRight, Film, Gamepad2, Users } from "lucide-react";
 import { useLanguage } from "../lib/i18n";
 
+const SHOW_EPISODE_UNLOCK_METRICS = false;
+
 export default function Home() {
   const [scenarios, setScenarios] = useState<Scenario[]>(INITIAL_SCENARIOS);
   const { tr } = useLanguage();
@@ -127,7 +129,7 @@ export default function Home() {
         </div>
 
         {/* Section 2: Cannes Countdown Ceremony Timer & Progress Bar */}
-        <CannesCountdown />
+      {SHOW_EPISODE_UNLOCK_METRICS && <CannesCountdown />}
 
 
         {/* Section 3: Gated Episode Roadmap */}
@@ -179,10 +181,10 @@ export default function Home() {
           <div className="flex flex-col items-center md:items-start gap-1">
             <div className="flex items-center gap-2">
               <span className="display text-sm" style={{ color: "var(--ink-0)" }}>
-                HOPO<span style={{ color: "var(--acc-primary)" }}>PORT</span>
+              호포<span style={{ color: "var(--acc-primary)" }}>항</span>
               </span>
               <span>|</span>
-              <span>EST. 2026</span>
+              <span>설립 2026</span>
             </div>
             <span className="text-[9px] text-gray-600 font-mono tracking-widest uppercase">
               {tr("공동 제작: 포지드 필름스 & 플러스엠 엔터테인먼트", "CO-PRODUCTION: FORGED FILMS & PLUS M ENTERTAINMENT")}

@@ -11,6 +11,7 @@ import GameShell from "../../components/game/GameShell";
 import PlateCanvas from "../../components/game/PlateCanvas";
 import Dossier from "../../components/game/Dossier";
 import EvidenceBoard from "../../components/game/EvidenceBoard";
+import RitualStatus from "../../components/game/RitualStatus";
 import { useGameState } from "../../lib/game/state";
 import { EPISODE_1 } from "../../lib/game/episode1";
 import { EPISODE_2 } from "../../lib/game/episode2";
@@ -28,31 +29,12 @@ import {
   localizeGameText,
 } from "../../lib/game/i18n";
 
-const EP3_GATE = 20_000;
-const EP4_GATE = 100_000;
 const EPISODE_DEFINITIONS: Record<GameDefinition["number"], GameDefinition> = {
   1: EPISODE_1,
   2: EPISODE_2,
   3: EPISODE_3,
   4: EPISODE_4,
 };
-const RARE_ARTIFACT_NAMES = new Set([
-  "Carcass Photograph",
-  "Unknown Track Cast",
-  "Unknown Subject Case File",
-  "Bamigir Encounter Photograph",
-  "Unfired Cartridge",
-  "Forest Withdrawal Route",
-  "Silver Hull Fragment",
-  "First-shot Causality Report",
-  "Kali Evidence Photograph",
-  "Yang-bae's Statement",
-  "Civilian Evacuation Manifest",
-  "Civilian Safe Route",
-  "Wordless Contact Record",
-  "Kali Medical Status Record",
-  "The Wordless Return",
-]);
 const LEGACY_EP1_ARTIFACTS = new Set([
   "Omega Mark",
   "Ω Mark (Apostate)",
@@ -62,24 +44,19 @@ const LEGACY_EP1_ARTIFACTS = new Set([
   "Coastal Cookware Photograph",
 ]);
 
-type EpisodeAccess = {
-  status: "idle" | "checking" | "verified" | "denied" | "error";
-  balance: number | null;
-};
-
-type GatedEpisodeNumber = 3 | 4;
+type GatedEpisodeNumber = 2 | 3 | 4;
 
 const GATE_CONFIG: Record<GatedEpisodeNumber, {
-  prerequisiteEpisode: 2 | 3;
-  requiredBalance: number;
+  prerequisiteEpisode: 1 | 2 | 3;
   description: string;
 }> = {
-  3: { prerequisiteEpisode: 2, requiredBalance: EP3_GATE, description: "The civilian corridor is classified. Complete the mountain case and verify the required wallet balance to enter." },
-  4: { prerequisiteEpisode: 3, requiredBalance: EP4_GATE, description: "The final archive requires an Episode 3 clear, three retained Hopo artifacts, and server-verified Elite Defender holdings." },
+  2: { prerequisiteEpisode: 1, description: "에피소드 1에서 호랑이 가설을 반박하고 사건을 클리어하면 열두 시간의 의식이 열립니다." },
+  3: { prerequisiteEpisode: 2, description: "에피소드 2에서 열두 존재의 호명을 마치면 역굿 구역에 진입할 수 있습니다." },
+  4: { prerequisiteEpisode: 3, description: "에피소드 3의 역굿을 완료하면 영시 기록실과 열세 번째 목격자의 자리가 열립니다." },
 };
 
 function isGatedEpisode(number: GameDefinition["number"]): number is GatedEpisodeNumber {
-  return number === 3 || number === 4;
+  return number === 2 || number === 3 || number === 4;
 }
 
 function walletReason(number: GameDefinition["number"]): "episode2" | "episode3" | "episode4" {
@@ -109,11 +86,9 @@ export default function GamePage() {
 
 function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefinition; onEpisodeChange: (episode: GameDefinition["number"]) => void }) {
   const { language, tr } = useLanguage();
-  const { connected, publicKey } = useWallet();
+  const { connected } = useWallet();
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [episodeAccess, setEpisodeAccess] = useState<EpisodeAccess>({ status: "idle", balance: null });
-  const [balanceRefresh, setBalanceRefresh] = useState(0);
   const [mobileTab, setMobileTab] = useState<"plate" | "dossier" | "deck">("plate");
   const [bgmEnabled, setBgmEnabled] = useState(false);
 
@@ -164,37 +139,6 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
     };
   }, []);
 
-
-  // Gated episode balances are authorized by a server-side Solana RPC check.
-  useEffect(() => {
-    if (!isGatedEpisode(definition.number) || !connected || !publicKey) return;
-
-    const controller = new AbortController();
-    const checkingTimer = window.setTimeout(
-      () => setEpisodeAccess({ status: "checking", balance: null }),
-      0,
-    );
-    void fetch(`/api/episode-access?episode=${definition.number}&wallet=${encodeURIComponent(publicKey.toBase58())}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`Access verification failed (${response.status})`);
-        return response.json() as Promise<{ balance: number; granted: boolean }>;
-      })
-      .then(({ balance, granted }) => {
-        setEpisodeAccess({ status: granted ? "verified" : "denied", balance });
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setEpisodeAccess({ status: "error", balance: null });
-      });
-
-    return () => {
-      window.clearTimeout(checkingTimer);
-      controller.abort();
-    };
-  }, [balanceRefresh, connected, definition.number, publicKey]);
 
   // Manage background music playback based on user toggle.
   useEffect(() => {
@@ -288,29 +232,11 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
   const prerequisiteCleared = gate
     ? (profile?.completedEndings?.includes(`ep${prerequisiteEpisode}_clear`) ?? false)
     : true;
-  const rareArtifactCount = profile?.inventory.reduce(
-    (count, name) => count + (RARE_ARTIFACT_NAMES.has(name) ? 1 : 0),
-    0,
-  ) ?? 0;
-  const artifactThresholdMet = definition.number !== 4 || rareArtifactCount >= 3;
-  const hasRequiredBalance = episodeAccess.status === "verified";
-  const episodeUnlocked = !gate || (connected && prerequisiteCleared && hasRequiredBalance && artifactThresholdMet);
-  const verifiedBalance = episodeAccess.balance ?? 0;
+  const episodeUnlocked = !gate || prerequisiteCleared;
 
   if (gate && !episodeUnlocked) {
-    const balanceLabel = episodeAccess.status === "checking"
-      ? tr("Solana에서 $NAHOPE 잔액 확인 중", "Checking $NAHOPE balance on Solana")
-      : episodeAccess.status === "error"
-        ? tr("서버 잔액 확인을 사용할 수 없음", "Server balance verification unavailable")
-        : tr(
-            `${verifiedBalance.toLocaleString()} / ${gate.requiredBalance.toLocaleString()} $NAHOPE 서버 확인`,
-            `${verifiedBalance.toLocaleString()} / ${gate.requiredBalance.toLocaleString()} $NAHOPE server verified`,
-          );
     const requirements = [
-      { label: tr("지갑 연결", "Wallet connected"), met: connected },
       { label: tr(`에피소드 ${prerequisiteEpisode} 클리어`, `Episode ${prerequisiteEpisode} cleared`), met: prerequisiteCleared },
-      ...(definition.number === 4 ? [{ label: tr(`희귀 호포 유물 ${rareArtifactCount} / 3개 보유`, `${rareArtifactCount} / 3 rare Hopo artifacts retained`), met: artifactThresholdMet }] : []),
-      { label: balanceLabel, met: hasRequiredBalance },
     ];
 
     return (
@@ -329,16 +255,6 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
             ))}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            {!connected && (
-              <button onClick={() => setShowWalletModal(true)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--acc-primary)", background: "transparent", color: "var(--acc-primary)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
-                {tr("지갑 연결", "CONNECT WALLET")}
-              </button>
-            )}
-            {connected && !hasRequiredBalance && episodeAccess.status !== "checking" && (
-              <button onClick={() => setBalanceRefresh((value) => value + 1)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--acc-violet)", background: "transparent", color: "var(--acc-violet)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
-                {tr("잔액 확인", "VERIFY BALANCE")}
-              </button>
-            )}
             <button onClick={() => onEpisodeChange(prerequisiteEpisode)} style={{ flex: "1 1 180px", padding: "11px 14px", border: "1px solid var(--line-bright)", background: "transparent", color: "var(--text-1)", cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.16em" }}>
               {tr(`에피소드 ${prerequisiteEpisode} 플레이`, `PLAY EPISODE ${prerequisiteEpisode}`)}
             </button>
@@ -370,12 +286,14 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
         turn={state.turn}
         scene={scene.title}
         walletAddress={connected ? (typeof window !== "undefined" ? localStorage.getItem("active_wallet_address") : null) : null}
-        tokenBalance={episodeAccess.balance ?? profile?.tokenBalance ?? 0}
+        tokenBalance={profile?.tokenBalance ?? 0}
         onConnect={() => setShowWalletModal(true)}
         bgmEnabled={bgmEnabled}
         onToggleBgm={() => setBgmEnabled(!bgmEnabled)}
         onReset={reset}
       />
+
+      <RitualStatus ritual={definition.ritual} state={state} />
 
       {/* Desktop: 3-column grid; Mobile: tab fallback */}
       <main style={{
@@ -497,9 +415,9 @@ function EpisodeRuntime({ definition, onEpisodeChange }: { definition: GameDefin
                 color: "var(--acc-violet)",
                 fontSize: 11, letterSpacing: "0.16em",
               }}>
-                {definition.number === 1 && tr("에피소드 2 개방 · 지갑 또는 사전 클리어 불필요", "EP.2 OPEN · NO WALLET OR PRIOR CLEAR REQUIRED")}
-                {definition.number === 2 && tr(`에피소드 3 조건 · ${EP3_GATE.toLocaleString()} $NAHOPE · 서버 확인 필요`, `EP.3 GATE · ${EP3_GATE.toLocaleString()} $NAHOPE · SERVER VERIFICATION REQUIRED`)}
-                {definition.number === 3 && tr(`에피소드 4 조건 · ${EP4_GATE.toLocaleString()} $NAHOPE · 희귀 유물 3개 · 서버 확인 필요`, `EP.4 GATE · ${EP4_GATE.toLocaleString()} $NAHOPE · 3 RARE ARTIFACTS · SERVER VERIFICATION REQUIRED`)}
+                {definition.number === 1 && tr("에피소드 1 클리어 기록 저장 · 에피소드 2 개방", "EPISODE 1 CLEAR SAVED · EPISODE 2 OPEN")}
+                {definition.number === 2 && tr("에피소드 2 클리어 기록 저장 · 에피소드 3 개방", "EPISODE 2 CLEAR SAVED · EPISODE 3 OPEN")}
+                {definition.number === 3 && tr("에피소드 3 클리어 기록 저장 · 에피소드 4 개방", "EPISODE 3 CLEAR SAVED · EPISODE 4 OPEN")}
               </div>
             )}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>

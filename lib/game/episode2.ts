@@ -1,340 +1,104 @@
-// Episode 2 — "The Hunt Reverses"
-// A game adaptation of the film's mountain-search and Kali revelation.
-
-import type {
-  EndingDescriptor,
-  EndingId,
-  GameDefinition,
-  Interaction,
-  Item,
-  Scene,
-  SceneId,
-} from "./types";
+// Episode 2 — 열두 존재를 부르는 12시간 의식.
+import type { EndingDescriptor, EndingId, GameDefinition, Interaction, Item, Scene, SceneId } from "./types";
+import { RITUAL_PRESENCE_EVENTS, ZODIAC_MARKERS } from "./ritual";
 
 export const EP2_MAX_TURNS = 34;
 
 export const EP2_ITEMS: Record<string, Item> = {
-  CASE_FILE: { id: "CASE_FILE", name: "Bum-seok's Case File", short: "Not a tiger. The first wounded subject cried before it died.", art: "/images/game/ep1/items/case_file.svg" },
-  CAMERA: { id: "CAMERA", name: "Police Evidence Camera", short: "The remaining frames must establish cause, not merely damage.", art: "/images/game/ep1/items/camera.svg" },
-  SEARCH_MAP: { id: "SEARCH_MAP", name: "Mountain Search Map", short: "Sung-ki's sweep line and every known road out of the basin.", art: "/images/game/ep2/items/search_map.svg" },
-  TRAUMA_KIT: { id: "TRAUMA_KIT", name: "Sung-ae's Trauma Kit", short: "Bandages, forceps, and a field card for distinguishing wounds.", art: "/images/game/ep2/items/trauma_kit.svg" },
-  CEASEFIRE_FLARE: { id: "CEASEFIRE_FLARE", name: "Ceasefire Flare", short: "A red signal Sung-ae orders the hunters not to fire through.", art: "/images/game/ep2/items/ceasefire_flare.svg" },
-  HUNTING_AMMO: { id: "HUNTING_AMMO", name: "Hunter Ammunition", short: "A fast answer to a question nobody has understood.", art: "/images/game/ep2/items/hunting_ammo.svg", losable: true },
-  WORKSHOP_KEY: { id: "WORKSHOP_KEY", name: "Cold-room Key", short: "Found behind the blank face of one of Yang-bae's mannequins.", art: "/images/game/ep2/items/workshop_clue.svg" },
-  MANNEQUIN_TAG: { id: "MANNEQUIN_TAG", name: "Mud-stained Mannequin Tag", short: "Pine resin and silver-grey soil cling to the carpenter's inventory tag.", art: "/images/game/ep2/items/workshop_clue.svg" },
-  KALI_PHOTO: { id: "KALI_PHOTO", name: "Kali Evidence Photograph", short: "A small childlike body in a freezer, killed by a human bullet.", art: "/images/game/ep2/items/kali_photo.svg", artifact: true },
-  SPENT_CASING: { id: "SPENT_CASING", name: "Spent Hunting Casing", short: "The firing-pin mark matches Yang-bae's hunting gun.", art: "/images/game/ep2/items/workshop_clue.svg" },
-  YANGBAE_STATEMENT: { id: "YANGBAE_STATEMENT", name: "Yang-bae's Statement", short: "He saw something small in the forest, fired without warning, and hid it in the freezer.", art: "/images/game/ep2/items/report.svg", artifact: true },
-  MULTI_TRACK_SKETCH: { id: "MULTI_TRACK_SKETCH", name: "Multiple-subject Track Sketch", short: "Several anatomies crossed the same trail from one impact basin.", art: "/images/game/ep2/items/search_map.svg" },
-  HULL_FRAGMENT: { id: "HULL_FRAGMENT", name: "Silver Hull Fragment", short: "Metal folded outward by a crash, not arranged for an invasion landing.", art: "/images/game/ep2/items/hull_fragment.svg", artifact: true },
-  FIRST_SHOT_REPORT: { id: "FIRST_SHOT_REPORT", name: "First-shot Causality Report", short: "The royal survivors searched for Kali; Yang-bae's bullet came before their encirclement.", art: "/images/game/ep2/items/report.svg", artifact: true },
-  EVAC_ROUTE: { id: "EVAC_ROUTE", name: "Forest Withdrawal Route", short: "A flare-marked path that extracts the hunters without firing through the encirclement.", art: "/images/game/ep2/items/search_map.svg", artifact: true },
+  CASE_FILE: { id: "CASE_FILE", name: "범석의 미확인 대상 사건철", short: "호랑이가 아니라는 결론과 바미기르의 눈물이 기록되어 있다.", art: "/images/game/ep1/items/case_file.svg" },
+  HUNTING_AMMO: { id: "HUNTING_AMMO", name: "봉인하지 않은 사냥탄", short: "형체를 이해하기 전에 결론을 낼 수 있는 가장 빠른 도구.", art: "/images/game/ep2/items/hunting_ammo.svg", losable: true },
+  COW_HOUR_RECORD: { id: "COW_HOUR_RECORD", name: "축시 소 사체 기록", short: "첫 사진의 시각과 갈비뼈 주변의 마른 상처를 묶은 기록.", art: "/images/game/ep1/items/cow_photo.svg", artifact: true },
+  TIGER_NAME_ORDER: { id: "TIGER_NAME_ORDER", name: "인시 호랑이 명령서", short: "증거보다 먼저 도착해 마을을 사냥대로 바꾼 이름.", art: "/images/game/ep2/items/report.svg" },
+  RABBIT_HIDE_ROUTE: { id: "RABBIT_HIDE_ROUTE", name: "묘시 토끼 가죽길", short: "가죽의 털 방향이 은빛 추락지로 이어진다.", art: "/images/game/ep2/items/search_map.svg" },
+  DRAGON_CRASH_TRACE: { id: "DRAGON_CRASH_TRACE", name: "진시 추락 흔적", short: "용이라 불린 형체는 정복군이 아니라 추락한 생존자에게서 시작됐다.", art: "/images/game/ep2/items/hull_fragment.svg", artifact: true },
+  WORM_TIME_SAMPLE: { id: "WORM_TIME_SAMPLE", name: "사시 지렁이 표본", short: "바미기르의 체온이 사라진 뒤에도 한 방향으로만 꿈틀거린다.", art: "/images/game/ep2/items/workshop_clue.svg" },
+  HORSE_PASSAGE_LOG: { id: "HORSE_PASSAGE_LOG", name: "오시 말 통과 기록", short: "말이 지나간 길에는 역행 노이즈가 침범하지 못했다.", art: "/images/game/ep2/items/search_map.svg", artifact: true },
+  YANGBAE_CAUSAL_NOTE: { id: "YANGBAE_CAUSAL_NOTE", name: "미시 양배 인과 메모", short: "양배라는 이름과 인간의 최초 총성이 같은 시간 칸에 놓인다.", art: "/images/game/ep2/items/report.svg" },
+  MONGCHI_NAME_TAG: { id: "MONGCHI_NAME_TAG", name: "신시 몽치 이름표", short: "동물의 몸과 이름이 서로 다른 간지를 가리킨다.", art: "/images/game/ep2/items/workshop_clue.svg" },
+  ROOSTER_CALL_TAPE: { id: "ROOSTER_CALL_TAPE", name: "유시 장닭 울음 테이프", short: "울음 직전 모든 외계 주파수가 한 박자 멎는다.", art: "/images/game/ep2/items/report.svg", artifact: true },
+  DOG_SURVIVOR_ROUTE: { id: "DOG_SURVIVOR_ROUTE", name: "술시 생존자 경로", short: "개의 짖음은 괴물이 아니라 숨어 있는 사람을 향했다.", art: "/images/game/ep2/items/search_map.svg" },
+  HAESUL_REVERSE_SEAL: { id: "HAESUL_REVERSE_SEAL", name: "해술 역행 인장", short: "술해가 아니라 해에서 술로. 의식의 방향을 뒤집는 증언.", art: "/images/game/ep2/items/ceasefire_flare.svg", artifact: true },
+  TWELVE_CALLS_RECORD: { id: "TWELVE_CALLS_RECORD", name: "열두 호명 기록", short: "동물, 이름, 사체와 소리가 12시간의 굿판을 완성했다.", art: "/images/game/ep2/items/report.svg", artifact: true },
+  RITUAL_CLOCK: { id: "RITUAL_CLOCK", name: "12간지 의식 원판", short: "조사 도구처럼 보이지만 열두 존재를 차례로 불러낸 무구.", art: "/images/game/ep2/items/hull_fragment.svg", artifact: true },
+  ZERO_HOUR_GAP_RECORD: { id: "ZERO_HOUR_GAP_RECORD", name: "자시 공백 기록", short: "쥐의 자리에서 아직 보내지지 않은 미래 신호가 들린다.", art: "/images/game/ep2/items/report.svg", artifact: true },
 };
 
 export const EP2_SCENES: Record<string, Scene> = {
-  EP2_RUINS: {
-    id: "EP2_RUINS",
-    title: "Hopo Port · Triage Line",
-    ambient: "Bamigir is down. Sung-ae treats the living while Sung-ki prepares to sweep the mountain.",
-    art: "/images/game/ep2/ruins.webp",
-    exits: ["EP2_WORKSHOP"],
-    hotspots: [
-      { id: "COMMAND_POST", label: "Search Command Post", top: "10%", left: "6%", width: "30%", height: "32%" },
-      { id: "SUNG_AE", label: "Sung-ae · Field Triage", top: "35%", left: "58%", width: "18%", height: "45%" },
-      { id: "BAMIGIR", label: "Bamigir Aftermath", top: "56%", left: "18%", width: "28%", height: "28%" },
-      { id: "AMMO_CRATE", label: "Hunter Ammunition", top: "68%", left: "78%", width: "16%", height: "22%" },
-    ],
-  },
-  EP2_WORKSHOP: {
-    id: "EP2_WORKSHOP",
-    title: "Hopo Port · Yang-bae's Workshop",
-    ambient: "Unfinished mannequins face a humming cold-room door. Yang-bae will not meet your eyes.",
-    art: "/images/game/ep2/workshop.webp",
-    exits: ["EP2_RUINS", "EP2_FREEZER", "EP2_TRAIL"],
-    hotspots: [
-      { id: "MANNEQUINS", label: "Mannequin Row", top: "12%", left: "6%", width: "30%", height: "58%" },
-      { id: "FREEZER_DOOR", label: "Locked Cold Room", top: "18%", left: "68%", width: "22%", height: "55%" },
-      { id: "YANGBAE", label: "Yang-bae · Carpenter", top: "45%", left: "42%", width: "16%", height: "42%" },
-      { id: "WALL_MAP", label: "Carpenter's Delivery Map", top: "8%", left: "40%", width: "20%", height: "25%" },
-    ],
-  },
-  EP2_FREEZER: {
-    id: "EP2_FREEZER",
-    title: "Workshop · Cold Room",
-    ambient: "The compressor drowns the village outside. Something small lies beneath a canvas sheet.",
-    art: "/images/game/ep2/freezer.webp",
-    exits: ["EP2_WORKSHOP"],
-    lockedUntil: "FREEZER_OPEN",
-    hotspots: [
-      { id: "KALI", label: "Covered Small Body", top: "34%", left: "24%", width: "38%", height: "42%" },
-      { id: "FLOOR", label: "Frost beneath the Rack", top: "75%", left: "52%", width: "30%", height: "18%" },
-      { id: "COMPRESSOR", label: "Cold-room Compressor", top: "10%", left: "70%", width: "20%", height: "35%" },
-    ],
-  },
-  EP2_TRAIL: {
-    id: "EP2_TRAIL",
-    title: "Mountain Trail · Hunter Line",
-    ambient: "Sung-ki's party moves uphill. Yang-bae knows this path better than he admitted.",
-    art: "/images/game/ep2/trail.webp",
-    exits: ["EP2_WORKSHOP", "EP2_WRECK"],
-    lockedUntil: "TRAIL_OPEN",
-    hotspots: [
-      { id: "MUD", label: "Silver-grey Trail Mud", top: "66%", left: "8%", width: "28%", height: "22%" },
-      { id: "TRACKS", label: "Overlapping Tracks", top: "52%", left: "42%", width: "28%", height: "30%" },
-      { id: "HUNTERS", label: "Sung-ki's Hunters", top: "30%", left: "68%", width: "22%", height: "48%" },
-      { id: "RIDGE_GLINT", label: "Glint beyond the Ridge", top: "6%", left: "35%", width: "28%", height: "25%" },
-    ],
-  },
-  EP2_WRECK: {
-    id: "EP2_WRECK",
-    title: "Pine Basin · Silver Wreck",
-    ambient: "A silver vessel has torn a trench through the forest. Tracks lead away from its ruptured hull.",
-    art: "/images/game/ep2/wreck.webp",
-    exits: ["EP2_TRAIL", "EP2_GLADE"],
-    lockedUntil: "WRECK_OPEN",
-    hotspots: [
-      { id: "HULL", label: "Ruptured Silver Hull", top: "18%", left: "8%", width: "48%", height: "48%" },
-      { id: "FOOTPRINTS", label: "Tracks from the Wreck", top: "66%", left: "50%", width: "30%", height: "22%" },
-      { id: "OPEN_HATCH", label: "Child-sized Compartment", top: "18%", left: "42%", width: "24%", height: "34%" },
-      { id: "DESCENT", label: "Voices below the Basin", top: "58%", left: "82%", width: "14%", height: "34%" },
-    ],
-  },
-  EP2_GLADE: {
-    id: "EP2_GLADE",
-    title: "Deep Forest · Encirclement",
-    ambient: "Three different figures surround the hunters. They speak to one another, but none has struck first.",
-    art: "/images/game/ep2/glade.webp",
-    exits: ["EP2_WRECK"],
-    lockedUntil: "GLADE_OPEN",
-    hotspots: [
-      { id: "MAVEYYO", label: "Ma'veyyo · Royal Guard", top: "24%", left: "40%", width: "24%", height: "56%" },
-      { id: "ROYAL_PAIR", label: "Zor and Aydobor", top: "12%", left: "6%", width: "28%", height: "52%" },
-      { id: "ESCAPE_ROUTE", label: "Hunter Withdrawal Line", top: "70%", left: "68%", width: "28%", height: "22%" },
-    ],
-  },
+  EP2_CATTLE_GROUND: { id: "EP2_CATTLE_GROUND", title: "소 사체터 · 축과 인", ambient: "성애가 순찰차 문 뒤에서 카빈을 내리지 않는다. 마른 사체 위로 낮빛이 남아 있고, 호랑이라는 말만 아직 살아 움직인다.", art: "/images/game/ep2/sungae-cattle-ground-v2.webp", exits: ["EP2_RABBIT_RIDGE"], hotspots: [
+    { id: "COW", label: "소 사체 사진", top: "42%", left: "10%", width: "34%", height: "38%" },
+    { id: "TIGER_ORDER", label: "호랑이 수색 명령서", top: "18%", left: "62%", width: "25%", height: "52%" },
+  ] },
+  EP2_RABBIT_RIDGE: { id: "EP2_RABBIT_RIDGE", title: "토끼 능선 · 묘와 진", ambient: "찢긴 토끼 가죽 너머로 은빛 선체가 용의 등처럼 솟아 있다.", art: "/images/game/ep2/trail.webp", exits: ["EP2_CATTLE_GROUND", "EP2_AUTOPSY_TENT"], lockedUntil: "RIDGE_OPEN", hotspots: [
+    { id: "RABBIT_HIDE", label: "토끼 가죽", top: "60%", left: "8%", width: "28%", height: "24%" },
+    { id: "DRAGON_TRACE", label: "추락한 형체", top: "8%", left: "52%", width: "38%", height: "48%" },
+  ] },
+  EP2_AUTOPSY_TENT: { id: "EP2_AUTOPSY_TENT", title: "검시 천막 · 사와 오", ambient: "바미기르의 몸속에서 지렁이가 꿈틀거린다. 천막 밖 말은 안쪽을 보지 않는다.", art: "/images/game/ep2/freezer.webp", exits: ["EP2_RABBIT_RIDGE", "EP2_YANGBAE_WORKSHOP"], lockedUntil: "AUTOPSY_OPEN", hotspots: [
+    { id: "WORMS", label: "몸속의 지렁이", top: "48%", left: "12%", width: "34%", height: "30%" },
+    { id: "HORSE", label: "살아 있는 말", top: "14%", left: "62%", width: "28%", height: "60%" },
+  ] },
+  EP2_YANGBAE_WORKSHOP: { id: "EP2_YANGBAE_WORKSHOP", title: "양배의 작업장 · 미와 신", ambient: "마네킹 얼굴 사이에서 양배와 몽치라는 두 이름이 서로를 피한다.", art: "/images/game/ep2/workshop.webp", exits: ["EP2_AUTOPSY_TENT", "EP2_DAWN_YARD"], lockedUntil: "WORKSHOP_OPEN", hotspots: [
+    { id: "YANGBAE_NOTE", label: "양배의 총격 메모", top: "18%", left: "10%", width: "30%", height: "52%" },
+    { id: "MONGCHI_TAG", label: "몽치 이름표", top: "38%", left: "62%", width: "25%", height: "32%" },
+  ] },
+  EP2_DAWN_YARD: { id: "EP2_DAWN_YARD", title: "새벽 마당 · 유와 술", ambient: "장닭이 울기 전 무음이 내려앉는다. 개는 빈 축사가 아니라 사람 사는 집을 향해 짖는다.", art: "/images/game/ep2/glade.webp", exits: ["EP2_YANGBAE_WORKSHOP", "EP2_HAESUL_HOUSE"], lockedUntil: "DAWN_OPEN", hotspots: [
+    { id: "ROOSTER", label: "울기 직전의 장닭", top: "18%", left: "12%", width: "30%", height: "55%" },
+    { id: "DOG", label: "생존자를 향한 개", top: "46%", left: "62%", width: "28%", height: "34%" },
+  ] },
+  EP2_HAESUL_HOUSE: { id: "EP2_HAESUL_HOUSE", title: "해술의 집 · 해와 자", ambient: "열한 칸이 채워졌다. 마지막 빈칸은 아직 일어나지 않은 시간을 수신한다.", art: "/images/game/ep2/wreck.webp", exits: ["EP2_DAWN_YARD"], lockedUntil: "HAESUL_OPEN", hotspots: [
+    { id: "HAESUL", label: "해술의 역순 증언", top: "16%", left: "10%", width: "32%", height: "58%" },
+    { id: "RECORD_DESK", label: "열두 시간 사건철", top: "58%", left: "38%", width: "24%", height: "26%" },
+    { id: "ZERO_SIGNAL", label: "자시 무전 공백", top: "12%", left: "68%", width: "24%", height: "56%" },
+  ] },
 };
 
 export const EP2_ENDINGS: Record<EndingId, EndingDescriptor> = {
-  A: {
-    id: "A",
-    title: "Ending A — The Hunt Reverses",
-    body: "The search line advances under the old tiger story. In the mountain, Sung-ki's hunters discover that they were never the only ones following tracks.",
-  },
-  B: {
-    id: "B",
-    title: "Ending B — First Shot, Again",
-    body: "Another human weapon answers a voice nobody understands. The royal survivors stop searching and Ma'veyyo begins the pursuit.",
-    isRestart: true,
-  },
-  C: {
-    id: "C",
-    title: "Ending C — Break the Encirclement",
-    body: "The flare holds the firing line long enough to withdraw Sung-ki's hunters. Hopo survives the encounter knowing the vessel crashed and the strangers were searching for a child.",
-    grantsArtifacts: ["EVAC_ROUTE", "HULL_FRAGMENT", "FIRST_SHOT_REPORT"],
-    unlocksNextEpisode: true,
-  },
-  D: {
-    id: "D",
-    title: "Ending D — The Child in the Freezer",
-    body: "Yang-bae's statement, Kali's photograph, and the wreck establish the first causal chain Hopo cannot bear to read: a human bullet preceded the royal survivors' violence.",
-    grantsArtifacts: ["KALI_PHOTO", "YANGBAE_STATEMENT", "FIRST_SHOT_REPORT"],
-    unlocksNextEpisode: true,
-  },
+  A: { id: "A", title: "엔딩 A — 반복되는 사냥", body: "열두 시간이 닫힌다. 마을은 다시 소 사체 앞에 서고, 누군가 또 호랑이라는 말을 먼저 꺼낸다." },
+  B: { id: "B", title: "엔딩 B — 잘못 부른 존재", body: "추락한 생존자를 용이라 확정하고 총을 건넨다. 인간이 부른 형체가 인간이 두려워한 모습으로 굳어진다.", isRestart: true },
+  C: { id: "C", title: "엔딩 C — 열두 시간의 굿", body: "열두 표식이 하나의 시간 원판에 놓인다. 호포의 사건은 우연이 아니라 반복되는 의식이었음이 기록된다.", grantsArtifacts: ["TWELVE_CALLS_RECORD", "RITUAL_CLOCK", "ROOSTER_CALL_TAPE"], unlocksNextEpisode: true },
+  D: { id: "D", title: "엔딩 D — 해술의 역행", body: "해에서 술로, 원판이 거꾸로 돈다. 쥐의 빈자리에서 미래의 구조 신호가 들리고 관객은 굿판의 참여자가 된다.", grantsArtifacts: ["HAESUL_REVERSE_SEAL", "RITUAL_CLOCK", "ZERO_HOUR_GAP_RECORD"], unlocksNextEpisode: true },
 };
 
 export const EP2_INTERACTIONS: Interaction[] = [
-  // TRIAGE LINE
-  {
-    id: "ep2.ruins.command.open", scene: "EP2_RUINS", hotspot: "COMMAND_POST", requires: { flagsNone: ["SEARCH_OPENED"] },
-    grants: ["SEARCH_MAP", "CAMERA"], setFlags: ["SEARCH_OPENED"],
-    log: { role: "BUM-SEOK", text: "The mountain sweep begins with a map and an evidence camera. No one fires at a silhouette.", kind: "system" }, once: true,
-  },
-  { id: "ep2.ruins.command.idle", scene: "EP2_RUINS", hotspot: "COMMAND_POST", log: { role: "SYSTEM", text: "Sung-ki's search line is marked, but the reason for the visitors' movement is still blank.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.ruins.sungae.prepare", scene: "EP2_RUINS", hotspot: "SUNG_AE", requires: { flagsNone: ["TRIAGE_READY"] },
-    grants: ["TRAUMA_KIT", "CEASEFIRE_FLARE"], setFlags: ["TRIAGE_READY"],
-    log: { role: "SUNG-AE", text: "'I will keep the wounded breathing. Take the red flare—if it burns, every muzzle stays down.'", kind: "voice" }, once: true,
-  },
-  { id: "ep2.ruins.sungae.idle", scene: "EP2_RUINS", hotspot: "SUNG_AE", log: { role: "SUNG-AE", text: "'The village is not safe. It is only between attacks.'", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.ruins.bamigir.photo", scene: "EP2_RUINS", hotspot: "BAMIGIR", requires: { item: "CAMERA", flagsNone: ["BAMIGIR_AFTERMATH"] },
-    setFlags: ["BAMIGIR_AFTERMATH"],
-    log: { role: "SYSTEM", text: "The frame records impact wounds, a missing leg, and tear tracks. Rage explains the damage no better than tiger did.", kind: "omega" }, once: true,
-  },
-  { id: "ep2.ruins.bamigir.idle", scene: "EP2_RUINS", hotspot: "BAMIGIR", log: { role: "BUM-SEOK", text: "'It was crying before the truck. Write that down before we decide what it was.'", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.ruins.ammo.take", scene: "EP2_RUINS", hotspot: "AMMO_CRATE", requires: { flagsNone: ["AMMO_TAKEN"] }, grants: ["HUNTING_AMMO"], setFlags: ["AMMO_TAKEN"],
-    log: { role: "SYSTEM", text: "Live hunting rounds. Useful against a threat; disastrous as a substitute for identifying one.", kind: "danger" }, once: true,
-  },
-  { id: "ep2.ruins.ammo.idle", scene: "EP2_RUINS", hotspot: "AMMO_CRATE", log: { role: "SYSTEM", text: "The empty crate is lighter than the decision it created.", kind: "default" }, turnCost: 0 },
-
-  // YANG-BAE'S WORKSHOP
-  {
-    id: "ep2.workshop.mannequins.search", scene: "EP2_WORKSHOP", hotspot: "MANNEQUINS", requires: { flagsNone: ["MANNEQUINS_SEARCHED"] },
-    grants: ["WORKSHOP_KEY", "MANNEQUIN_TAG"], setFlags: ["MANNEQUINS_SEARCHED"],
-    log: { role: "SYSTEM", text: "A cold-room key is taped behind a mannequin face. Its stock tag carries pine resin and silver-grey mountain soil.", kind: "system" }, once: true,
-  },
-  { id: "ep2.workshop.mannequins.idle", scene: "EP2_WORKSHOP", hotspot: "MANNEQUINS", log: { role: "SYSTEM", text: "Blank human faces in rows. Yang-bae has practiced making bodies look harmless.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.workshop.freezer.open", scene: "EP2_WORKSHOP", hotspot: "FREEZER_DOOR", requires: { item: "WORKSHOP_KEY", flagsNone: ["FREEZER_OPEN"] },
-    setFlags: ["FREEZER_OPEN"], moveTo: "EP2_FREEZER",
-    log: { role: "SYSTEM", text: "The lock opens. Cold air carries the smell of pine soil and gun oil.", kind: "danger" }, once: true,
-  },
-  { id: "ep2.workshop.freezer.locked", scene: "EP2_WORKSHOP", hotspot: "FREEZER_DOOR", requires: { flagsNone: ["FREEZER_OPEN"] }, log: { role: "SYSTEM", text: "The cold room is locked. Yang-bae says the key was lost among his mannequins.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.workshop.yangbae.confess", scene: "EP2_WORKSHOP", hotspot: "YANGBAE", requires: { item: "SPENT_CASING", has: ["KALI_PHOTO"], flagsAll: ["BULLET_WOUND_CONFIRMED"], flagsNone: ["YANGBAE_CONFESSED"] },
-    grants: ["YANGBAE_STATEMENT"], setFlags: ["YANGBAE_CONFESSED", "TRAIL_OPEN"],
-    log: { role: "YANG-BAE", text: "'It was small. I saw it in the woods and just fired. Then I put it on ice. I did not know anyone would come looking.'", kind: "danger" }, once: true,
-  },
-  { id: "ep2.workshop.yangbae.idle", scene: "EP2_WORKSHOP", hotspot: "YANGBAE", log: { role: "YANG-BAE", text: "'Why are you looking at my freezer? There is nothing in there worth naming.'", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.workshop.map.mark", scene: "EP2_WORKSHOP", hotspot: "WALL_MAP", requires: { item: "SEARCH_MAP", has: ["YANGBAE_STATEMENT"], flagsNone: ["ROUTE_MARKED"] },
-    setFlags: ["ROUTE_MARKED"],
-    log: { role: "SYSTEM", text: "Yang-bae's delivery marks overlap the place where he says he fired. Sung-ki's sweep is heading toward the same basin.", kind: "system" }, once: true,
-  },
-  { id: "ep2.workshop.map.idle", scene: "EP2_WORKSHOP", hotspot: "WALL_MAP", log: { role: "SYSTEM", text: "A carpenter's delivery route. It needs the official search map and an honest statement.", kind: "default" }, turnCost: 0 },
-
-  // COLD ROOM
-  {
-    id: "ep2.freezer.kali.photo", scene: "EP2_FREEZER", hotspot: "KALI", requires: { item: "CAMERA", flagsNone: ["KALI_DOCUMENTED"] },
-    grants: ["KALI_PHOTO"], setFlags: ["KALI_DOCUMENTED"],
-    log: { role: "SYSTEM", text: "Beneath the canvas is a child-sized green body. The shutter fixes the fact Yang-bae tried to freeze outside time.", kind: "omega" }, once: true,
-  },
-  {
-    id: "ep2.freezer.kali.examine", scene: "EP2_FREEZER", hotspot: "KALI", requires: { item: "TRAUMA_KIT", flag: "KALI_DOCUMENTED", flagsNone: ["BULLET_WOUND_CONFIRMED"] },
-    setFlags: ["BULLET_WOUND_CONFIRMED"],
-    log: { role: "SYSTEM", text: "Sung-ae's field card leaves no ambiguity: a single projectile entered before the body was frozen.", kind: "danger" }, once: true,
-  },
-  { id: "ep2.freezer.kali.idle", scene: "EP2_FREEZER", hotspot: "KALI", log: { role: "SYSTEM", text: "Small hands. No visible weapon. Document the body before deciding what it was.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.freezer.floor.casing", scene: "EP2_FREEZER", hotspot: "FLOOR", requires: { flagsNone: ["CASING_FOUND"] }, grants: ["SPENT_CASING"], setFlags: ["CASING_FOUND"],
-    log: { role: "SYSTEM", text: "A spent hunting casing is frozen into runoff beneath the rack. The firing-pin mark is distinctive.", kind: "system" }, once: true,
-  },
-  { id: "ep2.freezer.floor.idle", scene: "EP2_FREEZER", hotspot: "FLOOR", log: { role: "SYSTEM", text: "Meltwater runs toward the door, carrying a trace Yang-bae missed.", kind: "default" }, turnCost: 0 },
-  { id: "ep2.freezer.compressor", scene: "EP2_FREEZER", hotspot: "COMPRESSOR", log: { role: "SYSTEM", text: "The compressor has run for days. Kali was hidden before Bamigir reached the village.", kind: "omega" }, turnCost: 0 },
-
-  // MOUNTAIN TRAIL
-  {
-    id: "ep2.trail.mud.compare", scene: "EP2_TRAIL", hotspot: "MUD", requires: { item: "MANNEQUIN_TAG", flagsAll: ["ROUTE_MARKED"], flagsNone: ["YANGBAE_PATH"] },
-    setFlags: ["YANGBAE_PATH"],
-    log: { role: "SYSTEM", text: "The tag's silver-grey soil is identical. Yang-bae carried something from this trail back to his workshop.", kind: "system" }, once: true,
-  },
-  { id: "ep2.trail.mud.idle", scene: "EP2_TRAIL", hotspot: "MUD", log: { role: "SYSTEM", text: "Unusual grey soil. Something from the workshop may connect Yang-bae to this route.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.trail.tracks.document", scene: "EP2_TRAIL", hotspot: "TRACKS", requires: { item: "CAMERA", flag: "YANGBAE_PATH", flagsNone: ["MULTIPLE_SUBJECTS"] },
-    grants: ["MULTI_TRACK_SKETCH"], setFlags: ["MULTIPLE_SUBJECTS"],
-    log: { role: "SYSTEM", text: "At least four anatomies crossed here: upright, hoof-like, clawed, and child-sized. This is not one beast's territory.", kind: "omega" }, once: true,
-  },
-  { id: "ep2.trail.tracks.idle", scene: "EP2_TRAIL", hotspot: "TRACKS", log: { role: "SYSTEM", text: "Too many overlapping impressions for the naked eye. Establish Yang-bae's path, then document them.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.trail.hunters.arm", scene: "EP2_TRAIL", hotspot: "HUNTERS", requires: { item: "HUNTING_AMMO", flagsNone: ["HUNTERS_WARNED"] }, destroys: ["HUNTING_AMMO"], triggersEnding: "B",
-    log: { role: "SYSTEM", text: "The ammunition passes down the line. A voice sounds ahead; Yang-bae fires before Sung-ki can stop him.", kind: "danger" }, once: true,
-  },
-  {
-    id: "ep2.trail.hunters.warn", scene: "EP2_TRAIL", hotspot: "HUNTERS", requires: { item: "YANGBAE_STATEMENT", flag: "MULTIPLE_SUBJECTS", flagsNone: ["HUNTERS_WARNED"] },
-    setFlags: ["HUNTERS_WARNED"],
-    log: { role: "SUNG-KI", text: "'Yang-bae fired first once already. Safeties on. We find out who followed that child before we make it happen again.'", kind: "voice" }, once: true,
-  },
-  { id: "ep2.trail.hunters.idle", scene: "EP2_TRAIL", hotspot: "HUNTERS", log: { role: "SYSTEM", text: "The hunters still think they are pursuing one creature. Bring them evidence before the ridge closes behind them.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.trail.glint.observe", scene: "EP2_TRAIL", hotspot: "RIDGE_GLINT", requires: { flagsAll: ["MULTIPLE_SUBJECTS", "HUNTERS_WARNED"], flagsNone: ["WRECK_OPEN"] },
-    setFlags: ["WRECK_OPEN"],
-    log: { role: "SYSTEM", text: "Beyond the ridge, sunlight runs across a silver structure far larger than any vehicle in Hopo.", kind: "omega" }, once: true,
-  },
-  { id: "ep2.trail.glint.idle", scene: "EP2_TRAIL", hotspot: "RIDGE_GLINT", log: { role: "SYSTEM", text: "Something reflects beyond the ridge. The search line is not ready to approach it armed and uninformed.", kind: "default" }, turnCost: 0 },
-
-  // SILVER WRECK
-  {
-    id: "ep2.wreck.hull.inspect", scene: "EP2_WRECK", hotspot: "HULL", requires: { flagsNone: ["CRASH_CONFIRMED"] }, grants: ["HULL_FRAGMENT"], setFlags: ["CRASH_CONFIRMED"],
-    log: { role: "SYSTEM", text: "Trees are sheared along the approach trench and the hull is folded outward. The vessel crashed; it did not land in formation.", kind: "system" }, once: true,
-  },
-  { id: "ep2.wreck.hull.idle", scene: "EP2_WRECK", hotspot: "HULL", log: { role: "SYSTEM", text: "The silver structure is damaged from within and without. Read the terrain before calling it an invasion craft.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.wreck.tracks.compare", scene: "EP2_WRECK", hotspot: "FOOTPRINTS", requires: { item: "MULTI_TRACK_SKETCH", flag: "CRASH_CONFIRMED", flagsNone: ["WRECK_SURVIVORS"] },
-    setFlags: ["WRECK_SURVIVORS"],
-    log: { role: "SYSTEM", text: "Every trail print begins at the ruptured vessel. The figures in the mountain are survivors of the same crash.", kind: "omega" }, once: true,
-  },
-  { id: "ep2.wreck.tracks.idle", scene: "EP2_WRECK", hotspot: "FOOTPRINTS", log: { role: "SYSTEM", text: "Several paths leave the wreck. Compare them with the documented trail anatomies.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.wreck.hatch.link", scene: "EP2_WRECK", hotspot: "OPEN_HATCH", requires: { item: "KALI_PHOTO", flag: "WRECK_SURVIVORS", flagsNone: ["KALI_LINKED"] },
-    setFlags: ["KALI_LINKED"],
-    log: { role: "BUM-SEOK", text: "'This compartment fits the child in Yang-bae's freezer. They did not come to Hopo looking for us. They are looking for Kali.'", kind: "omega" }, once: true,
-  },
-  { id: "ep2.wreck.hatch.idle", scene: "EP2_WRECK", hotspot: "OPEN_HATCH", log: { role: "SYSTEM", text: "A small restraint and an empty cradle. Evidence from the freezer could identify who is missing.", kind: "default" }, turnCost: 0 },
-  {
-    id: "ep2.wreck.descent.open", scene: "EP2_WRECK", hotspot: "DESCENT", requires: { flagsAll: ["KALI_LINKED", "HUNTERS_WARNED"], flagsNone: ["GLADE_OPEN"] }, setFlags: ["GLADE_OPEN"], moveTo: "EP2_GLADE",
-    log: { role: "SYSTEM", text: "Sung-ki leads the hunters down with safeties engaged. Voices—structured, repeated, unanswered—rise from the glade.", kind: "danger" }, once: true,
-  },
-  { id: "ep2.wreck.descent.idle", scene: "EP2_WRECK", hotspot: "DESCENT", log: { role: "SYSTEM", text: "Figures wait below. Do not enter until the missing child and the first shot are connected.", kind: "default" }, turnCost: 0 },
-
-  // ENCIRCLEMENT
-  {
-    id: "ep2.glade.maveyyo.observe", scene: "EP2_GLADE", hotspot: "MAVEYYO", requires: { flagsNone: ["NO_FIRST_STRIKE"] }, setFlags: ["NO_FIRST_STRIKE"],
-    log: { role: "SYSTEM", text: "Ma'veyyo steps forward and speaks. Zor and Aydobor hold position. The hunters are surrounded, but the strangers do not strike first.", kind: "omega" }, turnCost: 0, once: true,
-  },
-  {
-    id: "ep2.glade.maveyyo.fire", scene: "EP2_GLADE", hotspot: "MAVEYYO", requires: { item: "HUNTING_AMMO", flag: "NO_FIRST_STRIKE", flagsNone: ["CEASEFIRE_SIGNALED"] }, destroys: ["HUNTING_AMMO"], triggersEnding: "B",
-    log: { role: "SYSTEM", text: "A rifle answers Ma'veyyo's voice. His body changes for pursuit, and the hunt reverses in a single shot.", kind: "danger" }, once: true,
-  },
-  {
-    id: "ep2.glade.maveyyo.flare", scene: "EP2_GLADE", hotspot: "MAVEYYO", requires: { item: "CEASEFIRE_FLARE", flag: "NO_FIRST_STRIKE", flagsNone: ["CEASEFIRE_SIGNALED"] }, consumes: ["CEASEFIRE_FLARE"], setFlags: ["CEASEFIRE_SIGNALED"],
-    log: { role: "SUNG-KI", text: "The red flare burns between both groups. Every human muzzle lowers. For one breath, nobody crosses the line.", kind: "system" }, once: true,
-  },
-  {
-    id: "ep2.glade.maveyyo.kali", scene: "EP2_GLADE", hotspot: "MAVEYYO", requires: { item: "KALI_PHOTO", flagsAll: ["NO_FIRST_STRIKE", "CEASEFIRE_SIGNALED", "KALI_LINKED"], flagsNone: ["FIRST_SHOT_RECORDED"] },
-    grants: ["FIRST_SHOT_REPORT"], setFlags: ["FIRST_SHOT_RECORDED"],
-    log: { role: "SYSTEM", text: "Ma'veyyo recognizes Kali. The sound he makes is not a battle cry. The causal chain is finally visible: crash, missing child, human bullet, search, panic.", kind: "omega" }, once: true,
-  },
-  {
-    id: "ep2.glade.maveyyo.truth", scene: "EP2_GLADE", hotspot: "MAVEYYO", requires: { item: "YANGBAE_STATEMENT", has: ["FIRST_SHOT_REPORT"], flagsAll: ["FIRST_SHOT_RECORDED", "CEASEFIRE_SIGNALED"] }, triggersEnding: "D",
-    log: { role: "BUM-SEOK", text: "Bum-seok places Yang-bae's statement beside Kali's photograph. Hopo's report begins with the shot its own hunter fired.", kind: "omega" }, once: true,
-  },
-  { id: "ep2.glade.maveyyo.idle", scene: "EP2_GLADE", hotspot: "MAVEYYO", log: { role: "SYSTEM", text: "The royal guard watches the hunters and waits. Observation has bought seconds, not understanding.", kind: "default" }, turnCost: 0 },
-  { id: "ep2.glade.royal.observe", scene: "EP2_GLADE", hotspot: "ROYAL_PAIR", log: { role: "SYSTEM", text: "Zor shields the smaller Aydobor. Their bodies and ranks differ, but both keep looking past the hunters toward Hopo.", kind: "omega" }, turnCost: 0 },
-  {
-    id: "ep2.glade.escape.route", scene: "EP2_GLADE", hotspot: "ESCAPE_ROUTE", requires: { item: "SEARCH_MAP", has: ["FIRST_SHOT_REPORT"], flagsAll: ["FIRST_SHOT_RECORDED", "CEASEFIRE_SIGNALED"], flagsNone: ["WITHDRAWAL_MARKED"] },
-    grants: ["EVAC_ROUTE"], setFlags: ["WITHDRAWAL_MARKED"], triggersEnding: "C",
-    log: { role: "SUNG-KI", text: "Sung-ki marks a withdrawal behind the flare. The hunters leave the encirclement without adding another body to the misunderstanding.", kind: "system" }, once: true,
-  },
-  { id: "ep2.glade.escape.idle", scene: "EP2_GLADE", hotspot: "ESCAPE_ROUTE", log: { role: "SYSTEM", text: "The withdrawal line crosses open ground. It needs a ceasefire signal and a complete cause report.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.cow.record", scene: "EP2_CATTLE_GROUND", hotspot: "COW", requires: { cycleIndex: 1, flagsNone: ["SIGN_CHUK"] }, grants: ["COW_HOUR_RECORD"], setFlags: ["SIGN_CHUK"], shiftCycle: 1, presenceId: "cow_breath", log: { role: "범석", text: "축시. 사체보다 먼저 죽은 것은 설명이었다. 사진의 시각을 첫 칸에 고정한다.", kind: "omega" }, once: true },
+  { id: "ep2.cow.idle", scene: "EP2_CATTLE_GROUND", hotspot: "COW", log: { role: "시스템", text: "상처보다 먼저 시간을 기록해야 한다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.tiger.classify", scene: "EP2_CATTLE_GROUND", hotspot: "TIGER_ORDER", requires: { item: "CASE_FILE", cycleIndex: 2, flagsAll: ["SIGN_CHUK"], flagsNone: ["SIGN_IN"] }, grants: ["TIGER_NAME_ORDER"], setFlags: ["SIGN_IN", "RIDGE_OPEN"], shiftCycle: 1, log: { role: "범석", text: "인시. 호랑이는 짐승이 아니라 사람을 움직인 명령이었다.", kind: "danger" }, once: true },
+  { id: "ep2.tiger.idle", scene: "EP2_CATTLE_GROUND", hotspot: "TIGER_ORDER", log: { role: "시스템", text: "미확인 대상 사건철로 이 이름의 근거를 먼저 반박해야 한다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.rabbit.route", scene: "EP2_RABBIT_RIDGE", hotspot: "RABBIT_HIDE", requires: { cycleIndex: 3, flagsNone: ["SIGN_MYO"] }, grants: ["RABBIT_HIDE_ROUTE"], setFlags: ["SIGN_MYO"], shiftCycle: 1, log: { role: "시스템", text: "묘시. 토끼 가죽의 털이 눕는 방향이 추락 골을 가리킨다.", kind: "system" }, once: true },
+  { id: "ep2.dragon.fire", scene: "EP2_RABBIT_RIDGE", hotspot: "DRAGON_TRACE", requires: { item: "HUNTING_AMMO" }, destroys: ["HUNTING_AMMO"], boundaryDelta: -100, triggersEnding: "B", log: { role: "시스템", text: "용이라는 이름에 탄환이 답한다. 굿판은 사냥터로 굳어진다.", kind: "danger" }, once: true },
+  { id: "ep2.dragon.read", scene: "EP2_RABBIT_RIDGE", hotspot: "DRAGON_TRACE", requires: { item: "RABBIT_HIDE_ROUTE", cycleIndex: 4, flagsAll: ["SIGN_MYO"], flagsNone: ["SIGN_JIN"] }, grants: ["DRAGON_CRASH_TRACE"], setFlags: ["SIGN_JIN", "AUTOPSY_OPEN"], shiftCycle: 1, presenceId: "reverse_gaze", log: { role: "범석", text: "진시. 용처럼 보인 등뼈는 안쪽에서 파열된 선체였다. 침입이 아니라 추락이다.", kind: "omega" }, once: true },
+  { id: "ep2.dragon.idle", scene: "EP2_RABBIT_RIDGE", hotspot: "DRAGON_TRACE", log: { role: "시스템", text: "형체에 이름을 붙이기 전에 토끼 가죽이 가리킨 경로를 대조해야 한다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.worm.sample", scene: "EP2_AUTOPSY_TENT", hotspot: "WORMS", requires: { cycleIndex: 5, flagsNone: ["SIGN_SA"] }, grants: ["WORM_TIME_SAMPLE"], setFlags: ["SIGN_SA"], shiftCycle: 1, log: { role: "보건소장", text: "사시. 지렁이는 체온이 아니라 원판의 다음 칸을 향해 움직인다.", kind: "omega" }, once: true },
+  { id: "ep2.horse.observe", scene: "EP2_AUTOPSY_TENT", hotspot: "HORSE", requires: { item: "WORM_TIME_SAMPLE", cycleIndex: 6, flagsAll: ["SIGN_SA"], flagsNone: ["SIGN_O"] }, grants: ["HORSE_PASSAGE_LOG"], setFlags: ["SIGN_O", "WORKSHOP_OPEN"], shiftCycle: 1, presenceId: "horse_passage", log: { role: "시스템", text: "오시. 말이 지나간 길만 시간이 앞으로 흐른다. 저쪽 존재는 그 생명을 건드리지 못한다.", kind: "system" }, once: true },
+  { id: "ep2.horse.idle", scene: "EP2_AUTOPSY_TENT", hotspot: "HORSE", log: { role: "시스템", text: "말은 천막을 보지 않는다. 먼저 지렁이의 시간 방향을 확인해야 한다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.yangbae.note", scene: "EP2_YANGBAE_WORKSHOP", hotspot: "YANGBAE_NOTE", requires: { cycleIndex: 7, flagsNone: ["SIGN_MI"] }, grants: ["YANGBAE_CAUSAL_NOTE"], setFlags: ["SIGN_MI"], shiftCycle: 1, log: { role: "양배", text: "미시. 내 이름의 양이 그 칸에 있었어. 내가 먼저 쏜 것도 그때였고.", kind: "danger" }, once: true },
+  { id: "ep2.mongchi.tag", scene: "EP2_YANGBAE_WORKSHOP", hotspot: "MONGCHI_TAG", requires: { item: "YANGBAE_CAUSAL_NOTE", cycleIndex: 8, flagsAll: ["SIGN_MI"], flagsNone: ["SIGN_SIN"] }, grants: ["MONGCHI_NAME_TAG"], setFlags: ["SIGN_SIN", "DAWN_OPEN"], shiftCycle: 1, log: { role: "시스템", text: "신시. 몸은 개지만 이름은 원숭이의 자리를 연다. 이 원판은 동물 도감이 아니다.", kind: "omega" }, once: true },
+  { id: "ep2.mongchi.idle", scene: "EP2_YANGBAE_WORKSHOP", hotspot: "MONGCHI_TAG", log: { role: "시스템", text: "이름표의 발음과 양배가 적은 시간 칸을 함께 읽어야 한다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.rooster.record", scene: "EP2_DAWN_YARD", hotspot: "ROOSTER", requires: { cycleIndex: 9, flagsNone: ["SIGN_YU"] }, grants: ["ROOSTER_CALL_TAPE"], setFlags: ["SIGN_YU"], shiftCycle: 1, presenceId: "rooster_silence", log: { role: "무전", text: "유시. 장닭이 울기 직전 모든 주파수가 멎었다. 그 무음이 시간 표식이다.", kind: "omega" }, once: true },
+  { id: "ep2.dog.route", scene: "EP2_DAWN_YARD", hotspot: "DOG", requires: { item: "ROOSTER_CALL_TAPE", cycleIndex: 10, flagsAll: ["SIGN_YU"], flagsNone: ["SIGN_SUL"] }, grants: ["DOG_SURVIVOR_ROUTE"], setFlags: ["SIGN_SUL", "HAESUL_OPEN"], shiftCycle: 1, log: { role: "시스템", text: "술시. 개의 짖음은 어둠이 아니라 숨은 사람들의 집을 차례로 가리킨다.", kind: "system" }, once: true },
+  { id: "ep2.dog.idle", scene: "EP2_DAWN_YARD", hotspot: "DOG", log: { role: "시스템", text: "장닭의 울음 간격을 기록해야 짖음의 순서를 읽을 수 있다.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.haesul.reverse", scene: "EP2_HAESUL_HOUSE", hotspot: "HAESUL", requires: { cycleIndex: 11, flagsNone: ["SIGN_HAE"] }, grants: ["HAESUL_REVERSE_SEAL"], setFlags: ["SIGN_HAE", "TWELVE_READY"], shiftCycle: 1, log: { role: "해술", text: "술해가 아니여. 해에서 술로 가는 겨. 끝에서 거꾸로 와야 보여.", kind: "voice" }, once: true },
+  { id: "ep2.record.complete", scene: "EP2_HAESUL_HOUSE", hotspot: "RECORD_DESK", requires: { item: "HAESUL_REVERSE_SEAL", flagsAll: ["TWELVE_READY"], flagsNone: ["SIGN_JA"] }, grants: ["TWELVE_CALLS_RECORD", "RITUAL_CLOCK"], triggersEnding: "C", log: { role: "범석", text: "열한 표식과 하나의 공백. 호포의 12시간을 사건철로 봉인한다.", kind: "system" }, once: true },
+  { id: "ep2.zero.receive", scene: "EP2_HAESUL_HOUSE", hotspot: "ZERO_SIGNAL", requires: { item: "HAESUL_REVERSE_SEAL", cycleIndex: 0, flagsAll: ["TWELVE_READY"], flagsNone: ["SIGN_JA"] }, grants: ["TWELVE_CALLS_RECORD", "RITUAL_CLOCK", "ZERO_HOUR_GAP_RECORD"], setFlags: ["SIGN_JA", "REVERSE_RITE_OPEN"], presenceId: "zero_seat", triggersEnding: "D", log: { role: "미래 신호", text: "자시. 구조 좌표가 수신된다. 발신 시각은 아직 오지 않았다.", kind: "omega" }, once: true },
+  { id: "ep2.haesul.idle", scene: "EP2_HAESUL_HOUSE", hotspot: "HAESUL", log: { role: "해술", text: "열두 칸을 순서대로 밟아야 내 이름이 왜 거꾸로인지 알어.", kind: "default" }, turnCost: 0 },
+  { id: "ep2.zero.idle", scene: "EP2_HAESUL_HOUSE", hotspot: "ZERO_SIGNAL", log: { role: "무전", text: "공백은 열려 있지만 역행 인장이 없으면 발신자를 읽을 수 없다.", kind: "default" }, turnCost: 0 },
 ];
 
 export const EP2_INITIAL_LOGS = [
-  { turn: 1, role: "SYSTEM", text: "HOPO PORT · AFTER THE FIRST ATTACK · 13:42", kind: "system" as const },
-  { turn: 1, role: "SUNG-AE", text: "'Bamigir is down. That does not mean it came alone.'", kind: "voice" as const },
-  { turn: 1, role: "SUNG-KI", text: "'The tracks go into the mountain. We move before they circle back.'", kind: "voice" as const },
-  { turn: 1, role: "TUTORIAL", text: "Establish cause before arming the search line. A second first shot ends the investigation.", kind: "default" as const },
+  { turn: 1, role: "시스템", text: "에피소드 2 · 열두 존재를 부르다", kind: "system" as const },
+  { turn: 1, role: "성애", text: "카빈은 내가 맡을게요. 이름부터 붙이고 쏘는 실수는 두 번 안 해요. 쏴야 할 순간이 오면 내가 먼저 알아요.", kind: "voice" as const },
+  { turn: 1, role: "범석", text: "소 사체 사진과 닭 울음 사이가 정확히 열두 시간이다. 우연이라면 너무 반듯하다.", kind: "voice" as const },
+  { turn: 1, role: "안내", text: "증거를 시간 순서대로 고정하십시오. 잘못된 호명은 다른 존재를 부릅니다.", kind: "danger" as const },
 ];
 
 export const EPISODE_2: GameDefinition = {
-  id: "ep2",
-  number: 2,
-  version: 1,
-  title: "The Hunt Reverses",
-  headerLabel: "HOPO PORT · MOUNTAIN SEARCH",
-  maxTurns: EP2_MAX_TURNS,
-  storageKey: "hope-ep2-canon-v1-state",
-  scenes: EP2_SCENES,
-  sceneOrder: ["EP2_RUINS", "EP2_WORKSHOP", "EP2_FREEZER", "EP2_TRAIL", "EP2_WRECK", "EP2_GLADE"],
-  items: EP2_ITEMS,
-  interactions: EP2_INTERACTIONS,
-  endings: EP2_ENDINGS,
-  initialScene: "EP2_RUINS" as SceneId,
-  initialLogs: EP2_INITIAL_LOGS,
-  initialInventory: ["CASE_FILE"],
-  waitText: "You wait. Sung-ki's search line climbs while the mountain answers with unfamiliar voices.",
-  successfulEndings: ["C", "D"],
-  caseRecord: {
-    title: "Causality Record · Mountain Search",
-    rows: [
-      { label: "Preceding event", text: "Kali killed by a human projectile before the village attack", revealFlag: "BULLET_WOUND_CONFIRMED" },
-      { label: "Search party", text: "multiple anatomies; one crashed vessel", revealFlag: "WRECK_SURVIVORS" },
-      { label: "Missing subject", text: "child-sized compartment linked to Kali", revealFlag: "KALI_LINKED" },
-      { label: "Contact behavior", text: "royal survivors spoke and held position before human fire", revealFlag: "NO_FIRST_STRIKE" },
-    ],
-    notes: [
-      { text: "Yang-bae statement · fired without warning; concealed the body", revealFlag: "YANGBAE_CONFESSED" },
-      { text: "causality note · humans were victims and unknowing aggressors", revealFlag: "FIRST_SHOT_RECORDED" },
-    ],
-  },
+  id: "ep2", number: 2, version: 2, title: "열두 존재를 부르다", headerLabel: "호포 12시간 의식 · 에피소드 2", maxTurns: EP2_MAX_TURNS,
+  storageKey: "nahope_ep2_ritual_v2", scenes: EP2_SCENES,
+  sceneOrder: ["EP2_CATTLE_GROUND", "EP2_RABBIT_RIDGE", "EP2_AUTOPSY_TENT", "EP2_YANGBAE_WORKSHOP", "EP2_DAWN_YARD", "EP2_HAESUL_HOUSE"],
+  items: EP2_ITEMS, interactions: EP2_INTERACTIONS, endings: EP2_ENDINGS, initialScene: "EP2_CATTLE_GROUND" as SceneId,
+  initialLogs: EP2_INITIAL_LOGS, initialInventory: ["CASE_FILE", "HUNTING_AMMO"], waitText: "기다린다. 원판은 움직이지 않지만 굿판의 결계가 한 겹 얇아진다.", successfulEndings: ["C", "D"],
+  ritual: { phase: "invocation", direction: "forward", initialCycleIndex: 1, markers: ZODIAC_MARKERS, presenceEvents: RITUAL_PRESENCE_EVENTS, boundaryCollapseEnding: "B" },
+  caseRecord: { title: "열두 호명 사건철", rows: ZODIAC_MARKERS.map((marker) => ({ label: marker.label, text: "시간 표식 확인", revealFlag: marker.revealFlag })), notes: [
+    { text: "증거는 체험을 대신하지 못하고, 체험은 증거인 척할 수 없다.", revealFlag: "TWELVE_READY" },
+    { text: "해술 · 해에서 술로, 의식이 역행한다.", revealFlag: "REVERSE_RITE_OPEN" },
+  ] },
 };

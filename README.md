@@ -116,30 +116,30 @@ A logic structure designed so that thoughtless clicking leads to failure. Player
 5. Follow the subject to Hopo's ruined main road, document the wounded Bamigir's tears, and file the unknown-subject report.
 
 
-**Episode 2 causality chain:**
-1. Stabilize the search line and preserve Bamigir's aftermath without distributing ammunition.
-2. Search Yang-bae's mannequin workshop, open the cold room, and document Kali's projectile wound.
-3. Match the spent casing to Yang-bae's statement and trace his route into the mountain.
-4. Document multiple anatomies and the crashed silver vessel, then connect its child-sized compartment to Kali.
-5. Hold fire during the royal survivors' encirclement and choose either a safe withdrawal or a complete first-shot report.
+**에피소드 2 순행 호명:**
+1. 소 사체의 `축`에서 시작해 호랑이라는 잘못된 이름 `인`을 분리한다.
+2. 토끼 가죽길 `묘`와 용처럼 보이는 추락 흔적 `진`을 기록하되 총알로 이름을 확정하지 않는다.
+3. 몸속 지렁이 `사`와 살아 있는 말의 통로 `오`를 연결한다.
+4. 양배의 첫 총성 `미`, 몽치의 이름 `신`, 장닭 `유`, 생존한 개 `술`을 순서대로 호명한다.
+5. 해술의 역문 `해`에서 영시 `자`로 돌아와 열두 시간의 의식 원판을 완성한다.
 
-**Episode 3 contact chain:**
-1. Stabilize the returning hunters, record every casualty, and remove the rifle bolts from the human line.
-2. Combine the casualty ledger with Nak-yeon's lived evacuation map to build a complete civilian manifest.
-3. Move Kali under medical custody, document the human projectile, and carry the child in a protected cradle.
-4. Use Hae-sul's witness movements to distinguish Aydobor's search route from the civilian corridor.
-5. Display human disarmament, hold the grove with Sung-ae's flare, then choose evacuation or Kali's wordless return.
+**에피소드 3 역굿:**
+1. `해→술→유→신→미→오→사→진→묘→인→축→자`의 역순을 지킨다.
+2. 각 단서를 인벤토리에 모으는 데서 끝내지 않고 의식 원판의 고정 증거로 박아 넣는다.
+3. 장닭의 울음과 말이 지난 길을 양기의 닻으로 보존한다.
+4. 잘못된 순서와 파괴적 선택으로 낮아지는 경계 온전도를 관리한다.
+5. 열두 살아 있는 목격을 철수시키거나 영시 공백의 미래 구조 신호를 증명한다.
 
-**Episode 4 archive chain:**
-1. Establish chain of custody across the surviving archive, testimony recorder, and sealed artifact cases.
-2. Reconstruct the cattle incident, human first shot, alien search, and reciprocal withdrawal on the causality board.
-3. Separate proven facts, supported inferences, and creative proposals before certifying the layered archive.
-4. Draft a game-original *Humans in Space* scenario around Kali, Zor, and the human witness without rewriting evidence as fact.
-5. Register authorship, publish an open archive index, and choose public release or community-governed transmission.
+**에피소드 4 송신 의식:**
+1. 되돌릴 수 없는 고정 증거와 선택에 따라 달라지는 인과를 분리한다.
+2. 기계 기록으로 환원되지 않는 화면·소리·신체 감각의 현현을 증언으로 남긴다.
+3. 증거, 현현, 창작 제안을 삼층 의식 기록으로 묶는다.
+4. 플레이어가 열세 번째 목격자로서 책임 있는 후속 시나리오를 작성한다.
+5. 기록은 공개하고 현현은 착취하지 않는 공동체 송별 송신으로 굿판을 끝낸다.
 
-### Token-Gating
+### Episode Progression
 
-Episode 2 is fully open with no prior clear, wallet, or token requirement. Episode 3 requires an Episode 2 clear plus 20,000 $NAHOPE; Episode 4 requires an Episode 3 clear, at least three rare artifacts, and 100,000 $NAHOPE. Connected-wallet balances for Episodes 3–4 are checked by a no-cache Next.js server route using Solana RPC and the configured `NAHOPE_MINT`; progression and artifact prerequisites come from the saved player profile.
+Episodes unlock only through sequential completion: Episode 1 clear → Episode 2, Episode 2 clear → Episode 3, and Episode 3 clear → Episode 4. Wallet connection, `$NAHOPE` balance, and retained artifact counts do not restrict episode access. Wallet connection remains optional for associating local progress with a Solana profile.
 
 ### UGC Reward System
 

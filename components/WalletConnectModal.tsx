@@ -20,20 +20,20 @@ const REASON_MESSAGES: Record<string, { title: string; desc: string; titleKo: st
   episode2: {
     title: "Optional Wallet Connection",
     desc: "Episode 2 is open without a wallet. Connect only to attach progress and inventory to your Solana profile.",
-    titleKo: "Optional Wallet Connection",
-    descKo: "Episode 2 is open without a wallet. Connect only to attach progress and inventory to your Solana profile.",
+    titleKo: "선택적 지갑 연결",
+    descKo: "에피소드 2는 지갑 없이 플레이할 수 있습니다. 진행 상황과 인벤토리를 Solana 프로필에 연결하려는 경우에만 지갑을 연결하세요.",
   },
   episode3: {
-    title: "Episode 3 Access",
-    desc: "Episode 3 requires a minimum balance of 20,000 $NAHOPE.",
-    titleKo: "에피소드 3 접근",
-    descKo: "에피소드 3에는 최소 20,000 $NAHOPE 잔액이 필요합니다.",
+    title: "Optional Wallet Connection",
+    desc: "Episode access depends only on prior episode completion. Connect a wallet only to attach progress to your profile.",
+    titleKo: "선택적 지갑 연결",
+    descKo: "에피소드 접근에는 직전 에피소드 클리어 기록만 필요합니다. 진행 상황을 프로필에 연결하려는 경우에만 지갑을 연결하세요.",
   },
   episode4: {
-    title: "Episode 4 Access",
-    desc: "Episode 4 is restricted to Elite Hopo Port Defenders holding 100,000 $NAHOPE.",
-    titleKo: "에피소드 4 접근",
-    descKo: "에피소드 4는 100,000 $NAHOPE를 보유한 정예 호포항 방어자만 입장할 수 있습니다.",
+    title: "Optional Wallet Connection",
+    desc: "Episode access depends only on prior episode completion. Connect a wallet only to attach progress to your profile.",
+    titleKo: "선택적 지갑 연결",
+    descKo: "에피소드 접근에는 직전 에피소드 클리어 기록만 필요합니다. 진행 상황을 프로필에 연결하려는 경우에만 지갑을 연결하세요.",
   },
 };
 

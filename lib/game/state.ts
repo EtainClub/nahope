@@ -14,6 +14,10 @@ import type {
 } from "./types";
 
 function makeInitialState(definition: GameDefinition): GameState {
+  const presenceSeed = Array.from(definition.storageKey).reduce(
+    (total, character) => (total * 31 + character.charCodeAt(0)) % 100_003,
+    definition.version,
+  );
   return {
     turn: 1,
     scene: definition.initialScene,
@@ -25,6 +29,14 @@ function makeInitialState(definition: GameDefinition): GameState {
     logs: [...definition.initialLogs],
     endingId: null,
     visitedScenes: [definition.initialScene],
+    cycleIndex: definition.ritual?.initialCycleIndex ?? 0,
+    loopCount: 0,
+    anchoredEvidence: [],
+    boundaryIntegrity: 100,
+    roosterAlive: true,
+    horsePathOpen: true,
+    witnessedPresence: [],
+    presenceSeed,
   };
 }
 
@@ -55,7 +67,18 @@ function matchRequires(
   if (!hasNone(state.flags, requirements.flagsNone)) return false;
   if (requirements.turnLte !== undefined && state.turn > requirements.turnLte) return false;
   if (requirements.turnGte !== undefined && state.turn < requirements.turnGte) return false;
+  if (requirements.cycleIndex !== undefined && state.cycleIndex !== requirements.cycleIndex) return false;
+  if (!hasAll(state.anchoredEvidence, requirements.anchoredAll)) return false;
   return true;
+}
+
+function moveCycle(index: number, shift: number) {
+  const raw = index + shift;
+  const wrapped = raw < 0 || raw > 11;
+  return {
+    index: ((raw % 12) + 12) % 12,
+    wrapped,
+  };
 }
 
 function findRule(
@@ -77,6 +100,8 @@ function applyRule(state: GameState, rule: Interaction, definition: GameDefiniti
   let inventory = [...state.inventory];
   const lostItems = [...state.lostItems];
   let flags = [...state.flags];
+  const anchoredEvidence = [...state.anchoredEvidence];
+  const witnessedPresence = [...state.witnessedPresence];
 
   for (const item of rule.consumes ?? []) inventory = inventory.filter((id) => id !== item);
   for (const item of rule.destroys ?? []) {
@@ -88,6 +113,19 @@ function applyRule(state: GameState, rule: Interaction, definition: GameDefiniti
   }
   for (const flag of rule.setFlags ?? []) if (!flags.includes(flag)) flags.push(flag);
   if (rule.clearFlags) flags = flags.filter((flag) => !rule.clearFlags?.includes(flag));
+  for (const evidence of rule.anchorEvidence ?? []) {
+    if (!anchoredEvidence.includes(evidence)) anchoredEvidence.push(evidence);
+  }
+  if (rule.presenceId && !witnessedPresence.includes(rule.presenceId)) {
+    witnessedPresence.push(rule.presenceId);
+  }
+
+  const cycle = rule.shiftCycle === undefined
+    ? { index: state.cycleIndex, wrapped: false }
+    : moveCycle(state.cycleIndex, rule.shiftCycle);
+  const boundaryIntegrity = Math.max(0, Math.min(100, state.boundaryIntegrity + (rule.boundaryDelta ?? 0)));
+  const roosterAlive = rule.extinguishesYang === "rooster" ? false : state.roosterAlive;
+  const horsePathOpen = rule.extinguishesYang === "horse" ? false : state.horsePathOpen;
 
   const nextTurn = Math.min(state.turn + (rule.turnCost ?? 1), definition.maxTurns + 1);
   const nextScene = rule.moveTo && definition.scenes[rule.moveTo] ? rule.moveTo : state.scene;
@@ -97,7 +135,10 @@ function applyRule(state: GameState, rule: Interaction, definition: GameDefiniti
   const activeItem = state.activeItem && [...(rule.consumes ?? []), ...(rule.destroys ?? [])].includes(state.activeItem)
     ? null
     : state.activeItem;
-  const endingId = rule.triggersEnding ?? (nextTurn > definition.maxTurns ? "A" : state.endingId);
+  const collapseEnding = definition.ritual?.boundaryCollapseEnding ?? "B";
+  const endingId = rule.triggersEnding
+    ?? (boundaryIntegrity <= 0 ? collapseEnding : null)
+    ?? (nextTurn > definition.maxTurns ? "A" : state.endingId);
 
   return {
     ...state,
@@ -111,16 +152,32 @@ function applyRule(state: GameState, rule: Interaction, definition: GameDefiniti
     logs: [...state.logs, { turn: nextTurn, ...rule.log }],
     endingId,
     visitedScenes,
+    cycleIndex: cycle.index,
+    loopCount: state.loopCount + (cycle.wrapped ? 1 : 0),
+    anchoredEvidence,
+    boundaryIntegrity,
+    roosterAlive,
+    horsePathOpen,
+    witnessedPresence,
   };
 }
 
 function advanceWithoutRule(state: GameState, definition: GameDefinition, text: string): GameState {
   const turn = Math.min(state.turn + 1, definition.maxTurns + 1);
+  const boundaryIntegrity = definition.ritual
+    ? Math.max(0, state.boundaryIntegrity - 4)
+    : state.boundaryIntegrity;
+  const collapseEnding = definition.ritual?.boundaryCollapseEnding ?? "B";
   return {
     ...state,
     turn,
-    logs: [...state.logs, { turn, role: "SYSTEM", text, kind: "default" }],
-    endingId: turn > definition.maxTurns ? "A" : state.endingId,
+    boundaryIntegrity,
+    logs: [...state.logs, { turn, role: "시스템", text, kind: "default" }],
+    endingId: boundaryIntegrity <= 0
+      ? collapseEnding
+      : turn > definition.maxTurns
+        ? "A"
+        : state.endingId,
   };
 }
 
@@ -137,14 +194,14 @@ function reduceGame(state: GameState, action: Action, definition: GameDefinition
       if (!rule) {
         return {
           ...state,
-          logs: [...state.logs, { turn: state.turn, role: "SYSTEM", text: "Nothing happens.", kind: "default" }],
+          logs: [...state.logs, { turn: state.turn, role: "시스템", text: "아무 일도 일어나지 않는다.", kind: "default" }],
         };
       }
       return applyRule(state, rule, definition);
     }
     case "USE": {
       const rule = findRule(definition, state, action);
-      return rule ? applyRule(state, rule, definition) : advanceWithoutRule(state, definition, "That doesn't fit here.");
+      return rule ? applyRule(state, rule, definition) : advanceWithoutRule(state, definition, "여기에는 사용할 수 없다.");
     }
     case "MOVE": {
       const current = definition.scenes[state.scene];
@@ -153,7 +210,7 @@ function reduceGame(state: GameState, action: Action, definition: GameDefinition
       if (target.lockedUntil && !state.flags.includes(target.lockedUntil)) {
         return {
           ...state,
-          logs: [...state.logs, { turn: state.turn, role: "SYSTEM", text: "That way is closed.", kind: "default" }],
+          logs: [...state.logs, { turn: state.turn, role: "시스템", text: "그쪽 길은 아직 닫혀 있다.", kind: "default" }],
         };
       }
       const turn = Math.min(state.turn + 1, definition.maxTurns + 1);
@@ -162,7 +219,7 @@ function reduceGame(state: GameState, action: Action, definition: GameDefinition
         scene: action.to,
         turn,
         visitedScenes: state.visitedScenes.includes(action.to) ? state.visitedScenes : [...state.visitedScenes, action.to],
-        logs: [...state.logs, { turn, role: "SYSTEM", text: `→ ${target.title}`, kind: "system" }],
+        logs: [...state.logs, { turn, role: "시스템", text: `→ ${target.title}`, kind: "system" }],
         endingId: turn > definition.maxTurns ? "A" : state.endingId,
       };
     }
@@ -178,7 +235,19 @@ function loadSaved(definition: GameDefinition): GameState | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as GameState;
     if (typeof parsed.turn !== "number" || !definition.scenes[parsed.scene]) return null;
-    return parsed;
+    const initial = makeInitialState(definition);
+    return {
+      ...initial,
+      ...parsed,
+      cycleIndex: typeof parsed.cycleIndex === "number" ? parsed.cycleIndex : initial.cycleIndex,
+      loopCount: typeof parsed.loopCount === "number" ? parsed.loopCount : 0,
+      anchoredEvidence: Array.isArray(parsed.anchoredEvidence) ? parsed.anchoredEvidence : [],
+      boundaryIntegrity: typeof parsed.boundaryIntegrity === "number" ? parsed.boundaryIntegrity : 100,
+      roosterAlive: parsed.roosterAlive !== false,
+      horsePathOpen: parsed.horsePathOpen !== false,
+      witnessedPresence: Array.isArray(parsed.witnessedPresence) ? parsed.witnessedPresence : [],
+      presenceSeed: typeof parsed.presenceSeed === "number" ? parsed.presenceSeed : initial.presenceSeed,
+    };
   } catch {
     return null;
   }

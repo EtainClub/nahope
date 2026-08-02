@@ -27,10 +27,10 @@ function RadarDial({ size = 28 }: { size?: number }) {
   );
 }
 
-function SettingsMenu({ pathname }: { pathname: string }) {
+function SettingsMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const { language, setLanguage, tr } = useLanguage();
+  const { tr } = useLanguage();
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -46,11 +46,6 @@ function SettingsMenu({ pathname }: { pathname: string }) {
       document.removeEventListener("keydown", onEsc);
     };
   }, []);
-
-  // Close after route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   const items: Array<{ href: string; label: string; icon: React.ComponentType<{ size?: number }> }> = [
     { href: "/guide", label: tr("현장 안내서", "FIELD GUIDE"), icon: BookOpen },
@@ -125,35 +120,8 @@ function SettingsMenu({ pathname }: { pathname: string }) {
             >
               {tr("언어", "LANGUAGE")}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
-              {([
-                { value: "ko", label: "한국어" },
-                { value: "en", label: "ENGLISH" },
-              ] as const).map((option) => {
-                const isActive = language === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setLanguage(option.value)}
-                    aria-pressed={isActive}
-                    style={{
-                      padding: "8px 6px",
-                      border: `1px solid ${isActive ? "var(--acc-primary)" : "var(--line)"}`,
-                      background: isActive
-                        ? "color-mix(in srgb, var(--acc-primary) 12%, transparent)"
-                        : "var(--bg-2)",
-                      color: isActive ? "var(--acc-primary)" : "var(--ink-2)",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 9,
-                      letterSpacing: "0.08em",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
+            <div style={{ padding: "8px 6px", border: "1px solid var(--acc-primary)", background: "color-mix(in srgb, var(--acc-primary) 12%, transparent)", color: "var(--acc-primary)", fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.08em", textAlign: "center" }}>
+              한국어 고정
             </div>
           </div>
           {items.map((it) => {
@@ -210,12 +178,13 @@ export default function Navigation() {
   };
 
   useEffect(() => {
-    syncProfile();
+    const initialSync = window.setTimeout(syncProfile, 0);
     const handleStorageChange = () => syncProfile();
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("profileUpdated", handleStorageChange);
     const interval = setInterval(syncProfile, 1000);
     return () => {
+      window.clearTimeout(initialSync);
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("profileUpdated", handleStorageChange);
       clearInterval(interval);
@@ -266,7 +235,7 @@ export default function Navigation() {
           </span>
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <span className="eyebrow" style={{ fontSize: 9, color: "var(--acc-primary)" }}>
-              {"// OMEGA · SYS"}
+              {"// 오메가 · 시스템"}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--ink-3)", letterSpacing: "0.16em" }}>
               v{packageJson.version} · {tr("빌드", "BUILD")} ε
@@ -310,7 +279,7 @@ export default function Navigation() {
         {/* Right cluster: PaletteSwitcher + Settings + RadarDial + Wallet */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
           <PaletteSwitcher />
-          <SettingsMenu pathname={pathname} />
+          <SettingsMenu />
           <RadarDial size={28} />
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -354,7 +323,7 @@ export default function Navigation() {
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <PaletteSwitcher />
-          <SettingsMenu pathname={pathname} />
+          <SettingsMenu />
           <div style={{
             display: "flex", alignItems: "center", gap: 6,
             border: "1px solid var(--line-bright)", background: "var(--bg-2)",

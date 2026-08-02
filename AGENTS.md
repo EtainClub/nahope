@@ -4,7 +4,7 @@
 
 ## ⚠️ 0. Language Rule
 
-**ALL UI text, labels, buttons, modals, tooltips, placeholders, and error messages must be written in English.** No Korean text in UI components. Korean may appear only inside in-game narrative dialogue strings (e.g., character quotes that are intentionally bilingual for atmosphere), nowhere else.
+**모든 UI 문구, 레이블, 버튼, 모달, 툴팁, 플레이스홀더, 오류 메시지는 한국어로 작성한다.** 작품명, 인물명, `$NAHOPE` 같은 고유명사와 코드 식별자만 원문 표기를 허용한다. 영어 전환 UI는 제공하지 않는다.
 
 ---
 
@@ -37,7 +37,7 @@ A layout implemented within the `src/app/game/page.tsx` route of the Next.js app
 *   **Main Canvas (Center):** Occupies 50% width. This is the dark, ominous "Hopo Police Station" or "DMZ Forest" interactive area. The mouse cursor changes form (e.g., crosshair or glitch effect) when hovering over objects, guiding users to discover "something wrong" through point-and-click. (See popup area in watermarked_img_13100639718061315193.png)
 *   **Game Log (Left):** Occupies 25% width. Displays current situations and the narrative. *"Sgt. 범석, a mutilated cow carcass was discovered in the fields today. Find the beast the villagers claim is a tiger..."* (See left panel in watermarked_img_13100639718061315193.png)
 *   **Inventory & UGC Slots (Right):** Occupies 25% width. Shows items users have discovered (e.g., `['Calivan Rifle', 'Hopo License Plate', 'Omega Mark']`) and provides X (Twitter) sharing functionality for user-generated memes. (See right panel in watermarked_img_13100639718061315193.png)
-*   **Status Bar (Bottom):** Shows the user's wallet balance (`[SOLANA LOGGED IN - 2,500 $NAHOPE]`) and current location (`CURRENT LOCATION: SUBSTATION`), explicitly stating the token-gating mechanics. (See bottom bar in watermarked_img_13100639718061315193.png)
+*   **Status Bar (Bottom):** Shows the user's optional wallet balance (`[SOLANA LOGGED IN - 2,500 $NAHOPE]`) and current location (`CURRENT LOCATION: SUBSTATION`). Balance is informational and never gates episode access. (See bottom bar in watermarked_img_13100639718061315193.png)
 
 ### 2.3. Typography and Sound
 *   **Font:** Mono-space fonts (e.g., monospace, SFMono-Regular, Roboto Mono) to replicate retro text log aesthetics. Glitch effects (`text-neon-red` and `text-neon-green` defined in `src/app/globals.css`) are applied to critical narrative text.
@@ -50,13 +50,13 @@ A layout implemented within the `src/app/game/page.tsx` route of the Next.js app
 ### 3.1. Tech Stack
 *   **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS.
 *   **Backend & Hosting:** Firebase (Firestore for data, Firebase App Hosting for Next.js SSR).
-*   **Blockchain:** Solana RPC API for verifying user wallet balances.
+*   **Blockchain:** Optional Solana wallet profile and balance display; never used to gate episode access.
 
 ### 3.2. Core Component Architecture
 *   `src/app/game/page.tsx`: Defines the overall layout structure. (See Design System 2.2)
 *   `src/components/game/GameCanvas.tsx`: Implements the point-and-click mechanism. Defines interaction coordinates (Hotspots) for main canvas objects, handles investigative popups (`[INVESTIGATE]`), and executes item interaction logic (e.g., using a screwdriver on a locked rifle). (See center area and popup in watermarked_img_13100639718061315193.png)
 *   `src/components/game/GameInventory.tsx`: A `Token-Gated` inventory system. Fetches user inventory data (`['Calivan Rifle', 'Hopo License Plate', 'Omega Mark']`) from Firestore and dynamically generates X (Twitter) sharing links for meme creation. (See right panel in watermarked_img_13100639718061315193.png)
-*   `src/components/game/WalletStatusBar.tsx`: Integrates Solana wallet connection (e.g., @solana/wallet-adapter) to display real-time `$NAHOPE` balance, enforcing token-gating. (See bottom bar in watermarked_img_13100639718061315193.png)
+*   `src/components/game/WalletStatusBar.tsx`: Integrates an optional Solana wallet connection (e.g., @solana/wallet-adapter) to display real-time `$NAHOPE` balance without restricting gameplay. (See bottom bar in watermarked_img_13100639718061315193.png)
 
 ### 3.3. Firebase Firestore Data Structure
 *   **`users` Collection:** Stores user data keyed by wallet address.
@@ -76,7 +76,7 @@ A layout implemented within the `src/app/game/page.tsx` route of the Next.js app
 
 ### 3.4. Coding Rules and Implementation Details
 1.  **Transparent Developer Wallets:** The homepage `[Dev Wallet Status]` section must transparently display the developer’s wallet address and link to Solscan, publicly confirming the dev’s minimal token holdings and promise not to dump.
-2.  **Solana RPC Balance Verification (Token-Gating):** Access to subsequent game episodes (e.g., Episode 2 requiring 5,000 $NAHOPE) must be validated via Solana RPC calls from Next.js server-side functions (Middleware or API route handler).
+2.  **Sequential Episode Progression:** Episode access is based only on the previous episode's clear record. Wallet connection, Solana RPC balance, `$NAHOPE` holdings, and artifact counts must never gate gameplay.
 3.  **UGC-Based Reward System:** Implements an automated reward system using Firebase Functions. Users who share their inventory item memes (e.g., `Alien Slime`) on X (Twitter) and receive community engagement in the app feed can be automatically airdropped small `$NAHOPE` rewards to incentivize holding.
 
 ---

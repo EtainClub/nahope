@@ -263,6 +263,107 @@ const alienDossiers = [
   },
 ];
 
+const audienceTheories = [
+  {
+    number: "01",
+    title: "유병재의 12간지 이론",
+    category: "동물 상징",
+    accentColor: "#a3e635",
+    thesis:
+      "영화에 집요하게 배치된 동물과 동물적 형상을 12지의 순환 구조로 읽는 이론이다. 죽은 소와 호랑이 소문에서 시작해 말과 장닭, 사족으로 변하는 게르투까지 이어지는 동물들이 사건의 순서와 인물의 운명을 표시한다고 본다.",
+    clues: [
+      "소의 사체와 호랑이 목격담이 사건의 문을 연다.",
+      "말과 장닭처럼 위기 속에서도 버티는 동물이 강조된다.",
+      "게르투의 변형 신체가 여러 동물의 형상을 연상시킨다.",
+    ],
+    unresolved:
+      "열두 동물의 정확한 대응표와 등장 순서는 공개적으로 확인된 설정이 아니다. 반복되는 동물 이미지를 하나의 순환 암호로 묶어 읽는 관객 가설이다.",
+    sourceLabel: "유병재의 해석 영상",
+    sourceUrl: "https://youtu.be/CpRlw-wv3VQ",
+  },
+  {
+    number: "02",
+    title: "산불 타임루프 이론",
+    category: "시간 구조",
+    accentColor: "var(--acc-danger)",
+    thesis:
+      "호포항을 비운 산불과 마지막 파국이 서로 다른 사건이 아니라, 원인과 결과가 맞물린 하나의 시간 고리라는 해석이다. 영화가 보여 준 순서가 실제 시간의 순서와 다르며 누군가가 이미 실패한 사건을 다시 겪고 있다고 본다.",
+    clues: [
+      "산불은 구조 인력을 마을 밖으로 빼내 고립을 완성한다.",
+      "조르의 ‘운명을 바꾸라’는 명령은 이미 정해진 결과를 전제한다.",
+      "죽은 듯했던 성기가 다시 걷는 마지막 장면이 시간의 틈을 남긴다.",
+    ],
+    unresolved:
+      "되감기의 시작점과 기억을 보존하는 존재는 아직 특정되지 않았다. 시간 역행이 아니라 부활 능력만으로도 같은 장면을 설명할 수 있다.",
+    sourceLabel: "유병재의 해석 영상",
+    sourceUrl: "https://youtu.be/CpRlw-wv3VQ",
+  },
+  {
+    number: "03",
+    title: "마베이요 심장 부활 이론",
+    category: "능력 해석",
+    accentColor: "var(--acc-amber)",
+    thesis:
+      "마베이요의 살아 움직이는 심장은 시간을 되돌리는 장치가 아니라 일정한 범위와 시간 안에서 죽은 생명을 되살리는 기관이라는 가설이다. 그렇다면 칼리의 소생 가능성과 성기의 생존을 하나의 능력으로 연결할 수 있다.",
+    clues: [
+      "심장은 몸 밖에서도 독립적으로 살아 움직인다.",
+      "마베이요의 임무는 죽은 황태자 칼리를 되찾는 일과 연결된다.",
+      "치명상을 입은 성기가 마지막에 다시 모습을 드러낸다.",
+    ],
+    unresolved:
+      "능력의 범위와 대상, 발동 조건이 설명되지 않았다. 이 힘이 광범위하다면 게르투가 겪은 죽음과 조난을 왜 막지 못했는지도 남는 반론이다.",
+    sourceLabel: "관객 부활 가설",
+    sourceUrl: "https://theqoo.net/movie/4288627755",
+  },
+  {
+    number: "04",
+    title: "방주와 단군신화 이론",
+    category: "신화 대응",
+    accentColor: "var(--acc-cyan)",
+    thesis:
+      "하늘에서 내려온 게르투의 거대한 함선을 노아의 방주이자 환웅의 강림으로, 호포의 인간들을 곰과 호랑이로 대표되는 정주 집단으로 겹쳐 읽는 김단군의 가설이다. 우주 조난극을 낯선 건국신화의 재연으로 본다.",
+    clues: [
+      "황실과 여러 계급을 태운 함선은 생명을 보존하는 방주처럼 보인다.",
+      "하늘에서 내려온 존재와 땅의 주민이 처음 마주한다.",
+      "호랑이와 곰을 비롯한 동물 상징이 인간 집단의 정체성과 겹친다.",
+    ],
+    unresolved:
+      "성경과 단군신화를 동시에 대입한 적극적인 관객 창작에 가깝다. 영화 속 명칭이나 대사가 이 대응을 직접 확정하지는 않는다.",
+    sourceLabel: "김단군 망상회 기록",
+    sourceUrl: "https://chimhaha.net/internet/908395",
+  },
+  {
+    number: "05",
+    title: "말과 장닭의 양기 이론",
+    category: "무속 해석",
+    accentColor: "var(--acc-violet)",
+    thesis:
+      "외계 존재가 유독 말과 장닭을 완전히 꺾지 못하는 이유를 두 동물이 지닌 강한 양기에서 찾는 해석이다. 이들은 저쪽 세계가 침범한 호포항에서 인간 편의 결계를 유지하는 살아 있는 부적으로 기능한다.",
+    clues: [
+      "장닭의 울음은 밤과 새벽의 경계를 가르고 악한 기운을 밀어낸다.",
+      "말은 압도적인 추격 속에서도 인간을 태우고 끝까지 달린다.",
+      "동물의 생존이 단순한 액션 장치 이상으로 반복해 강조된다.",
+    ],
+    unresolved:
+      "전통적 무속 상징을 영화의 생존 규칙으로 확장한 독해다. 동물의 생존에는 속도와 지형 같은 현실적인 설명도 가능하다.",
+  },
+  {
+    number: "06",
+    title: "영화관은 굿판이라는 이론",
+    category: "제의적 독해",
+    accentColor: "var(--ink-0)",
+    thesis:
+      "나홍진을 굿을 주관하는 무당, 영화를 무구, 영화관을 제의의 공간으로 보는 해석이다. 스크린 너머의 형체 없는 공포를 소리와 빛, 관객의 신체 반응으로 불러내며 복제 매체 안에서 역설적으로 일회적인 아우라를 만든다고 본다.",
+    clues: [
+      "무선 잡음과 울음소리, 돌발적인 정적이 관객의 몸을 먼저 자극한다.",
+      "스크린은 이쪽 세계와 저쪽 세계를 나누는 결계처럼 작동한다.",
+      "관객은 이야기를 구경하는 데서 그치지 않고 집단적 공포를 함께 치른다.",
+    ],
+    unresolved:
+      "줄거리의 정답을 찾는 이론이라기보다 상영 체험을 설명하는 미학적 독해다. 같은 영상도 관람 환경과 관객의 감각에 따라 다르게 작동한다.",
+  },
+] as const;
+
 export default function MovieIntroPage() {
   const { language } = useLanguage();
   const isKorean = language === "ko";
@@ -494,7 +595,149 @@ export default function MovieIntroPage() {
           </div>
         </section>
 
-        {/* Section 2: Cast & Roles */}
+        {/* Section 2: Audience Theory Archive */}
+        <section id="theories" className="flex flex-col gap-6 scroll-mt-24">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+            <div className="flex items-start gap-3">
+              <span
+                className="w-2.5 h-2.5 rounded-full flicker mt-1.5 shrink-0"
+                style={{ background: "var(--acc-amber)" }}
+              />
+              <div>
+                <span
+                  className="text-[10px] font-mono tracking-[0.24em]"
+                  style={{ color: "var(--acc-amber)" }}
+                >
+                  관객 해석 아카이브 // 2026년 8월 1일 기준
+                </span>
+                <h2 className="display text-xl sm:text-2xl mt-1" style={{ color: "var(--ink-0)" }}>
+                  호포항을 둘러싼 여섯 가지 이론
+                </h2>
+                <p className="text-xs text-gray-400 leading-relaxed mt-3 max-w-3xl">
+                  유병재와 김단군의 해석 영상, 온라인 관객 토론, 무속적 독해를 함께 정리했습니다.
+                  아래 내용은 작품이 공식 확정한 설정이 아니라 장면을 다시 읽기 위한 가설입니다.
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="w-fit px-3 py-2 text-[9px] font-mono tracking-widest"
+              style={{
+                color: "var(--acc-danger)",
+                border: "1px solid color-mix(in srgb, var(--acc-danger) 45%, transparent)",
+                background: "color-mix(in srgb, var(--acc-danger) 8%, transparent)",
+              }}
+            >
+              주의 // 결말과 쿠키 영상 내용 포함
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {audienceTheories.map((theory) => (
+              <article
+                key={theory.number}
+                className="panel panel-bracket relative overflow-hidden p-5 sm:p-6 flex flex-col gap-5"
+                style={{
+                  borderColor: `color-mix(in srgb, ${theory.accentColor} 36%, transparent)`,
+                  boxShadow: `0 0 22px color-mix(in srgb, ${theory.accentColor} 8%, transparent)`,
+                }}
+              >
+                <span className="br-bl" /><span className="br-br" />
+                <div
+                  className="absolute top-0 left-0 h-[2px] w-24"
+                  style={{ background: theory.accentColor }}
+                />
+
+                <header className="flex items-start justify-between gap-4 pb-4" style={{ borderBottom: "1px solid var(--line)" }}>
+                  <div>
+                    <span className="text-[9px] font-mono tracking-[0.2em]" style={{ color: theory.accentColor }}>
+                      가설 {theory.number}
+                      {" // "}
+                      {theory.category}
+                    </span>
+                    <h3 className="display text-base sm:text-lg mt-2" style={{ color: "var(--ink-0)" }}>
+                      {theory.title}
+                    </h3>
+                  </div>
+                  <span
+                    className="text-3xl sm:text-4xl font-mono leading-none opacity-25"
+                    style={{ color: theory.accentColor }}
+                    aria-hidden="true"
+                  >
+                    {theory.number}
+                  </span>
+                </header>
+
+                <div>
+                  <span className="text-[9px] font-mono tracking-widest" style={{ color: theory.accentColor }}>
+                    핵심 주장
+                  </span>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mt-2">
+                    {theory.thesis}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[9px] font-mono tracking-widest" style={{ color: theory.accentColor }}>
+                    관찰 단서
+                  </span>
+                  <ul className="mt-2 flex flex-col gap-2">
+                    {theory.clues.map((clue) => (
+                      <li key={clue} className="flex gap-2 text-[11px] text-gray-400 leading-relaxed">
+                        <span className="shrink-0" style={{ color: theory.accentColor }} aria-hidden="true">
+                          ▸
+                        </span>
+                        <span>{clue}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div
+                  className="p-3 mt-auto"
+                  style={{
+                    border: "1px solid var(--line)",
+                    background: "color-mix(in srgb, var(--bg-0) 82%, transparent)",
+                  }}
+                >
+                  <span className="text-[9px] font-mono tracking-widest text-gray-500">
+                    반론 · 미확정
+                  </span>
+                  <p className="text-[11px] text-gray-400 leading-relaxed mt-1.5">
+                    {theory.unresolved}
+                  </p>
+                </div>
+
+                {"sourceUrl" in theory && theory.sourceUrl ? (
+                  <a
+                    href={theory.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-fit text-[10px] font-mono tracking-widest transition-opacity hover:opacity-70"
+                    style={{ color: theory.accentColor }}
+                    aria-label={`${theory.sourceLabel} 새 창에서 보기`}
+                  >
+                    출처 보기 // {theory.sourceLabel} ↗
+                  </a>
+                ) : null}
+              </article>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-[9px] font-mono tracking-wider text-gray-500">
+            <span>정리 원칙 // 사실·관객 가설·반론을 분리해 기록</span>
+            <a
+              href="https://www.xportsnews.com/article/2176763"
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-gray-300"
+            >
+              해석 열풍 관련 보도 ↗
+            </a>
+          </div>
+        </section>
+
+        {/* Section 3: Cast & Roles */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full flicker" style={{ background: "var(--acc-cyan)" }} />
@@ -559,7 +802,7 @@ export default function MovieIntroPage() {
           </div>
         </section>
 
-        {/* Section 3: Gertu World Lore & Alien Dossiers */}
+        {/* Section 4: Gertu World Lore & Alien Dossiers */}
         <section
           className="flex flex-col gap-6"
           style={{ contentVisibility: "auto", containIntrinsicSize: "1200px" }}
@@ -757,7 +1000,7 @@ export default function MovieIntroPage() {
           </div>
         </section>
 
-        {/* Section 4: Director Spotlight */}
+        {/* Section 5: Director Spotlight */}
         <section className="panel panel-bracket p-6 relative flex flex-col md:flex-row gap-8 items-stretch shadow-2xl" style={{ borderColor: "var(--acc-violet)", boxShadow: "var(--glow-violet)" }}>
           <span className="br-bl" /><span className="br-br" />
 
